@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4ad00db3-6386-4a8d-b416-7463ba9296e5" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LCCI/OneAway.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LCCI/OneAway.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -139,6 +137,8 @@
       <workItem from="1592645138557" duration="3200000" />
       <workItem from="1593397186943" duration="5123000" />
       <workItem from="1593497072757" duration="5643000" />
+      <workItem from="1593504192168" duration="645000" />
+      <workItem from="1593588388876" duration="4874000" />
     </task>
     <servers />
   </component>
@@ -150,7 +150,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
