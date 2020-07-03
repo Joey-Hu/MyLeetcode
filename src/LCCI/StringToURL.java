@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * @author: huhao
  * @time: 2020/6/29 10:57
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/string-to-url-lcci/
  */
 public class StringToURL {
 

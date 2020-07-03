@@ -3,7 +3,7 @@ package LCCI;
 /**
  * @author: huhao
  * @time: 2020/6/29 11:26
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/palindrome-permutation-lcci/
  */
 public class PalindromePermutation {
 

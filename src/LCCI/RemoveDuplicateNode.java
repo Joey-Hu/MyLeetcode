@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * @author: huhao
  * @time: 2020/7/1 21:45
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/remove-duplicate-node-lcci/
  */
 public class RemoveDuplicateNode {
     public ListNode removeDuplicateNodes(ListNode head) {

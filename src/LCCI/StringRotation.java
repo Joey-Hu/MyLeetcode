@@ -3,6 +3,7 @@ package LCCI;
 public class StringRotation {
 
     public boolean isFlipedString(String s1, String s2) {
+//        https://leetcode-cn.com/problems/string-rotation-lcci/
         // 旋转字符串存在两倍原字符串当中，查找子串
         if(s1.length() != s2.length()){
             return false;

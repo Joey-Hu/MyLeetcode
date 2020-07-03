@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * @author: huhao
  * @time: 2020/6/29 10:24
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/check-permutation-lcci/
  */
 public class CheckPermutation {
 

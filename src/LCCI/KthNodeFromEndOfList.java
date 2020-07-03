@@ -5,7 +5,7 @@ import java.util.Stack;
 /**
  * @author: huhao
  * @time: 2020/7/1 22:41
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/kth-node-from-end-of-list-lcci/
  */
 public class KthNodeFromEndOfList {
 

@@ -5,6 +5,8 @@ import java.util.Set;
 
 public class ZeroMatrix {
 
+//    https://leetcode-cn.com/problems/zero-matrix-lcci/
+
     public void setZeroes(int[][] matrix) {
 
         Set<Integer> zeroRow = new HashSet<>();

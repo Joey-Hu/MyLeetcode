@@ -3,7 +3,7 @@ package LCCI;
 public class CompressString {
 
     public String compressString(String S) {
-
+        // https://leetcode-cn.com/problems/compress-string-lcci/
         // 朴素算法
         if(S.length()<2){
             return S;
