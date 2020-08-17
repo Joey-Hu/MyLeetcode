@@ -6,7 +6,7 @@ import java.util.Queue;
 /**
  * @author: huhao
  * @time: 2020/8/16 15:21
- * @desc:
+ * @desc: https://leetcode-cn.com/problems/permutation-ii-lcci/
  */
 public class PermutationII {
     /**

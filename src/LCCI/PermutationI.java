@@ -29,39 +29,37 @@ public class PermutationI {
      */
     List<String> list = new ArrayList<>();
     public String[] permutation(String S) {
-       if (S == ""){
-           return new String[0];
-       }
-       for(int i=0; i<S.length(); i++){
-           StringBuilder track = new StringBuilder();
-//           List<Character> track = new ArrayList<>();
-//           boolean[] vis = new boolean[S.length()];
-           backtrack(S, track);
-       }
-       // 输出结果
-       String[] res = new String[list.size()];
-       for (int j=0; j<list.size(); j++) {
-           res[j] = list.get(j);
-       }
-       return res;
+        if (S == ""){
+            return new String[0];
+        }
+        for(int i=0; i<S.length(); i++){
+            StringBuilder sb = new StringBuilder();
+            boolean[] vis = new boolean[S.length()];
+            backtrack(sb, S, S.charAt(i), vis);
+        }
+        // 输出结果
+        String[] res = new String[list.size()];
+        for (int j=0; j<list.size(); j++) {
+            res[j] = list.get(j);
+        }
+        return res;
     }
 
-    private void backtrack(String s, StringBuilder track) {
-//        sb.append(c);
-//        vis[s.indexOf(c)] = true;
+    private void backtrack(StringBuilder sb, String s, Character c, boolean[] vis) {
+        sb.append(c);
+        vis[s.indexOf(c)] = true;
         // 满足条件则添加排列结果
-        if(track.length() == s.length()){
-            list.add(track.toString());
+        if(sb.length() == s.length()){
+            list.add(sb.toString());
             return;
         }
         // for 遍历
         for(int i=0; i<s.length(); i++){
-            if(!track.toString().contains(String.valueOf(s.charAt(i)))){
-                track.append(s.charAt(i));
-                backtrack(s, track);
+            if(s.charAt(i)!=c&&!vis[i]){
+                backtrack(sb, s, s.charAt(i), vis);
                 // 恢复 vis 和 sb
-//                vis[i] = false;
-                track.deleteCharAt(track.length()-1);
+                vis[i] = false;
+                sb.deleteCharAt(sb.length()-1);
             }
         }
     }
