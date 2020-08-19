@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class EightQueens {
     public List<List<String>> solveNQueens(int n) {
+        return null;
 
     }
 }
