@@ -30,7 +30,7 @@ public class Hanota {
             return;
         }
 
-        // N-1个盘经过辅助C放到B上
+        // size-1个盘经过辅助C放到B上
         move(size-1, A, C, B);
         // 大盘从A放到C
         C.add(A.get(A.size()-1));

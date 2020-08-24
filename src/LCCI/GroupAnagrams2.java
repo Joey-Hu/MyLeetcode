@@ -15,6 +15,6 @@ public class GroupAnagrams2 {
      */
     public List<List<String>> groupAnagrams(String[] strs) {
         
-
+        return null;
     }
 }
