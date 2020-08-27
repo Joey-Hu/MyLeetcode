@@ -10,71 +10,61 @@ import java.util.Map;
  */
 public class BooleanEvaluation {
 
-    Map<String, Integer> map = new HashMap<>();
 
     /**
-     * 将问题划分为子问题，对子问题递归求解
-     * 例：s = "1^0|0|1"可分解为
-     * 1 ^ 0|0|1
-     * 1^0 | 0|1
-     * 1^0|0 | 1
+     * 区间动态规划
      * @param s
      * @param result
      * @return
      */
     public int countEval(String s, int result) {
-        if (s.length() == 1){
-            if (s.equals(String.valueOf(result))) {
-                return 1;
+        if (s == null) {
+            return 0;
+        }
+
+        int n = s.length();
+        int len = 0;
+        int[][] dp0 = new int[n][n];
+        int[][] dp1 = new int[n][n];
+
+        //dp?[i][j] 表示 区间[i,j]内运算值为 ? 的方案数
+        for (int i = 0; i < n; i++) {
+            if (s.charAt(i) == '1') {
+                dp1[i][i] = 1;
             }else {
-                return 0;
+                dp0[i][i] = 1;
             }
         }
 
-        int res = 0;
-        for (int i=0; i<s.length(); i++) {
-            if (s.charAt(i) == '1' || s.charAt(i) == '0') {
-                continue;
-            }
-            String left = s.substring(0, i);
-            String right = s.substring(i+1);
-
-            if (map.get(left+"0") == null) {
-                map.put(left+"0", countEval(left, 0));
-            }
-            if(map.get(left+"1") == null)
-                map.put(left+"1", countEval(left, 1));
-            if(map.get(right+"0") == null)
-                map.put(right+"0", countEval(right, 0));
-            if(map.get(right+"1") == null)
-                map.put(right+"1", countEval(right, 1));
-
-            int left_0 = map.get(left+"0");
-            int left_1 = map.get(left+"1");
-            int right_0 = map.get(right+"0");
-            int right_1 = map.get(right+"1");
-
-            if(s.charAt(i) == '&'){
-                if(result == 0){
-                    res += (left_0 * right_0 + left_0 * right_1 + left_1 * right_0);
-                }else{
-                    res += (left_1 * right_1);
-                }
-            }else if(s.charAt(i) == '|'){
-                if(result == 0){
-                    res += (left_0 * right_0);
-                }else{
-                    res += (left_1 * right_1 + left_0 * right_1 + left_1 * right_0);
-                }
-            }else{
-                if(result == 0){
-                    res += (left_1 * right_1 + left_0 * right_0);
-                }else{
-                    res += (left_0 * right_1 + left_1 * right_0);
+        for (len = 2; len <= n-1; len += 2) {
+            //按长度递增
+            for (int i = 0; i < n - len; i += 2) {
+                // 左端点i
+                for (int j = i; j < i+len-2; j += 2) {
+                    // 中间端点j
+                    if(s.charAt(j+1)=='&')
+                    {
+                        dp1[i][i+len] += dp1[i][j]*dp1[j+2][i+len];
+                        dp0[i][i+len] += dp0[i][j]*dp0[j+2][i+len]+dp1[i][j]*dp0[j+2][i+len]+dp0[i][j]*dp1[j+2][i+len];
+                    }
+                    else if(s.charAt(j+1)=='|')
+                    {
+                        dp1[i][i+len] += dp1[i][j]*dp1[j+2][i+len]+dp1[i][j]*dp0[j+2][i+len]+dp0[i][j]*dp1[j+2][i+len];
+                        dp0[i][i+len] += dp0[i][j]*dp0[j+2][i+len];
+                    }
+                    else//^
+                    {
+                        dp1[i][i+len] += dp1[i][j]*dp0[j+2][i+len]+dp0[i][j]*dp1[j+2][i+len];
+                        dp0[i][i+len] += dp0[i][j]*dp0[j+2][i+len]+dp1[i][j]*dp1[j+2][i+len];
+                    }
                 }
             }
         }
-        return res;
+        if(result == 1) {
+            return dp1[0][n-1];
+        }
+        return dp0[0][n-1];
+
     }
 
     public static void main(String[] args) {
