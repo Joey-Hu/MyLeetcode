@@ -37,9 +37,10 @@ public class TopKFrequentElements {
         }
 
         int[] res = new int[k];
-        for (int pos = bucket.length-1; pos >=0 && res.length < k; pos --) {
+        int index = 0;
+        for (int pos = bucket.length-1; pos >=0 && index < k; pos --) {
             if (bucket[pos] != null) {
-                res.addAll(bucket[pos]);
+
             }
         }
         return res;
