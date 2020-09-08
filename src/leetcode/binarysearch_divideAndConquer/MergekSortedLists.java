@@ -1,4 +1,4 @@
-package leetcode.binarysearch;
+package leetcode.binarysearch_divideAndConquer;
 
 /**
  * @author: huhao
