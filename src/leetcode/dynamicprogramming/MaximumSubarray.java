@@ -7,22 +7,21 @@ package leetcode.dynamicprogramming;
  */
 public class MaximumSubarray {
     /**
-     * 暴力解法
+     * 动态规划
+     * 动态规划问题最主要的明确重叠子问题和状态转移方程
      * @param nums
      * @return
      */
     public int maxSubArray(int[] nums) {
 
-        int max = Integer.MIN_VALUE;
-        int sum = nums[0];
+        // dp[i]  表示以i结尾的maxSubArray
+        int[] dp = new int[nums.length];
+        dp[0] = nums[0];
+        int max = dp[0];
 
         for (int i = 1; i < nums.length; i++) {
-            if (sum + nums[i] < sum) {
-                sum = nums[i];
-                max = Math.max(max, sum);
-            }else {
-                sum += nums[i];
-            }
+            dp[i] = nums[i] + (dp[i-1] > 0 ? dp[i - 1] : 0);
+            max = Math.max(max, dp[i]);
         }
         return max;
     }
