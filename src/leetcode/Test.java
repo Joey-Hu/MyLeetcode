@@ -12,29 +12,24 @@ import java.util.List;
  */
 public class Test {
 
-    public int threeSumClosest(int[] nums, int target) {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        backtrack(nums, res, new ArrayList<Integer>());
+        return res;
+    }
 
-        Arrays.sort(nums);
-        int minDiff = Integer.MAX_VALUE;
-        int res = 0;
-
-        for (int i = 0; i < nums.length-2; i++) {
-            int low = i + 1;
-            int high = nums.length - 1;
-            while (low < high) {
-                int sum = nums[i] + nums[low] + nums[high];
-                if (Math.abs(sum - target) < minDiff) {
-                    minDiff = Math.abs(nums[low] + nums[high] - target);
-                    res = nums[low] + nums[high];
+    private void backtrack(int[] nums, List<List<Integer>> res, List<Integer> tempList) {
+        if (tempList.size() == nums.length) {
+            res.add(new ArrayList<>(tempList));
+        }else {
+            for (int i = 0; i < nums.length; i++) {
+                if (tempList.contains(nums[i])) {
+                    continue;
                 }
-                if (sum > target) {
-                    high --;
-                }
-                if (sum < target) {
-                    low ++;
-                }
+                tempList.add(nums[i]);
+                backtrack(nums, res, tempList);
+                tempList.remove(tempList.size() - 1);
             }
         }
-        return res;
     }
 }
