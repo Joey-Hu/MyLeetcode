@@ -22,6 +22,7 @@ public class ContainerWithMostWater2 {
         while (low < high) {
             volume = Math.max(volume, Math.min(height[low], height[high]) * (high - low));
 
+            // 如果我们每次移动较高的指针的话，这不会增加面积，因为面积取决于较矮的指针
             if (height[low] < height[high]) {
                 low ++;
             }else {
