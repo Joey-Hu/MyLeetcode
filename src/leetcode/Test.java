@@ -12,24 +12,42 @@ import java.util.List;
  */
 public class Test {
 
-    public List<List<Integer>> permute(int[] nums) {
-        List<List<Integer>> res = new ArrayList<>();
-        backtrack(nums, res, new ArrayList<Integer>());
+    public int[] searchRange(int[] nums, int target) {
+        int[] res = new int[]{-1, -1};
+        int low = 0;
+        int high = nums.length - 1;
+
+        if (nums.length == 0) {
+            return res;
+        }
+
+        // 左边界
+        while(low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] >= target) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+        res[0] = low;
+
+        // 右边界
+        high = nums.length - 1;
+        while(low < high) {
+            int mid = low + (high - low) / 2;
+            if(nums[mid] <= target) {
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        res[1] = high;
         return res;
     }
 
-    private void backtrack(int[] nums, List<List<Integer>> res, List<Integer> tempList) {
-        if (tempList.size() == nums.length) {
-            res.add(new ArrayList<>(tempList));
-        }else {
-            for (int i = 0; i < nums.length; i++) {
-                if (tempList.contains(nums[i])) {
-                    continue;
-                }
-                tempList.add(nums[i]);
-                backtrack(nums, res, tempList);
-                tempList.remove(tempList.size() - 1);
-            }
-        }
+    public static void main(String[] args) {
+        int[] nums = new int[]{5,7,7,8,8,10};
+        new Test().searchRange(nums, 8);
     }
 }
