@@ -4,7 +4,10 @@ package leetcode.twopointsAndslidewindow;
  * @author: huhao
  * @time: 2020/9/14 20:28
  * @desc: https://leetcode.com/problems/minimum-window-substring/
- * SimilarQuestion：567. Permutation in String
+ * SimilarQuestion：
+ *  567. Permutation in String，
+ *  438. Find All Anagrams in a String，
+ *  3. Longest Substring Without Repeating Characters
  */
 public class MinimumWindowSubstring {
     public String minWindow(String s, String t) {
