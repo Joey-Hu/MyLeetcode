@@ -1,41 +1,47 @@
+import com.sun.org.apache.regexp.internal.RE;
+
 import java.util.Scanner;
 import java.util.Stack;
 
 public class Solution {
 
     public static void main(String args[]) {
-        Scanner scanner = new Scanner(System.in);
-        String next = scanner.next();
-        scanner.close();
-        System.out.println(decompression(next));
+        int[] nums = new int[]{5, 3, 8, 3, 2, 5};
+        countBuildingds(nums);
     }
 
-    public static  String decompression(String str) {
+    public static  int[] countBuildingds(int[] nums) {
+        // 能看到的楼的下标
         Stack<Integer> stack = new Stack<>();
-        int i = 0;
-        StringBuilder sb = new StringBuilder();
+        // 往左看能看到的楼的数量
+        int[] leftLook = new int[nums.length];
+        // 往右看能看到的楼的数量
+        int[] rightLook = new int[nums.length];
 
-        while(i < str.length()) {
-            if (str.charAt(i) == '[' || str.charAt(i) == '|') {
-                stack.push(i);
-            }else if (str.charAt(i) == ']') {
-                int interval = stack.pop();
-                int leftChar = stack.pop();
-                int times = 0;
-                for (int t = leftChar + 1; t <= interval; t ++) {
-                    times = times * 10 + (str.charAt(t) - '0');
-                }
-
-                for (int j = 0; j < times; j++) {
-                    sb.append(str.substring(interval+1, i));
-                }
-            } else {
-                if (stack.empty()) {
-                    sb.append(str.charAt(i));
-                }
+        // 从右往左看
+        for (int i = 0; i <= nums.length-1; i++) {
+            leftLook[i] = stack.size();
+            // 去掉被挡住的楼
+            while (!stack.empty() && nums[i] >= nums[stack.peek()]) {
+                stack.pop();
             }
-            i++;
+            stack.push(i);
         }
-        return sb.toString();
+
+        stack.clear();
+
+        // 从左往右看
+        for (int i = nums.length-1; i >= 0; i--) {
+            rightLook[i] = stack.size();
+            while (!stack.empty() && nums[i] >= nums[stack.peek()]) {
+                stack.pop();
+            }
+            stack.push(i);
+        }
+
+        for(int i=0;i<=nums.length-1;i++) {
+            leftLook[i] += 1 + rightLook[i];
+        }
+        return leftLook;
     }
 }
