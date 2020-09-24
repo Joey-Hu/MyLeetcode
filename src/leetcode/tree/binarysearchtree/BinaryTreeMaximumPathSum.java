@@ -1,4 +1,4 @@
-package leetcode.binarysearchtree;
+package leetcode.tree.binarysearchtree;
 
 /**
  * @author: huhao

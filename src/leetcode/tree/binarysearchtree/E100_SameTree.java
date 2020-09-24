@@ -1,6 +1,4 @@
-package leetcode.binarysearchtree;
-
-import sun.reflect.generics.tree.Tree;
+package leetcode.tree.binarysearchtree;
 
 /**
  * @author: huhao

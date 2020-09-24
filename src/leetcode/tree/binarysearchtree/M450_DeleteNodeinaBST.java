@@ -1,6 +1,4 @@
-package leetcode.binarysearchtree;
-
-import java.util.Random;
+package leetcode.tree.binarysearchtree;
 
 /**
  * @author: huhao

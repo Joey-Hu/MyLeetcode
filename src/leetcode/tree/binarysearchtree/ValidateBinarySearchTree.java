@@ -1,6 +1,4 @@
-package leetcode.binarysearchtree;
-
-import java.util.Stack;
+package leetcode.tree.binarysearchtree;
 
 /**
  * @author: huhao
