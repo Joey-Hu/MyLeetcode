@@ -7,7 +7,7 @@ import java.util.Random;
  * @time: 2020/9/11 12:55
  * @desc: https://leetcode.com/problems/delete-node-in-a-bst/
  */
-public class DeleteNodeinaBST {
+public class M450_DeleteNodeinaBST {
 
     /**
      * 首先先找到等于 key 的结点
