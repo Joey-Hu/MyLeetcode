@@ -13,6 +13,7 @@ public class E496_NextGreaterElementI {
 
         for (int i = 0; i < len1; i++) {
 
+
         }
 
     return null;

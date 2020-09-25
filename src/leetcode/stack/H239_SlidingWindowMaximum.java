@@ -27,8 +27,8 @@ public class H239_SlidingWindowMaximum {
 
         Deque<Integer> deque = new ArrayDeque<>();
         for (int i = 0; i < nums.length; i++) {
-            while (!deque.isEmpty() && )
         }
+        return null;
     }
 
 }
