@@ -1,4 +1,4 @@
-package leetcode.array;
+package leetcode.backtrack;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +10,7 @@ import java.util.List;
  * @time: 2020/9/5 12:45
  * @desc: https://leetcode.com/problems/subsets/
  */
-public class Subsets {
+public class M78_Subsets {
 
     /**
      * 回溯法
@@ -36,6 +36,6 @@ public class Subsets {
 
     public static void main(String[] args) {
         int[] nums = new int[]{1,2,3};
-        new Subsets().subsets(nums);
+        new M78_Subsets().subsets(nums);
     }
 }

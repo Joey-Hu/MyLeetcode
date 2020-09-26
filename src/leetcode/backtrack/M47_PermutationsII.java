@@ -9,7 +9,7 @@ import java.util.List;
  * @time: 2020/9/5 13:47
  * @desc: https://leetcode.com/problems/permutations-ii/
  */
-public class PermutationsII {
+public class M47_PermutationsII {
 
     public List<List<Integer>> permuteUnique(int[] nums) {
 

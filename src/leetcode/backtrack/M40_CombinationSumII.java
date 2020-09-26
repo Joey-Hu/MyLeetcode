@@ -8,7 +8,7 @@ import java.util.List;
  * @time: 2020/9/9 20:33
  * @desc: https://leetcode.com/problems/combination-sum-ii/
  */
-public class CombinationSumII {
+public class M40_CombinationSumII {
 
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
 

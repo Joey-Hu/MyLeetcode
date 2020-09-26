@@ -13,7 +13,7 @@ import java.util.List;
  * @time: 2020/9/5 13:58
  * @desc: https://leetcode.com/problems/combination-sum/
  */
-public class CombinationSum {
+public class M39_CombinationSum {
 
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
 

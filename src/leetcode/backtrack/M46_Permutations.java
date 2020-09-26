@@ -10,7 +10,7 @@ import java.util.List;
  * @time: 2020/9/5 13:35
  * @desc: https://leetcode.com/problems/permutations/
  */
-public class Permutations {
+public class M46_Permutations {
 
     public List<List<Integer>> permute(int[] nums) {
         List<List<Integer>> track = new ArrayList<>();
