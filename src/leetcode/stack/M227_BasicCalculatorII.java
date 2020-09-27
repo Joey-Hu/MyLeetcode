@@ -27,7 +27,7 @@ public class M227_BasicCalculatorII {
             if (Character.isDigit(c)) {
                 number = number * 10 + (int) (c - '0');
             }
-            if ((c != ' ' && !Character.isDigit(c) ) || i == s.length()-1){
+            if ((c != ' ' && !Character.isDigit(c)) || i == s.length()-1){
                 if (op == '+') {
                     stack.push(number);
                 }
