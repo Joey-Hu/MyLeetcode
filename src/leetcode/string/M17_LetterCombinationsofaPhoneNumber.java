@@ -1,5 +1,7 @@
 package leetcode.string;
 
+import com.sun.org.apache.regexp.internal.REUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,22 +13,14 @@ import java.util.List;
 public class M17_LetterCombinationsofaPhoneNumber {
 
     public List<String> letterCombinations(String digits) {
-        char[][] map = new char[][]{{'a', 'b', 'c'}, {'d', 'e', 'f'}, {'g', 'h', 'i'}, {'j', 'k', 'l'}, {'m', 'n', 'o'},
-                {'p', 'q', 'r', 's'}, {'t', 'u', 'v'}, {'w', 'x', 'y', 'z'}};
+        if (digits.length() == 0) {
+            return null;
+        }
+
         List<String> res = new ArrayList<>();
-        backtrack(map, digits, new ArrayList<Character>(), res);
-
-
-
+//        List<String> dict
+        return null;
     }
 
-    private void backtrack(char[][] map, String digits, ArrayList<Character> characters, List<String> res) {
-        if (characters.size() == digits.length()) {
-            res.add(characters.toString());
-        }
 
-        for (int i = 0; i < digits.length(); i++) {
-
-        }
-    }
 }
