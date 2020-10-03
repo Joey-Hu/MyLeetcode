@@ -42,4 +42,6 @@ public class M378_KthSmallestElementinaSortedMatrix {
      * @return
      */
     public int kthSmallest2(int[][] matrix, int k) {
+        return -1;
+    }
 }
