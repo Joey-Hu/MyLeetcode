@@ -5,7 +5,7 @@ package leetcode.linkedlist;
  * @time: 2020/9/1 11:39
  * @desc: https://leetcode.com/problems/reverse-nodes-in-k-group/
  */
-public class ReverseNodesink_Group {
+public class H25_ReverseNodesinkGroup {
     /**
      * 每次倒置链表的 k 个结点
      * 第一次不会
@@ -28,6 +28,7 @@ public class ReverseNodesink_Group {
         }
 
         ListNode prev = reverseKGroup(cur, k);
+        // reverse
         while (count > 0) {
             ListNode tmp = head.next;
             head.next = prev;
