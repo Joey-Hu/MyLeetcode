@@ -26,10 +26,13 @@ public class M1019_NextGreaterNodeInLinkedList {
 
         int[] res = new int[list.size()];
         Stack<Integer> stack = new Stack<>();
+        // 从头开始遍历
         for (int i = 0; i < list.size(); i++) {
+            // 如果后面存在比栈中索引指代的数更大的数，则索引出栈并给结果数组赋值
             while (!stack.empty() && list.get(stack.peek()) < list.get(i)) {
                 res[stack.pop()] = list.get(i);
             }
+            // 入栈
             stack.push(i);
         }
         return res;

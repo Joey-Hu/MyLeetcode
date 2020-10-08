@@ -5,7 +5,7 @@ package leetcode.linkedlist;
  * @time: 2020/8/31 22:03
  * @desc: https://leetcode.com/problems/add-two-numbers/
  */
-public class AddTwoNumbers {
+public class M2_AddTwoNumbers {
 
     public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         int carry = 0;
