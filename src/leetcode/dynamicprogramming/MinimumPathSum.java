@@ -3,7 +3,7 @@ package leetcode.dynamicprogramming;
 /**
  * @author: huhao
  * @time: 2020/9/8 15:10
- * @desc: https://leetcode.com/problems/minimum-path-sum/
+ * @desc:
  */
 public class MinimumPathSum {
 
