@@ -1,6 +1,8 @@
 package leetcode.binarysearch_divideAndConquer;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author: huhao
@@ -10,8 +12,24 @@ import java.util.Arrays;
 public class M287_FindtheDuplicateNumber {
 
     /**
+     * set
+     * O(N)
+     * @param nums
+     * @return
+     */
+    public int findDuplicate2(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (set.add(nums[i]) == false) {
+                return nums[i];
+            }
+        }
+        throw new IllegalArgumentException("No solution");
+    }
+
+    /**
      * sort + traverse
-     * O(n)
+     * O(nlogn)
      * @param nums
      * @return
      */

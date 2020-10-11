@@ -11,6 +11,12 @@ import java.util.List;
  */
 public class M230_KthSmallestElementinaBST {
 
+    /**
+     * 中序遍历得到有序链表 获取数据
+     * @param root
+     * @param k
+     * @return
+     */
     public int kthSmallest(TreeNode root, int k) {
 
         List<Integer> inorder = new ArrayList<>();

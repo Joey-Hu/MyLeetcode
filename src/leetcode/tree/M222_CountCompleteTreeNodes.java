@@ -53,7 +53,7 @@ public class M222_CountCompleteTreeNodes {
     }
 
     /**
-     *
+     * 相比于方法2，分离出树是完全二叉树的情况
      * @param root
      * @return
      */
