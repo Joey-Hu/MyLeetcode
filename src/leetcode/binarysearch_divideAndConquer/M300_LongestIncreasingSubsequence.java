@@ -23,6 +23,7 @@ public class M300_LongestIncreasingSubsequence {
 
 
         }
+        return -1;
 
     }
 }
