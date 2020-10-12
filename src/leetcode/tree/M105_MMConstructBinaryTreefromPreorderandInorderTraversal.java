@@ -8,7 +8,7 @@ import java.util.Map;
  * @time: 2020/9/12 20:43
  * @desc: https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
  */
-public class ConstructBinaryTreefromPreorderandInorderTraversal {
+public class M105_MMConstructBinaryTreefromPreorderandInorderTraversal {
 
     public TreeNode buildTree(int[] preorder, int[] inorder) {
         Map<Integer, Integer> inMap = new HashMap<>();
