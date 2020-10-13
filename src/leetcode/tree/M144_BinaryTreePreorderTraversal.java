@@ -1,5 +1,6 @@
 package leetcode.tree;
 
+import java.awt.print.Pageable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -9,14 +10,39 @@ import java.util.Stack;
  * @time: 2020/9/10 9:04
  * @desc: https://leetcode.com/problems/binary-tree-preorder-traversal/
  */
-public class BinaryTreePreorderTraversal2 {
+public class M144_BinaryTreePreorderTraversal {
+
+    /**
+     * 递归方法
+     * @param root
+     * @return
+     */
+    public List<Integer> preorderTraversal(TreeNode root) {
+
+        List<Integer> res = new ArrayList<>();
+        preOrder(res, root);
+        return res;
+    }
+
+    private void preOrder(List<Integer> res, TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        res.add(root.val);
+        if (root.left != null) {
+            preOrder(res, root.left);
+        }
+        if (root.right != null) {
+            preOrder(res, root.right);
+        }
+    }
 
     /**
      * 迭代方法
      * @param root
      * @return
      */
-    public List<Integer> preorderTraversal(TreeNode root) {
+    public List<Integer> preorderTraversal2(TreeNode root) {
 
         List<Integer> res = new ArrayList<>();
         Stack<TreeNode> stack = new Stack<>();
@@ -40,6 +66,7 @@ public class BinaryTreePreorderTraversal2 {
         }
         return res;
     }
+
 
     class TreeNode {
         int val;
