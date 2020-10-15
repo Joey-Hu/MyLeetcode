@@ -13,6 +13,7 @@ public class E101_SymmetricTree {
 
     /**
      * 递归
+     * 类似 E100
      * @param root
      * @return
      */

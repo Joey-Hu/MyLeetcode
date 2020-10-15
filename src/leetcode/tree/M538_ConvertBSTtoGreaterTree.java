@@ -32,27 +32,6 @@ public class M538_ConvertBSTtoGreaterTree {
         return left;
     }
 
-    private void inorder(TreeNode root, List<Integer> list) {
-        if (root == null) {
-            return;
-        }
-        if (root.left != null) {
-            inorder(root.left, list);
-        }
-        list.add(root.val);
-        if (root.right != null) {
-            inorder(root.right, list);
-        }
-    }
-
-    private int sum(List<Integer> list, int start) {
-        int sum = 0;
-        for (int i = start; i < list.size(); i++) {
-            sum += list.get(i);
-        }
-        return sum;
-    }
-
     class TreeNode {
         int val;
         TreeNode left;
