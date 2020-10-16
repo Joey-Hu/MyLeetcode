@@ -1,5 +1,7 @@
 package leetcode.tree;
 
+import java.util.List;
+
 /**
  * @author: huhao
  * @time: 2020/10/15 21:25
@@ -8,7 +10,7 @@ package leetcode.tree;
 public class M652_FindDuplicateSubtrees {
 
     public List<TreeNode> findDuplicateSubtrees(TreeNode root) {
-
+        return null;
     }
 
     class TreeNode {

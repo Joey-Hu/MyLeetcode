@@ -5,7 +5,7 @@ package leetcode.binarysearch_divideAndConquer;
  * @time: 2020/9/13 10:23
  * @desc: https://leetcode.com/problems/binary-search/
  */
-public class BinarySearch {
+public class E704_BinarySearch {
 
     public int search(int[] nums, int target) {
 
