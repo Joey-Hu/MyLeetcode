@@ -7,6 +7,12 @@ package leetcode.binarysearch_divideAndConquer;
  */
 public class M875_KokoEatingBananas {
 
+    /**
+     * 与1011题类似
+     * @param piles
+     * @param H
+     * @return
+     */
     public int minEatingSpeed(int[] piles, int H) {
         int low = 1;
         int high = (int) 1e9;
