@@ -27,8 +27,8 @@ public class LFUCache {
      * @param capacity: total capacity of LFU Cache
      * @param curSize: current size of LFU cache
      * @param minFrequency: frequency of the last linked list (the minimum frequency of entire LFU cache)
-     * @param cache: a hash map that has key to Node mapping, which used for storing all nodes by their keys
-     * @param frequencyMap: a hash map that has key to linked list mapping, which used for storing all
+     * @param cache: a hashTable map that has key to Node mapping, which used for storing all nodes by their keys
+     * @param frequencyMap: a hashTable map that has key to linked list mapping, which used for storing all
      *                    double linked list by their frequencies
      */
     public LFUCache(int capacity) {

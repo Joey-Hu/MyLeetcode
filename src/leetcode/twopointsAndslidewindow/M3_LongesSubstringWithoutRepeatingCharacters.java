@@ -8,7 +8,7 @@ import java.util.Set;
  * @time: 2020/9/3 13:48
  * @desc: https://leetcode.com/problems/longest-substring-without-repeating-characters/
  */
-public class LongesSubstringWithoutRepeatingCharacters {
+public class M3_LongesSubstringWithoutRepeatingCharacters {
 
     /**
      * slide window
@@ -38,6 +38,6 @@ public class LongesSubstringWithoutRepeatingCharacters {
     }
 
     public static void main(String[] args) {
-        new LongesSubstringWithoutRepeatingCharacters().lengthOfLongestSubstring("pwwkew");
+        new M3_LongesSubstringWithoutRepeatingCharacters().lengthOfLongestSubstring("pwwkew");
     }
 }

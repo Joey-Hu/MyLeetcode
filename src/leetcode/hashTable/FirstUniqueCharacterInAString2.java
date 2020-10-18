@@ -1,7 +1,4 @@
-package leetcode.hash;
-
-import java.util.HashMap;
-import java.util.Map;
+package leetcode.hashTable;
 
 /**
  * @author: huhao
