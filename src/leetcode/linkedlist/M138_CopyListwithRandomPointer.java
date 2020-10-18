@@ -33,15 +33,14 @@ public class M138_CopyListwithRandomPointer {
         // 第三轮: 提取复制节点
         iter = head;
         Node dummy = new Node(-1);
-        Node copy, copyIter = dummy;
+        Node copyIter = dummy;
 
         while (iter != null) {
             next = iter.next.next;
 
             // 提取copy
-            copy = iter.next;
-            copyIter.next = copy;
-            copyIter = copy;
+            copyIter.next = iter.next;
+            copyIter = copyIter.next;
 
             // 存储原始节点
             iter.next = next;
