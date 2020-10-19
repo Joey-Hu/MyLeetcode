@@ -9,9 +9,13 @@ import java.util.*;
  */
 public class E349_IntersectionofTwoArrays {
 
+    /**
+     * 使用 set 分别记录两个字符串中的字符，然后求两个 set 的重复字符串
+     * @param nums1
+     * @param nums2
+     * @return
+     */
     public int[] intersection(int[] nums1, int[] nums2) {
-//        Arrays.sort(nums1);
-//        Arrays.sort(nums2);
         Set<Integer> set1 = new HashSet<>();
         Set<Integer> set2 = new HashSet<>();
 
