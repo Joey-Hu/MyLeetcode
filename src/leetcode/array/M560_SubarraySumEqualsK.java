@@ -1,6 +1,8 @@
 package leetcode.array;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -9,6 +11,29 @@ import java.util.Random;
  * @desc: https://leetcode.com/problems/subarray-sum-equals-k/
  */
 public class M560_SubarraySumEqualsK {
+
+    /**
+     * 使用累计和 + hashMap
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int subarraySum3(int[] nums, int k) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+        // 初始化：用于统计从0到i的累计和等于k
+        map.put(0, 1);
+        int sum = 0;
+        int res = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            if (map.containsKey(sum-k)) {
+                res += map.get(sum-k);
+            }
+            map.put(sum, map.getOrDefault(sum, 0)+1);
+        }
+        return res;
+    }
 
     /**
      * 暴力方法
