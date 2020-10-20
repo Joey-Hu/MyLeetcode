@@ -10,6 +10,7 @@ public class M718_MaximumLengthofRepeatedSubarray {
     /**
      * DP
      * 类似于求解两字符串的最长子串(Longest Common Substring)
+     * O(M * N)
      * @param A
      * @param B
      * @return

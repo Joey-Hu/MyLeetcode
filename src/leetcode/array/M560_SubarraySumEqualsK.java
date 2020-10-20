@@ -27,6 +27,7 @@ public class M560_SubarraySumEqualsK {
         int res = 0;
         for (int i = 0; i < nums.length; i++) {
             sum += nums[i];
+            // 当存在sum-k时，表示当前位置到map.get(sum-k)位置的和等与k
             if (map.containsKey(sum-k)) {
                 res += map.get(sum-k);
             }

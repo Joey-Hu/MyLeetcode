@@ -9,6 +9,11 @@ import java.util.Stack;
  */
 public class M739_DailyTemperatures {
 
+    /**
+     * 单调栈
+     * @param T
+     * @return
+     */
     public int[] dailyTemperatures(int[] T) {
         int[] res = new int[T.length];
         Stack<Integer> stack = new Stack<>();
