@@ -11,6 +11,12 @@ import java.util.HashSet;
  */
 public class E350_IntersectionofTwoArraysII {
 
+    /**
+     * set
+     * @param nums1
+     * @param nums2
+     * @return
+     */
     public int[] intersect(int[] nums1, int[] nums2) {
 
         HashSet<Integer> set = new HashSet<>();
