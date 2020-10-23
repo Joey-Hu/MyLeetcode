@@ -10,6 +10,11 @@ import java.util.Queue;
  */
 public class E111_MinimumDepthofBinaryTree {
 
+    /**
+     * BFS
+     * @param root
+     * @return
+     */
     public int minDepth(TreeNode root) {
 
         if (root == null) {

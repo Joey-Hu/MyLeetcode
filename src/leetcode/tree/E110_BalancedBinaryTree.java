@@ -5,7 +5,7 @@ package leetcode.tree;
  * @time: 2020/9/10 16:09
  * @desc: https://leetcode.com/problems/balanced-binary-tree/
  */
-public class M110_BalancedBinaryTree {
+public class E110_BalancedBinaryTree {
 
     public boolean isBalanced(TreeNode root) {
         if (root == null) {

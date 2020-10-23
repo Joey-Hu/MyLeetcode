@@ -56,9 +56,13 @@ public class M98_ValidateBinarySearchTree {
         if (root == null) {
             return;
         }
-        inorder(root.left, list);
+        if (root.left != null) {
+            inorder(root.left, list);
+        }
         list.add(root.val);
-        inorder(root.right, list);
+        if (root.right != null) {
+            inorder(root.right, list);
+        }
     }
 
 

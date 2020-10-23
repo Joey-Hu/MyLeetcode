@@ -3,6 +3,7 @@ package leetcode.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * @author: huhao
@@ -12,7 +13,7 @@ import java.util.List;
 public class E101_SymmetricTree {
 
     /**
-     * 递归
+     * 递归 dfs
      * 类似 E100
      * @param root
      * @return
@@ -35,8 +36,40 @@ public class E101_SymmetricTree {
         return p.val == q.val && isMirror(p.left, q.right) && isMirror(p.right, q.left);
     }
 
+    /**
+     * 迭代 stack
+     * @param root
+     * @return
+     */
+    public boolean isSymmetric2(TreeNode root) {
+        if (root == null) {
+            return true;
+        }
 
-    class TreeNode {
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root.right);
+        stack.push(root.left);
+
+        while (!stack.empty()) {
+            TreeNode left = stack.pop();
+            TreeNode right = stack.pop();
+            if (left == null && right == null) {
+                continue;
+            }
+            if (left == null || right == null || left.val != right.val) {
+                return false;
+            }
+            stack.push(left.left);
+            stack.push(right.right);
+            stack.push(left.right);
+            stack.push(right.left);
+        }
+        return true;
+    }
+
+
+
+        class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
