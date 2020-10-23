@@ -12,13 +12,16 @@ public class M324_WiggleSortII {
     public void wiggleSort(int[] nums) {
         int[] res = new int[nums.length];
         Arrays.sort(nums);
-        int left = 0;
-        int right = nums.length / 2 + 1;
+        int left = (nums.length-1) / 2;
+        int right = nums.length-1;
         int idx = 0;
 
-        while (right < nums.length && idx < nums.length) {
-            res[idx++] = nums[left++];
-            res[idx++] = nums[right++];
+        while (idx < nums.length) {
+            res[idx++] = nums[left--];
+            if (idx >= nums.length) {
+                break;
+            }
+            res[idx++] = nums[right--];
         }
 
         for (int i = 0; i < res.length; i++) {
