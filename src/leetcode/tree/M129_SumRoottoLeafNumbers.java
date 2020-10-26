@@ -59,7 +59,6 @@ public class M129_SumRoottoLeafNumbers {
         return sum;
     }
 
-
     class TreeNode {
         int val;
         TreeNode left;

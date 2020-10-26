@@ -24,22 +24,23 @@ public class M113_PathSumII {
     }
 
     private void pathSum(TreeNode root, int sum, List<Integer> temp, List<List<Integer>> res) {
+        // 终止条件1
         if (root == null) {
             return;
         }
 
         temp.add(new Integer(root.val));
+        // 终止条件2
         if (root.left == null && root.right == null && sum-root.val==0) {
-            // 添加的是reference
+            // 添加的是引用
             // res.add(temp);
             res.add(new ArrayList<>(temp));
-        }else {
-            pathSum(root.left, sum-root.val, temp, res);
-            pathSum(root.right, sum-root.val, temp, res);
         }
+        pathSum(root.left, sum-root.val, temp, res);
+        pathSum(root.right, sum-root.val, temp, res);
+
         temp.remove(temp.size()-1);
     }
-
 
     class TreeNode {
         int val;

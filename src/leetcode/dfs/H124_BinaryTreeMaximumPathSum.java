@@ -7,8 +7,6 @@ package leetcode.dfs;
  */
 public class H124_BinaryTreeMaximumPathSum {
 
-    // 全局变量
-
     public int maxPathSum(TreeNode root) {
         if (root == null) {
             return 0;
