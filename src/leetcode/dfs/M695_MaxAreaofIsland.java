@@ -15,40 +15,19 @@ public class M695_MaxAreaofIsland {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 if (grid[i][j] == 1) {
-                    int area = 0;
-                    boundaryDFS(grid, i, j, area);
-                    maxArea = Math.max(maxArea, area);
+                    maxArea = Math.max(maxArea, boundaryDFS(grid, i, j));
                 }
             }
         }
         return maxArea;
     }
 
-    private void boundaryDFS(int[][] grid, int i, int j, int area) {
-        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length) {
-            return;
-        }
-        if (grid[i][j] == 1) {
+    private int boundaryDFS(int[][] grid, int i, int j) {
+        if (i >= 0 && i < grid.length && j >= 0 && j < grid[0].length && grid[i][j] == 1) {
             grid[i][j] = -1;
-            area ++;
+            return 1 + boundaryDFS(grid, i-1, j) + boundaryDFS(grid, i+1, j) + boundaryDFS(grid, i, j-1) + boundaryDFS(grid, i, j+1);
         }
-
-        if (i > 0 && grid[i-1][j] == 1) {
-            boundaryDFS(grid, i-1, j, area);
-        }
-
-        if (i < grid.length-1 && grid[i+1][j] == 1) {
-            boundaryDFS(grid, i+1, j, area);
-        }
-
-        if (j > 0 && grid[i][j-1] == 1) {
-            boundaryDFS(grid, i, j-1, area);
-        }
-
-        if (j < grid[0].length-1 && grid[i][j+1] == 1) {
-            boundaryDFS(grid, i, j+1, area);
-        }
-        return;
+        return 0;
     }
 
     public static void main(String[] args) {

@@ -5,7 +5,7 @@ package leetcode.dynamicprogramming.houserobber;
  * @time: 2020/9/16 12:43
  * @desc: https://leetcode.com/problems/house-robber/
  */
-public class HouseRobber {
+public class E198_HouseRobber {
 
     /**
      * 动态规划
@@ -31,6 +31,6 @@ public class HouseRobber {
 
     public static void main(String[] args) {
         int[] nums = {1, 2, 3, 1};
-        new HouseRobber().rob(nums);
+        new E198_HouseRobber().rob(nums);
     }
 }

@@ -5,7 +5,7 @@ package leetcode.dynamicprogramming.houserobber;
  * @time: 2020/9/16 13:18
  * @desc: https://leetcode.com/problems/house-robber-ii/
  */
-public class HouseRobberII {
+public class M213_HouseRobberII {
 
     /**
      * 分别去掉首尾元素，分别用house robber里的算法求一遍，求最大值
