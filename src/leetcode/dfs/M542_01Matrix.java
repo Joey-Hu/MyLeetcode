@@ -1,5 +1,8 @@
 package leetcode.dfs;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * @author: huhao
  * @time: 2020/10/27 11:43
@@ -7,21 +10,59 @@ package leetcode.dfs;
  */
 public class M542_01Matrix {
 
+    /**
+     * BFS 多源最短路径
+     * ref: https://www.youtube.com/watch?v=YTnYte6U61w
+     * @param matrix
+     * @return
+     */
     public int[][] updateMatrix(int[][] matrix) {
-        for (int i = 0; i <matrix.length; i++) {
-            for (int j = 0; j < matrix[0].length; j++) {
-                searchDFS(matrix, 0, i, j)
-            }
+        int m = matrix.length;
+        int n = matrix[0].length;
 
+        Queue<int[]> queue = new LinkedList<>();
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (matrix[i][j] == 0) {
+                    queue.offer(new int[] {i, j});
+                }
+                else {
+                    matrix[i][j] = Integer.MAX_VALUE;
+                }
+            }
         }
+
+        int[][] dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            for (int[] d : dirs) {
+                int r = cell[0] + d[0];
+                int c = cell[1] + d[1];
+                if (r < 0 || r >= m || c < 0 || c >= n || matrix[r][c] <= matrix[cell[0]][cell[1]] + 1) {
+                    continue;
+                }
+                queue.add(new int[] {r, c});
+                matrix[r][c] = matrix[cell[0]][cell[1]] + 1;
+            }
+        }
+
+        return matrix;
     }
 
-    private int searchDFS(int[][] matrix, int minDistance, int i, int j) {
-        if (i < 0 || i >= matrix.length || j < 0 || j >= matrix[0].length || matrix[i][j] == 0) {
-            return minDistance;
-        }
-        minDistance ++;
-        minDistance = Math.min(Math.min(searchDFS(matrix, minDistance, i-1, j), searchDFS(matrix, minDistance, i+1, j)), Math.min())
+    /**
+     * 动态规划
+     * @param matrix
+     * @return
+     */
+    public int[][] updateMatrix2(int[][] matrix) {
+        return null;
+    }
+
+
+        public static void main(String[] args) {
+        int[][] matrix = new int[][]{{0,0,0},{0,1,0},{1, 1, 1}};
+        new M542_01Matrix().updateMatrix(matrix);
     }
 
 }
