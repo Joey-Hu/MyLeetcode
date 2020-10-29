@@ -51,4 +51,9 @@ public class M179_LargestNumber {
 
         return sb.toString();
     }
+
+    public static void main(String[] args) {
+        int[] nums = new int[] {3,30,34,5,9};
+        new M179_LargestNumber().largestNumber(nums);
+    }
 }

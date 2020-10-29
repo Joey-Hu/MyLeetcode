@@ -20,6 +20,7 @@ public class E53_MaximumSubarray {
         int max = dp[0];
 
         for (int i = 1; i < nums.length; i++) {
+            // 如果前面的和小于0，就从当前位置开始计算最大子序列
             dp[i] = nums[i] + (dp[i-1] > 0 ? dp[i - 1] : 0);
             max = Math.max(max, dp[i]);
         }

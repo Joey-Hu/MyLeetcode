@@ -34,7 +34,7 @@ public class M75_SortColors {
             // 如果队尾元素小于tmp了,需要将其赋值给low
             nums[low] = nums[high];
 
-            // 当队首元素小于等于tmp时,向前挪动low指针
+            // 当队首元素小于等于tmp时,向后挪动low指针
             while (low < high && nums[low] <= temp) {
                 low ++;
             }
