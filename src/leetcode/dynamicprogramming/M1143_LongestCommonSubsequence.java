@@ -7,7 +7,7 @@ import LCCI.Maximum;
  * @time: 2020/9/8 20:48
  * @desc: https://leetcode.com/problems/longest-common-subsequence/
  */
-public class LongestCommonSubsequence {
+public class M1143_LongestCommonSubsequence {
 
     /**
      * 第一遍不会

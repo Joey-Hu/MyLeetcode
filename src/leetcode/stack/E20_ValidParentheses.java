@@ -7,7 +7,7 @@ import java.util.Stack;
  * @time: 2020/9/6 9:27
  * @desc: https://leetcode.com/problems/valid-parentheses/
  */
-public class ValidParentheses {
+public class E20_ValidParentheses {
 
     /**
      * O(n)
@@ -42,6 +42,6 @@ public class ValidParentheses {
     }
 
     public static void main(String[] args) {
-        new ValidParentheses().isValid("(){}}{");
+        new E20_ValidParentheses().isValid("(){}}{");
     }
 }

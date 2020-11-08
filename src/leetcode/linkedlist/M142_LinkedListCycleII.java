@@ -11,32 +11,24 @@ public class M142_LinkedListCycleII {
         if (head == null || head.next == null) {
             return null;
         }
-        ListNode fast = head;
         ListNode slow = head;
-        boolean isCycle = false;
-
-        // 判断是否存在环
-        // 注意终止条件
-        while (fast != null && slow != null) {
+        ListNode fast = head;
+        // 结束条件：不存在环
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
             fast = fast.next.next;
-            if (fast.next == null) {
-                return null;
-            }
-            slow = slow.next;
+            // 存在环
             if (slow == fast) {
-                isCycle = true;
-                break;
+                ListNode slow2 = head;
+                while (slow2 != slow){
+                    slow = slow.next;
+                    slow2 = slow2.next;
+                }
+                return slow;
             }
         }
-        if (!isCycle) {
-            return null;
-        }
-        fast = head;
-        while (fast != slow) {
-            fast = fast.next;
-            slow = slow.next;
-        }
-        return slow;
+
+        return null;
     }
 
     class ListNode {
