@@ -5,7 +5,7 @@ package leetcode.binarysearch_divideAndConquer;
  * @time: 2020/9/7 15:24
  * @desc: https://leetcode.com/problems/merge-k-sorted-lists/
  */
-public class MergekSortedLists {
+public class H23_MergekSortedLists {
 
     /**
      * 逐个合并
