@@ -5,7 +5,7 @@ package leetcode.string;
  * @time: 2020/9/4 10:21
  * @desc: https://leetcode.com/problems/longest-common-prefix/
  */
-public class LongestCommonPrefix {
+public class E14_LongestCommonPrefix {
 
     /**
      * 逐个比较
@@ -43,7 +43,7 @@ public class LongestCommonPrefix {
 
     public static void main(String[] args) {
         String[] strs = new String[]{"aca","cba"};
-        System.out.println(new LongestCommonPrefix().longestCommonPrefix(strs));
+        System.out.println(new E14_LongestCommonPrefix().longestCommonPrefix(strs));
     }
 
 

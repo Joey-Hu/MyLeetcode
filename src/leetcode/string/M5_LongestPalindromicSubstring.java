@@ -1,12 +1,14 @@
+package leetcode.string;
+
 import javax.naming.ldap.ExtendedRequest;
 import java.awt.*;
 
 /**
  * @author: huhao
  * @time: 2020/9/11 17:10
- * @desc:
+ * @desc: https://leetcode.com/problems/longest-palindromic-substring/
  */
-public class LongestPalindromicSubstring {
+public class M5_LongestPalindromicSubstring {
 
     private int low;
     private int maxLen;

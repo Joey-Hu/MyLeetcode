@@ -18,20 +18,24 @@ public class M3_LongesSubstringWithoutRepeatingCharacters {
      * @return
      */
     public int lengthOfLongestSubstring(String s) {
+
+        if (s.length() == 0) {
+            return 0;
+        }
+
         Set<Character> set = new HashSet<>();
         int ans = 0;
-        int i = 0;
-        int j = 0;
+        int start = 0;
+        int end = 0;
 
-        while (i < s.length() && j < s.length()) {
-            if (!set.contains(s.charAt(j))) {
-                set.add(s.charAt(j));
-                j ++;
-                ans = Math.max(ans, j-i);
+        while (end < s.length()) {
+            if (set.add(s.charAt(end))) {
+                end ++;
+                ans = Math.max(ans, end - start);
             }else {
-                // 存在相同字符，就把i向右移动，并删除 s[i]，直到不存在相同字符
-                set.remove(s.charAt(i));
-                i ++;
+                // 存在相同字符，就把start向右移动，并删除 s[start]，直到不存在相同字符
+                set.remove(s.charAt(start));
+                start ++;
             }
         }
         return ans;
