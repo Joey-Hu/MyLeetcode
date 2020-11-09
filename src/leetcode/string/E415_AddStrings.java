@@ -32,7 +32,6 @@ public class E415_AddStrings {
             idx1 --;
             idx2 --;
 
-            new HashSet<>().
         }
 
         return res.toString();
