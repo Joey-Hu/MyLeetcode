@@ -7,23 +7,28 @@ package leetcode.binarysearch_divideAndConquer;
  */
 public class M300_LongestIncreasingSubsequence {
 
+    /**
+     * 动态规划
+     * O(N^2)
+     * @param nums
+     * @return
+     */
     public int lengthOfLIS(int[] nums) {
 
-        int low = 0;
-        int minLen = Integer.MIN_VALUE;
-
-        for (int i = 1; i < nums.length; i++) {
-            if (nums[i] < nums[i-1]) {
-                low = i;
-            }else {
-                minLen = Math.max(minLen, i - low + 1);
-            }
-
-
-
-
+        // dp[i] 表示到num[i]递增子序列的元素个数
+        int[] dp = new int[nums.length];
+        int maxLen = 0;
+        for (int i = 0; i < dp.length; i++) {
+            dp[i] = 1;
         }
-        return -1;
-
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[j] < nums[i]) {
+                    dp[i] = Math.max(dp[i], dp[j]+1);
+                }
+            }
+            maxLen = Math.max(dp[i], maxLen);
+        }
+        return maxLen;
     }
 }
