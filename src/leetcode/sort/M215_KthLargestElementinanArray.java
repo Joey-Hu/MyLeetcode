@@ -1,7 +1,5 @@
-package leetcode.heap;
+package leetcode.sort;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -12,14 +10,50 @@ import java.util.Arrays;
 public class M215_KthLargestElementinanArray {
 
     /**
-     * 快速选择
+     * 快速选择(快速排序思想)
      * @param nums
      * @param k
      * @return
      */
     public int findKthLargest2(int[] nums, int k) {
-        if (nums == null || nums.length == 0) return Integer.MAX_VALUE;
-        return quickSelect(nums, 0, nums.length - 1, nums.length - k);
+        if (nums == null || nums.length == 0) {
+            return Integer.MAX_VALUE;
+        }
+
+        int left = 0;
+        int right = nums.length - 1;
+        while (left < right) {
+            int pos = partition(nums, left, right);
+            if (pos == nums.length - k) {
+                break;
+            }else if (pos > nums.length - k) {
+                right = pos - 1;
+            }else {
+                left = pos + 1;
+            }
+        }
+        return nums[nums.length - k];
+    }
+
+    private int partition(int[] nums, int left, int right) {
+        int pivot = nums[left];
+        int l = left + 1;
+        int r = right;
+        while (true) {
+            while (l < right && nums[l] <= pivot) {
+                l ++;
+            }
+            while (left < r && nums[r] >= pivot) {
+                r --;
+            }
+            if (l >= r) {
+                break;
+            }
+            swap(nums, l, r);
+        }
+        swap(nums, left, r);
+
+        return r;
     }
 
     private int quickSelect(int[] nums, int start, int end, int k) {
@@ -53,13 +87,13 @@ public class M215_KthLargestElementinanArray {
         nums[j]  =temp;
     }
 
-        /**
-         * quick sort
-         * O(NlogN)
-         * @param nums
-         * @param k
-         * @return
-         */
+    /**
+     * quick sort
+     * O(NlogN)
+     * @param nums
+     * @param k
+     * @return
+     */
     public int findKthLargest(int[] nums, int k) {
 
         Arrays.sort(nums);
@@ -67,7 +101,7 @@ public class M215_KthLargestElementinanArray {
     }
 
     public static void main(String[] args) {
-        int[] nums = new int[]{1, 3, 5, 2, 2};
-        System.out.println(new M215_KthLargestElementinanArray().findKthLargest2(nums, 3));
+        int[] nums = new int[]{3,2,1,5,6,4};
+        System.out.println(new M215_KthLargestElementinanArray().findKthLargest2(nums, 2));
     }
 }
