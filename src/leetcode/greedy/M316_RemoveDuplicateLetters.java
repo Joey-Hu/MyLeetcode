@@ -12,7 +12,6 @@ public class M316_RemoveDuplicateLetters {
      * @return
      */
     public String removeDuplicateLetters(String s) {
-        int[]
-
+        return "";
     }
 }

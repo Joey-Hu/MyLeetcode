@@ -19,11 +19,13 @@ public class M40_CombinationSumII {
 
     private void backtrack(List<List<Integer>> res, int[] candidates, int start, int target, ArrayList<Integer> tempList) {
 
+        //符合条件，加入res，返回上一层
         if (target == 0) {
             res.add(new ArrayList(tempList));
             return;
         }
 
+        //
         if (target < 0) {
             return;
         }
