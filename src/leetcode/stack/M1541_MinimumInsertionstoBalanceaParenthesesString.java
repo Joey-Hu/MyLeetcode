@@ -13,7 +13,6 @@ public class M1541_MinimumInsertionstoBalanceaParenthesesString {
         int res = 0;
         Stack<Character> leftParenthesis = new Stack<>();
 
-
-
+        return 0;
     }
 }

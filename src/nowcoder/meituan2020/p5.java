@@ -5,14 +5,15 @@ import java.util.Scanner;
 /**
  * @author: huhao
  * @time: 2020/11/16 20:40
- * @desc:
+ * @desc: https://www.nowcoder.com/question/next?pid=21910764&qid=894462&tid=39432890
  */
 public class p5 {
 
     private static String expressionEvaluate(String str) {
         String[] strSplit = str.split(" ");
         int len = strSplit.length;
-        int[] arr = new int[len]; // 转成整数比较快
+        // 转成整数比较快
+        int[] arr = new int[len];
         if (len % 2 == 0) {
             return "error";
         }
