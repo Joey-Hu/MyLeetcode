@@ -4,12 +4,13 @@ package leetcode.twopointsAndslidewindow;
  * @author: huhao
  * @time: 2020/9/14 20:28
  * @desc: https://leetcode.com/problems/minimum-window-substring/
+ * ref: https://www.cnblogs.com/grandyang/p/4340948.html
  * SimilarQuestion：
  *  567. Permutation in String，
  *  438. Find All Anagrams in a String，
  *  3. Longest Substring Without Repeating Characters
  */
-public class MinimumWindowSubstring {
+public class H76_MinimumWindowSubstring {
     public String minWindow(String s, String t) {
        int[] map = new int[128];
        for (char c : t.toCharArray()) {
@@ -48,8 +49,6 @@ public class MinimumWindowSubstring {
     }
 
     public static void main(String[] args) {
-        new MinimumWindowSubstring().minWindow("ADOBECODEBANC", "ABC");
+        new H76_MinimumWindowSubstring().minWindow("ADOBECODEBANC", "ABC");
     }
-
-
 }
