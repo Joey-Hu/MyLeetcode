@@ -1,4 +1,4 @@
-package leetcode.hashTable;
+package leetcode.dfs;
 
 /**
  * @author: huhao
@@ -8,11 +8,7 @@ package leetcode.hashTable;
 public class E463_IslandPerimeter {
 
     /**
-     * 注意 1 方格周边的 1 方格的个数：
-     * 1个 ：周长加3
-     * 2个 ：周长加2
-     * 3个 ：周长加1
-     * 4个：周长加0
+     * 计算是边界或者是与水域相邻的边数
      * @param grid
      * @return
      */
