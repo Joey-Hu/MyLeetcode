@@ -27,7 +27,8 @@ public class M47_PermutationsII {
         }else {
             for (int i = 0; i < nums.length; i++) {
                 // 排除不合法选择
-                if (isUsed[i] == true || i > 0 && nums[i] == nums[i-1] && !isUsed[i-1]) {
+                // 如果 nums[i]访问过 或者 nums[i] == nums[i-1] 并且 nums[i-1] 被访问过
+                if (isUsed[i] == true || (i > 0 && nums[i] == nums[i-1] && !isUsed[i-1])) {
                     continue;
                 }
                 tempList.add(nums[i]);

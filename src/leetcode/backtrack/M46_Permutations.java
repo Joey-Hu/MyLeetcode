@@ -25,6 +25,7 @@ public class M46_Permutations {
             track.add(new ArrayList<>(tempList));
         }else {
             for (int i = 0; i < nums.length; i++) {
+                // 不合法选项
                 if (tempList.contains(nums[i])) {
                     continue;
                 }
