@@ -8,7 +8,7 @@ package leetcode.binarysearch_divideAndConquer;
 public class M240_Searcha2DMatrixII {
 
     /**
-     * 从右上角开始
+     * 从右上角或左下角开始
      * @param matrix
      * @param target
      * @return
