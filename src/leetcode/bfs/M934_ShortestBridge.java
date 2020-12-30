@@ -24,6 +24,7 @@ public class M934_ShortestBridge {
                 }
             }
         }
+        return 0;
     }
 
     private void dfs(int[][] A, int i, int j) {
