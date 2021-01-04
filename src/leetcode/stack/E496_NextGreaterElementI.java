@@ -12,7 +12,7 @@ import java.util.Stack;
 public class E496_NextGreaterElementI {
 
     /**
-     * 单调栈
+     * 单调栈，注意题目有个条件：nums1中的元素是nums2的子集
      * @param nums1
      * @param nums2
      * @return
