@@ -32,8 +32,9 @@ public class UNKNOW772_BasicCalculatorIII {
 
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
+            // 当字符是数字时
             if (Character.isDigit(ch)) {
-                number += number * 10 + (int)(ch - '0');
+                number = number * 10 + (int)(ch - '0');
             }else if (ch == '(') {
                 int j = i;
                 int count = 0;
@@ -68,6 +69,6 @@ public class UNKNOW772_BasicCalculatorIII {
     }
 
     public static void main(String[] args) {
-        new UNKNOW772_BasicCalculatorIII().calculate("(2*(3-4))*5");
+        System.out.println(new UNKNOW772_BasicCalculatorIII().calculate("100+100"));
     }
 }
