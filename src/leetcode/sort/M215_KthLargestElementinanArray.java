@@ -1,6 +1,8 @@
 package leetcode.sort;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 
 /**
  * @author: huhao
@@ -8,6 +10,33 @@ import java.util.Arrays;
  * @desc: https://leetcode.com/problems/kth-largest-element-in-an-array/
  */
 public class M215_KthLargestElementinanArray {
+
+    /**
+     * 使用最大堆（优先队列实现）
+     * 建立一个大小为 len-k+1 的最大堆
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int findKthLargest3(int[] nums, int k) {
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(nums.length - k + 1, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+
+        for (int i = 0; i < nums.length; i ++) {
+            if (maxHeap.size() < nums.length - k + 1) {
+                maxHeap.offer(nums[i]);
+            }else if (maxHeap.peek() > nums[i]) {
+                maxHeap.poll();
+                maxHeap.offer(nums[i]);
+            }
+        }
+
+        return maxHeap.poll();
+    }
 
     /**
      * 快速选择(快速排序思想)
