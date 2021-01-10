@@ -64,50 +64,22 @@ public class M215_KthLargestElementinanArray {
         return nums[nums.length - k];
     }
 
-    private int partition(int[] nums, int left, int right) {
-        int pivot = nums[left];
-        int l = left + 1;
-        int r = right;
-        while (true) {
-            while (l < right && nums[l] <= pivot) {
-                l ++;
-            }
-            while (left < r && nums[r] >= pivot) {
-                r --;
-            }
-            if (l >= r) {
-                break;
-            }
-            swap(nums, l, r);
-        }
-        swap(nums, left, r);
+    private int partition(int[] a, int l, int r) {
+        int left = l;
+        int right = r;
 
-        return r;
-    }
-
-    private int quickSelect(int[] nums, int start, int end, int k) {
-        if (start > end) {
-            return Integer.MAX_VALUE;
-        }
-
-        // Take A[end] as the pivot,
-        int pivot = nums[end];
-        int left = start;
-        for (int i = start; i < end; i++) {
-            // Put numbers < pivot to pivot's left
-            if (nums[i] <= pivot) {
-                swap(nums, left++, i);
+        while (left < right) {
+            // 分治，把所有大于等于pivot的元素移到右边，所有小于等于pivot的元素移到左边
+            while (right > l && a[right] > a[l]) {
+                right --;
             }
+            while (left < r && a[left] < a[l]) {
+                left ++;
+            }
+            swap(a, left, right);
         }
-        swap(nums, left, end);
-        // Found kth largest number
-        if (left == k) {
-            return nums[left];
-        }else if (left < k) {
-            return quickSelect(nums, left + 1, end, k);
-        }else {
-            return quickSelect(nums, start, left-1, k);
-        }
+        swap(a, l, right);
+        return right;
     }
 
     private void swap(int[] nums, int i, int j) {

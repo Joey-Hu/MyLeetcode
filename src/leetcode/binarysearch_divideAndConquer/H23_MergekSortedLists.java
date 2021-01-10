@@ -1,11 +1,56 @@
 package leetcode.binarysearch_divideAndConquer;
 
+import java.util.Comparator;
+import java.util.PriorityQueue;
+
 /**
  * @author: huhao
  * @time: 2020/9/7 15:24
  * @desc: https://leetcode.com/problems/merge-k-sorted-lists/
  */
 public class H23_MergekSortedLists {
+
+    /**
+     * 最小堆
+     * 建立一个大小为 lists.size() 的最小堆，首先先将所有链表的的首节点加入到最小堆中，然后从最小堆中获取最小首节点（堆顶元素）minListNode
+     * 加入到结果链表中，如果 minListNode 有后继节点，将后继节点加入到最小堆中，自动排序，重复上述过程
+     * @param lists
+     * @return
+     */
+    public ListNode mergeKLists2(ListNode[] lists) {
+        int len = lists.length;
+
+        ListNode res = new ListNode(-1);
+        ListNode cur = res;
+
+        if (len == 0 || lists == null) {
+            return null;
+        }
+
+        PriorityQueue<ListNode> minHeap = new PriorityQueue<ListNode>(len, new Comparator<ListNode>(){
+            @Override
+            public int compare(ListNode o1, ListNode o2) {
+                return o1.val - o2.val;
+            }
+        });
+
+        for (int i = 0; i < len; i++) {
+            if (lists[i] != null) {
+                minHeap.offer(lists[i]);
+            }
+        }
+
+        while (!minHeap.isEmpty()) {
+            ListNode minListNode = minHeap.poll();
+            cur.next = minListNode;
+            cur = cur.next;
+
+            if (minListNode.next != null) {
+                minHeap.offer(minListNode.next);
+            }
+        }
+        return res.next;
+    }
 
     /**
      * 逐个合并
