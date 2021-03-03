@@ -12,15 +12,15 @@ public class E206_ReverseLinkedList {
         if (head == null || head.next == null) {
             return head;
         }
-        ListNode cur = head.next;
-        ListNode prev = head;
+
+        ListNode prev = null;
+        ListNode cur = head;
         while (cur != null) {
             ListNode next = cur.next;
             cur.next = prev;
             prev = cur;
             cur = next;
         }
-        head.next = null;
         return prev;
     }
 

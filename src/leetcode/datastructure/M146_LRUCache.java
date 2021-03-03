@@ -101,6 +101,7 @@ public class M146_LRUCache {
             newNode.key = key;
             newNode.value = value;
 
+            // 这里的 put 方法是 HashMap 自带的
             this.cache.put(key, newNode);
             this.addNode(newNode);
 
