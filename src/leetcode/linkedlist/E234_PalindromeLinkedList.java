@@ -22,7 +22,7 @@ public class E234_PalindromeLinkedList {
             slow = slow.next;
         }
 
-        // 奇数节点
+        // 奇数节点，将slow节点移动到下个节点
         if (fast != null) {
             slow = slow.next;
         }
