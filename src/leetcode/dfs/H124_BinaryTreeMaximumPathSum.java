@@ -7,12 +7,13 @@ package leetcode.dfs;
  */
 public class H124_BinaryTreeMaximumPathSum {
 
+    int maxValue = Integer.MIN_VALUE;
     public int maxPathSum(TreeNode root) {
         if (root == null) {
             return 0;
         }
-        int maxValue = Integer.MIN_VALUE;
-        dfs(root, maxValue);
+
+        dfs(root);
         return maxValue;
     }
 
@@ -21,26 +22,22 @@ public class H124_BinaryTreeMaximumPathSum {
      * @param root
      * @return
      */
-    private int dfs(TreeNode root, Integer maxValue) {
+    private int dfs(TreeNode root) {
         // 如果节点为空的话，返回0
         if (root == null) {
             return 0;
         }
 
-        // 过当前结点左子结点的最大路径和
-        int left = dfs(root.left, maxValue);
-        // 过当前结点右子结点的最大路径和
-        int right = dfs(root.right, maxValue);
+        // 当前结点左子树的最大路径和
+        int left = Math.max(dfs(root.left), 0);
+        // 当前结点右子树的最大路径和
+        int right = Math.max(dfs(root.right), 0);
 
-        //过当前结点的最大路径和
-        int curSum = Math.max(root.val, Math.max(left + root.val, right + root.val));
-        //如果将当前结点作为根结点，就要考虑横跨的情况
-        int curMax = Math.max(curSum, left + right + root.val);
         //更新最大值
-        maxValue = Math.max(maxValue, curMax);
+        maxValue = Math.max(maxValue, root.val + left + right);
 
-        //返回过当前结点的最大路径和
-        return curMax;
+        //返回过当前结点的最大路径和，只能选择左右子树中的一条
+        return Math.max(left, right) + root.val;
     }
 
 

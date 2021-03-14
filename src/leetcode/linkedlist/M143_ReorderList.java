@@ -29,7 +29,7 @@ public class M143_ReorderList {
         slow.next = null;
         // reverse the half after middle 1->2->3->4->5->6 to 1->2->3->4->null 6->5
         second = reverse(second);
-        // insert the elements of the list1 into list1 one by one
+        // insert the elements of the list2 into list1 one by one
         ListNode first = head;
         while (second != null) {
             ListNode next = first.next;

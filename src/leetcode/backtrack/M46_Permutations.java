@@ -30,7 +30,9 @@ public class M46_Permutations {
                     continue;
                 }
                 tempList.add(nums[i]);
+                // 递归
                 backtrack(nums, track, tempList);
+                // 回溯
                 tempList.remove(tempList.size()-1);
             }
         }

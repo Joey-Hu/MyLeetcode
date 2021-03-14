@@ -12,34 +12,102 @@ import java.util.List;
  */
 public class test {
 
-    public List<List<Integer>> permuteUnique(int[] nums) {
+    public static ListNode solution(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
 
-        // 排序
-        Arrays.sort(nums);
+        ListNode oddList = new ListNode(-1);
+        ListNode evenList = new ListNode(-1);
+        ListNode oddCur = oddList;
+        ListNode evenCur = evenList;
 
-        List<List<Integer>> res = new ArrayList<>();
-        List<Integer> tempList = new ArrayList<>();
-        boolean[] visited = new boolean[nums.length];
+        // 分割链表
+        int count = 1;
+        while (head != null) {
+            if (count % 2 == 1) {
+                oddCur.next = new ListNode(head.val);
+                oddCur = oddCur.next;
+            }else {
+                evenCur.next = new ListNode(head.val);
+                evenCur = evenCur.next;
+            }
 
-        backtrack(nums, tempList, res, visited);
-        return res;
+            head = head.next;
+            count ++;
+        }
+
+        // 逆转偶数链表
+        evenCur = evenList.next;
+        ListNode prev = null;
+        while (evenCur != null) {
+            ListNode next = evenCur.next;
+            evenCur.next = prev;
+            prev = evenCur;
+            evenCur = next;
+        }
+        evenCur = prev;
+
+        // 合并两个有序链表
+        oddCur = oddList.next;
+        ListNode res = new ListNode(-1);
+        ListNode cur = res;
+        while (oddCur != null && evenCur != null) {
+            if (oddCur.val < evenCur.val) {
+                cur.next = new ListNode(oddCur.val);
+                oddCur = oddCur.next;
+            }else {
+                cur.next = new ListNode(evenCur.val);
+                evenCur = evenCur.next;
+            }
+            cur = cur.next;
+        }
+
+        cur.next = oddCur == null ? evenCur : oddCur;
+
+        return res.next;
     }
 
-    private void backtrack(int[] nums, List<Integer> tempList, List<List<Integer>> res, boolean[] visited) {
-        if (tempList.size() == nums.length && !res.contains(new ArrayList<>(tempList))) {
-            res.add(new ArrayList<>(tempList));
-            return;
+    static class ListNode {
+        int val;
+        ListNode next;
+
+        public ListNode() {}
+
+        public ListNode(int val) {
+            this.val = val;
         }
 
-        for (int i = 0; i < nums.length; i++) {
-            if (visited[i] == true || (i > 0 && nums[i-1] == nums[i] && !visited[i-1])) {
-                continue;
-            }
-            tempList.add(nums[i]);
-            visited[i] = true;
-            backtrack(nums, tempList, res, visited);
-            tempList.remove(tempList.size()-1);
-            visited[i] = false;
+        public ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
         }
+    }
+
+    public static void main(String[] args) {
+        ListNode raw = new ListNode(1);
+        ListNode cur = raw;
+        int[] val = new int[]{8, 3, 6, 5, 4, 7, 2};
+        for (int num : val) {
+            cur.next = new ListNode(num);
+            cur = cur.next;
+        }
+        cur.next = null;
+
+        // 输出原链表
+        cur = raw;
+        while (cur != null) {
+            System.out.print(cur.val);
+            cur = cur.next;
+        }
+
+        System.out.println("*******");
+
+        ListNode res = solution(raw);
+        while (res != null) {
+            System.out.print(res.val);
+            res = res.next;
+        }
+
     }
 }
