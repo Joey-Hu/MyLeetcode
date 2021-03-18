@@ -15,6 +15,5 @@ public class E122_BestTimetoBuyandSellStockII {
             }
         }
         return maxProfit;
-
     }
 }

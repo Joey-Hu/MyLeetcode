@@ -16,7 +16,7 @@ public class E198_HouseRobber {
      */
     public int rob(int[] nums) {
 
-        if (nums.length < 1) {
+        if (nums.length <= 1) {
             return nums.length == 0 ? 0 : nums[0];
         }
 
