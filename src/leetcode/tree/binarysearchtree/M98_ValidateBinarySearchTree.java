@@ -15,12 +15,12 @@ public class M98_ValidateBinarySearchTree {
      * @return
      */
     public boolean isValidBST(TreeNode root) {
-        return isValidBST(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        return isValidBST(root, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
-    private boolean isValidBST(TreeNode root, int minValue, int maxValue) {
+    private boolean isValidBST(TreeNode root, long minValue, long maxValue) {
 
-        if (root != null) {
+        if (root == null) {
             return true;
         }
 
@@ -36,32 +36,29 @@ public class M98_ValidateBinarySearchTree {
      * @return
      */
     public boolean isValidBST2(TreeNode root) {
+        ArrayList<Integer> res = new ArrayList<>();
+        inorderTraverse(root, res);
 
-        if (root == null) {
-            return true;
-        }
-
-        List<Integer> list = new ArrayList<>();
-        inorder(root, list);
-
-        for (int i = 1; i < list.size(); i++) {
-            if (list.get(i) < list.get(i-1)) {
+        for (int i = 0; i < res.size() - 1; i++) {
+            if (res.get(i) >= res.get(i+1)) {
                 return false;
             }
         }
         return true;
     }
 
-    private void inorder(TreeNode root, List<Integer> list) {
+    private void inorderTraverse(TreeNode root, List<Integer> inorder) {
+
         if (root == null) {
             return;
         }
+
         if (root.left != null) {
-            inorder(root.left, list);
+            inorderTraverse(root.left, inorder);
         }
-        list.add(root.val);
+        inorder.add(root.val);
         if (root.right != null) {
-            inorder(root.right, list);
+            inorderTraverse(root.right, inorder);
         }
     }
 

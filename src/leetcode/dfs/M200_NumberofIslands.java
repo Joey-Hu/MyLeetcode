@@ -31,13 +31,15 @@ public class M200_NumberofIslands {
     }
 
     private void boundaryDFS(char[][] grid, int i, int j) {
+        // terminal condition
         if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length) {
             return;
         }
+        // 标记已访问过的元素
         if (grid[i][j] == '1') {
             grid[i][j] = '*';
         }
-
+        // 深度遍历未访问过的元素
         if (i > 0 && grid[i-1][j] == '1') {
             boundaryDFS(grid, i-1, j);
         }
