@@ -10,30 +10,27 @@ import java.awt.print.PrinterAbortException;
 public class E543_DiameterofBinaryTree {
 
     /**
-     * 最长路径有两种情况：
-     * 1. 经过根节点，找出根节点左右两棵子树的最大深度相加即可
-     * 2. 不经过根节点，只需要找出根节点的左子树或者根节点的右子树作为根的最长路径度即可
+     * 对于每个结点，最长路径 = 左子树的最大深度 + 右子树的最大深度
      * @param root
      * @return
      */
-    public int diameterOfBinaryTree(TreeNode root) {
-        if (root == null) {
-            return 0;
-        }
+    int maxLen = 0;
 
-        // 经过根结点
-        int dia = height(root.left) + height(root.right);
-        // 不经过根结点
-        int lia = diameterOfBinaryTree(root.left);
-        int ria = diameterOfBinaryTree(root.right);
-        return Math.max(dia, Math.max(lia, ria));
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDepth(root);
+        return maxLen;
     }
 
-    private int height(TreeNode root) {
+    private int maxDepth(TreeNode root) {
         if (root == null) {
             return 0;
         }
-        return 1+Math.max(height(root.left), height(root.right));
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+
+        maxLen = Math.max(maxLen, left + right);
+
+        return Math.max(left, right) + 1;
     }
 
     class TreeNode {
