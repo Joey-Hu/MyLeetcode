@@ -1,5 +1,7 @@
 package leetcode.sort;
 
+import java.util.Arrays;
+
 /**
  * @author: huhao
  * @time: 2020/11/10 8:17
@@ -20,7 +22,6 @@ public class SortAlgorithms {
      * @param right
      */
     public void quickSort(int[] nums, int left, int right) {
-
         // 结束条件
         if (left >= right) {
             return;
@@ -31,12 +32,12 @@ public class SortAlgorithms {
         int key = nums[left];
         while (i < j) {
             // 把小于基准值的元素放到前面
-            while (i < j && nums[j] > key) {
+            while (i < j && nums[j] >= key) {
                 j--;
             }
             nums[i] = nums[j];
             // 把大于基准值的元素放到后面
-            while (i < j && nums[i] < key) {
+            while (i < j && nums[i] <= key) {
                 i ++;
             }
             nums[j] = nums[i];

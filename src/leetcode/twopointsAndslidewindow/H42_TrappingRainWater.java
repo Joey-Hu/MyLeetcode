@@ -15,35 +15,28 @@ public class H42_TrappingRainWater {
      * @return
      */
     public int trap(int[] height) {
-
-        if (height.length <= 1) {
-            return 0;
-        }
-
-        int volume = 0;
-        int leftMax = 0;
-        int rightMax = 0;
-
+        // 左右指针
         int left = 0;
         int right = height.length - 1;
+        // 记录左右最大高度
+        int maxLeft = 0;
+        int maxRight = 0;
+        int res = 0;
 
         while (left < right) {
-            if (height[left] < height[right]) {
-                if (leftMax <= height[left]) {
-                    leftMax = height[left];
-                }else {
-                    volume += leftMax - height[left];
-                }
+            // 用于移动指针，if成立，移动左指针，否则，移动右指针
+            if (height[left] <  height[right]) {
+                // 更新最大值
+                maxLeft = Math.max(height[left], maxLeft);
+                // 获取雨水
+                res += maxLeft - height[left];
                 left ++;
             }else {
-                if (rightMax <= height[right]) {
-                    rightMax = height[right];
-                }else {
-                    volume += rightMax - height[right];
-                }
+                maxRight = Math.max(height[right], maxRight);
+                res += maxRight - height[right];
                 right --;
             }
         }
-        return volume;
+        return res;
     }
 }
