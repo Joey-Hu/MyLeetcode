@@ -1,10 +1,12 @@
 #### lc200 岛屿数量
 
+深度优先遍历，当遍历到某个位置grid\[i][j] 时，判断结果为1时，res ++，并标记该元素已访问过，然后进行深度优先遍历其周围的元素
+
+注意终止条件
+
 ```java
 /**
  * DFS
- * 逐行遍历，遇见 1 就将其与周边的 1 都变成 *, res ++
- * similar questions: Surrounded Regions, Max Area of Island
  * @param grid
  * @return
  */
