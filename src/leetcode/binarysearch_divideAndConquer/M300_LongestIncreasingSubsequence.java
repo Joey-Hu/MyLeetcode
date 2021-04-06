@@ -7,6 +7,32 @@ package leetcode.binarysearch_divideAndConquer;
  */
 public class M300_LongestIncreasingSubsequence {
 
+    public int lengthOfLIS2(int[] nums) {
+        // tails[i]表示的是所有长度为i+1的递增子序列中的最小的尾部
+        int[] tails = new int[nums.length];
+        int size = 0;
+        for (int x : nums) {
+            int i = 0;
+            int j = size;
+            while (i != j) {
+                int m = i + (j-i) / 2;
+                // 找到最后一个大于x的tail
+                if (tails[m] < x) {
+                    i = m + 1;
+                }else {
+                    j = m;
+                }
+            }
+            // 如果 tails[i-1] < x <= tails[i]，则更新tail[i]
+            tails[i] = x;
+            // 如果所有的tail都小于x，则将将x添加进去，并更新size
+            if (i == size) {
+                ++ size;
+            }
+        }
+        return size;
+    }
+
     /**
      * 动态规划
      * O(N^2)
@@ -31,4 +57,11 @@ public class M300_LongestIncreasingSubsequence {
         }
         return maxLen;
     }
+
+    public static void main(String[] args) {
+        int[] nums = {4, 5, 6, 3};
+        new M300_LongestIncreasingSubsequence().lengthOfLIS2(nums);
+    }
+
+
 }
