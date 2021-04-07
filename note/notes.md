@@ -294,6 +294,14 @@ public int climbStairs(int n) {
 
 #### [补充题2. 圆环回原点问题](https://mp.weixin.qq.com/s/VnGFEWHeD3nh1n9JSDkVUg)
 
+圆环上有10个点，编号为0~9。从0点出发，每次可以逆时针和顺时针走一步，问走n步回到0点共有多少种走法。
+
+```markdown
+输入: 2
+输出: 2
+解释：有2种方案。分别是0->1->0和0->9->0
+```
+
 思路 ：和爬楼梯问题类似，走 i 步到 j 点的方式数 = 走 i-1 步到 (j - 1 + length) % length 的方案数 + 走 i-1 步到 (j + 1) % length 的方案数。
 
 转移方程：
@@ -1053,7 +1061,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
 
 #### lc146 LRU 缓存机制
 
-![LRU cache.png](D:/software/Desktop/leetcode202006-202106/note/images/LRU cache.png)
+![LRU cache.png](./images/LRU cache.png)
 
 ```java
 /**

@@ -31,6 +31,6 @@ public class H32_LongestValidParentheses {
     }
 
     public static void main(String[] args) {
-        new H32_LongestValidParentheses().longestValidParentheses("(()");
+        new H32_LongestValidParentheses().longestValidParentheses(")()())");
     }
 }
