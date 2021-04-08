@@ -119,6 +119,10 @@ public int maxProfit(int[] prices) {
 
 #### lc198 打家劫舍
 
+思路：动态规划，这道题的本质相当于在一列数组中取出一个或多个不相邻数，使其和最大
+
+经过一间房子，如果抢，则金额等于dp[i-2] + nums[i]，如果不抢，则金额等于dp[i-1]，两者取最大值	
+
 ```java
 /**
  * 动态规划
@@ -135,6 +139,7 @@ public int rob(int[] nums) {
 
     int[] dp = new int[nums.length];
     dp[0] = nums[0];
+    // 注意此时的dp[1]
     dp[1] = Math.max(nums[0], nums[1]);
     for (int i = 2; i < nums.length; i++) {
         dp[i] = Math.max(dp[i-2] + nums[i], dp[i-1]);
@@ -144,6 +149,10 @@ public int rob(int[] nums) {
 ```
 
 #### lc322 零钱兑换
+
+思路：类似于爬楼梯那道题目
+
+注意题目要求是使用最少数量的硬币来兑换该金额
 
 ```java
 public int coinChange(int[] coins, int amount) {
@@ -156,6 +165,7 @@ public int coinChange(int[] coins, int amount) {
     dp[0] = 0;
     for (int i = 1; i < dp.length; i++) {
         for (int j = 0; j < coins.length; j++) {
+            // 如果硬币面额小于金额，就尝试进行兑换
             if (coins[j] <= i) {
                 dp[i] = Math.min(dp[i], dp[i - coins[j]] + 1);
             }
@@ -167,6 +177,13 @@ public int coinChange(int[] coins, int amount) {
 ```
 
 #### LC518 零钱兑换II
+
+思路：
+
+1. 类似于组合总和那道题的解法 -- 空间复杂度过大
+2. 动态规划：完全背包问题
+
+https://www.cnblogs.com/xym4869/p/13024462.html
 
 ```java
 public int change(int amount, int[] coins) {
@@ -927,6 +944,10 @@ private void backtrack(int[] nums, List<List<Integer>> track, ArrayList<Integer>
 
 #### lc39 组合总和
 
+思路：回溯法
+
+注意要对 candidates 进行排序
+
 ```java
 public List<List<Integer>> combinationSum(int[] candidates, int target) {
 
@@ -1183,7 +1204,7 @@ public class M146_LRUCache {
 }
 ```
 
-#### lc160两链表相交
+#### lc160 两链表相交
 
 ```java
 /**
@@ -1590,11 +1611,34 @@ public ListNode detectCycle(ListNode head) {
 
 #### lc24 两两交换链表中的结点
 
-方法一：将链表拆分成奇链表和偶链表，然后合并
+方法一：遍历交换交换两节点
 
-方法二：遍历交换交换两节点
+方法二：将链表拆分成奇链表和偶链表，然后合并
 
 ```java
+/**
+ * 迭代
+ * @param head
+ * @return
+ */
+public ListNode swapPairs(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+    ListNode dmy = new ListNode(-1);
+    dmy.next = head;
+    ListNode prev = dmy;
+    while (prev.next != null && prev.next.next != null) {
+        ListNode swap1 = prev.next;
+        ListNode swap2 = prev.next.next;
+        swap1.next = swap2.next;
+        swap2.next = prev.next;
+        prev.next = swap2;
+        prev = swap1;
+    }
+    return dmy.next;
+}
+
 public static ListNode swapPairs2(ListNode head) {
     if (head == null || head.next == null) {
         return head;
@@ -1640,29 +1684,7 @@ public static ListNode swapPairs2(ListNode head) {
     return dummy.next;
 }
 
-/**
- * 迭代
- * @param head
- * @return
- */
-public ListNode swapPairs(ListNode head) {
-    if (head == null || head.next == null) {
-        return head;
-    }
 
-    ListNode dummy = new ListNode(-1);
-    dummy.next = head;
-    ListNode prev = dummy;
-    while (prev.next != null && prev.next.next != null) {
-        ListNode swap1 = prev.next;
-        ListNode swap2 = prev.next.next;
-        swap1.next = swap2.next;
-        prev.next = swap2;
-        swap2.next = swap1;
-        prev = swap1;
-    }
-    return dummy.next;
-}
 ```
 
 #### lc234 回文链表
@@ -1769,6 +1791,30 @@ private ListNode mergeLists(ListNode left, ListNode right) {
 }
 ```
 
+#### lc83 删除有序链表中的重复元素
+
+```java
+public ListNode deleteDuplicates(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+
+    ListNode cur = head;
+    while (cur!= null && cur.next != null){
+        ListNode next = cur.next;
+        if (next.val == cur.val) {
+            cur.next = next.next;
+            continue;
+        }else {
+            cur = cur.next;
+        }
+    }
+    return head;
+}
+```
+
+
+
 ### 树
 
 #### 牛客题霸-算法-实现二叉树先序，中序和后序遍历
@@ -1821,6 +1867,33 @@ private void postOrder(List<Integer> res, TreeNode root) {
 ```
 
 迭代方法
+
+```java
+// 中序遍历
+public List<Integer> inorderTraversal(TreeNode root) {
+    List<Integer> res = new ArrayList<>();
+    if (root == null) {
+        return res;
+    }
+    Stack<TreeNode> stack = new Stack<>();
+    pushAllLeft(root, stack);
+    while (!stack.empty()) {
+        TreeNode cur = stack.pop();
+        res.add(cur.val);
+        pushAllLeft(cur.right, stack);
+    }
+    return res;
+} 
+
+private void pushAllLeft(TreeNode root, Stack stack) {
+    while (root != null) {
+        stack.push(root);
+        root = root.left;
+    }
+}
+```
+
+
 
 #### lc105 从前序和中序遍历序列构造二叉树
 
@@ -2135,6 +2208,8 @@ private void inorderTraverse(TreeNode root, List<Integer> inorder) {
 ```
 
 #### lc543 二叉树直径
+
+本题有点类似lc124 二叉树中的最大路径和
 
 ```java
 /**
@@ -3550,13 +3625,64 @@ public class UNKNOW772_BasicCalculatorIII {
 }
 ```
 
+#### lc32 最长有效括号
+
+思路：没看懂，记住吧
+
+```java
+public int longestValidParentheses(String s) {
+    if (s.isEmpty()) {
+        return 0;
+    }
+    int result = 0;
+    Stack<Integer> stack = new Stack<>();
+    /**
+         * 如下图：
+         *   -1 0 1 2 3 4
+         *   *  ( ) ( ( )
+         *
+         * 合法括号的长度为2，明显是下表为0、1的两个括号的组合
+         * 要想计算出这个2，其实用它们的下标相减即可，但是1 - 0 = 1 不等于 2
+         * 所以需要再往前减一位，即设置一个 -1
+         */
+    stack.push(-1);
+
+    for (int i = 0; i < s.length(); i++) {
+        if (s.charAt(i) == ')') {
+            // 一旦遇到右括号就要开始计算长度，需要跳过一个进行相减才计算的出正确长度
+            stack.pop();
+            // 开始计算长度
+            if (!stack.isEmpty()) {
+                result = Math.max(result, i - stack.peek());
+            } else {
+                // 如果当前栈为空，说明存在不合法的子串，例如：)()
+                // 需要重新设定当前找到的括号的下标为合法的起始下标，好用来准备计算
+                stack.push(i);
+            }
+        } else {
+            // 压入全部的左括号下标，等待使用右括号下标来计算长度
+            stack.push(i);
+        }
+    }
+    return result;
+}
+```
+
 
 
 ### 单调栈
 
-#### 739. Daily Temperatures
+栈中只保存单调递增或单调递减的序列
 
-[url](https://leetcode.com/problems/daily-temperatures/)
+![Monotonous stack1.png](./images/Monotonous stack1.png)
+
+![Monotonous stack2.png](./images/Monotonous stack2.png)
+
+![Monotonous stack3.png](./images/Monotonous stack3.png)
+
+#### lc739. Daily Temperatures
+
+思路：单调栈
 
 ```java
 public int[] dailyTemperatures(int[] T) {
@@ -3574,7 +3700,7 @@ public int[] dailyTemperatures(int[] T) {
 }
 ```
 
-#### 496. Next Greater Element I
+#### lc496. Next Greater Element I
 
 url: https://leetcode.com/problems/next-greater-element-i/
 
