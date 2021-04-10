@@ -1804,7 +1804,6 @@ public ListNode deleteDuplicates(ListNode head) {
         ListNode next = cur.next;
         if (next.val == cur.val) {
             cur.next = next.next;
-            continue;
         }else {
             cur = cur.next;
         }
@@ -3759,4 +3758,39 @@ public String addStrings(String num1, String num2){
 
 #### lc470 用 rand7() 实现 rand10()
 
-####  
+### 排序
+
+#### 数组排列
+
+快排
+
+```java
+public int[] sortArray(int[] nums) {
+    quickSort(nums, 0, nums.length-1);
+    return nums;
+}
+
+private void quickSort(int[] nums, int start, int end) {
+    if (start >= end) {
+        return;
+    }
+
+    int left = start;
+    int right = end;
+    int key = nums[start];
+    while (left < right) {
+        while (left < right && nums[right] >= key) {
+            right --;
+        }
+        nums[left] = nums[right];
+        while (left < right && nums[left] <= key) {
+            left ++;
+        }
+        nums[right] = nums[left];
+    }
+    nums[left] = key;
+    quickSort(nums, start, left-1);
+    quickSort(nums, left+1, end);
+}
+```
+
