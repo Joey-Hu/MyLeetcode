@@ -973,6 +973,46 @@ private void backtrack(int[] candidates, List<List<Integer>> track, ArrayList<In
 }
 ```
 
+#### lc79. 单词搜索
+
+```java
+public boolean exist(char[][] board, String word) {
+    char[] wordCharArray = word.toCharArray();
+    for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[0].length; j++) {
+
+            if (backtrack(board, wordCharArray, 0, i, j)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row, int col) {
+    // 结束条件
+    if (idx == wordCharArray.length) {
+        return true;
+    }
+
+    if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || board[row][col] != wordCharArray[idx]) {
+        return false;
+    }
+
+    board[row][col] = '*';
+    boolean exist = backtrack(board, wordCharArray, idx+1, row-1, col) || backtrack(board, wordCharArray,
+                                                                                    idx+1, row+1, col) || backtrack(board, wordCharArray, idx+1, row, col-1) || backtrack(board, wordCharArray, idx+1, row, col+1);
+    board[row][col] = wordCharArray[idx];
+    return exist;
+}
+```
+
+
+
+
+
+
+
 ### 链表
 
 #### lc25 K 个一组翻转链表
@@ -3759,4 +3799,107 @@ public String addStrings(String num1, String num2){
 
 #### lc470 用 rand7() 实现 rand10()
 
-####  
+
+
+### leetcode 周赛
+
+#### [5726. 数组元素积的符号](https://leetcode-cn.com/problems/sign-of-the-product-of-an-array/)
+
+```java
+public int arraySign(int[] nums) {
+    int oddCount = 0;
+
+    for (int i = 0; i < nums.length; i++) {
+        if (nums[i] == 0) {
+            return 0;
+        }if (nums[i] < 0) {
+            oddCount ++;
+        }
+    }
+
+    return oddCount % 2 == 0 ? 1 : -1;
+}
+```
+
+#### [5727. 找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)
+
+经典约瑟夫环问题
+
+```java
+public int findTheWinner(int n, int k) {
+    ArrayList<Integer> list = new ArrayList<>();
+    for (int i = 1; i <= n; i++) {
+        list.add(i);
+    }
+    int start = 0;
+    while (list.size() > 1) {
+        //模size防止越界
+        int id = (start + k - 1) % list.size();
+        list.remove(id);
+        start = id;
+    }
+    return list.get(0);
+}
+
+public int findTheWinner(int n, int k) {
+    int res = 0;
+	// 倒退求解
+    for (int i = 2; i <=n; i++) {
+        res = (res + k) % i;
+    }
+    return res + 1;
+
+}
+```
+
+#### [5728. 最少侧跳次数](https://leetcode-cn.com/problems/minimum-sideway-jumps/)
+
+动态规划
+
+解题思路
+一共3条跑道，n个点，如果跑道i当前位置k(0<=k<n)有石头，无论如何跳也到不了该处，dp\[k][i]=Integer.MAX_VALUE-1（避免加1后超出int范围）；
+
+如果当前位置没有石头，则跳到该点的方法为:
+
+* 同一跑道前一节点跳过来，dp\[k][i]=dp\[k-1][i]，
+
+* 其他两条跑道中没有石头的节点 j 跳过来，前一节点次数加1(侧跳一次),dp\[k-1][j]+1。
+
+取最小值dp\[k]][i]=Math.min(dp\[k-1][i],dp\[k-1][j]+1)。
+
+```java
+public int minSideJumps(int[] obstacles) {
+    int n = obstacles.length;
+    int[][] dp=new int[n][3];
+    // 一开始就侧跳
+    dp[0][0]=1;
+    dp[0][2]=1;
+
+    for(int i=1;i<n;++i){
+        // 如果障碍在第一条道上的位置i
+        if(obstacles[i]==1){   
+            // 如果跑道i当前位置k(0<=k<n)有石头，无论如何跳也到不了该处，dp\[k][i]=Integer.MAX_VALUE-1（避免加1后超出int范围）；
+            dp[i][0]=Integer.MAX_VALUE-1;
+            // 两种情况，取最小值
+            dp[i][1]=Math.min(dp[i-1][1],dp[i-1][2]+1);
+            dp[i][2]=Math.min(dp[i-1][2],dp[i-1][1]+1);                
+        }else if(obstacles[i]==2){
+            dp[i][1]=Integer.MAX_VALUE-1;
+            dp[i][0]=Math.min(dp[i-1][0],dp[i-1][2]+1);
+            dp[i][2]=Math.min(dp[i-1][2],dp[i-1][0]+1);                
+        }else if(obstacles[i]==3){
+            dp[i][2]=Integer.MAX_VALUE-1;
+            dp[i][0]=Math.min(dp[i-1][0],dp[i-1][1]+1);
+            dp[i][1]=Math.min(dp[i-1][1],dp[i-1][0]+1);                
+        }else{
+            dp[i][0]=Math.min(dp[i-1][0],Math.min(dp[i-1][1],dp[i-1][2])+1);
+            dp[i][1]=Math.min(dp[i-1][1],Math.min(dp[i-1][0],dp[i-1][2])+1);
+            dp[i][2]=Math.min(dp[i-1][2],Math.min(dp[i-1][0],dp[i-1][1])+1);
+        }            
+    }
+
+    return Math.min(dp[n-1][0],Math.min(dp[n-1][1],dp[n-1][2]));
+}
+```
+
+#### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
