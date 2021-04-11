@@ -1844,7 +1844,6 @@ public ListNode deleteDuplicates(ListNode head) {
         ListNode next = cur.next;
         if (next.val == cur.val) {
             cur.next = next.next;
-            continue;
         }else {
             cur = cur.next;
         }
@@ -3799,6 +3798,7 @@ public String addStrings(String num1, String num2){
 
 #### lc470 用 rand7() 实现 rand10()
 
+<<<<<<< HEAD
 
 
 ### leetcode 周赛
@@ -3903,3 +3903,41 @@ public int minSideJumps(int[] obstacles) {
 ```
 
 #### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
+=======
+### 排序
+
+#### 数组排列
+
+快排
+
+```java
+public int[] sortArray(int[] nums) {
+    quickSort(nums, 0, nums.length-1);
+    return nums;
+}
+
+private void quickSort(int[] nums, int start, int end) {
+    if (start >= end) {
+        return;
+    }
+
+    int left = start;
+    int right = end;
+    int key = nums[start];
+    while (left < right) {
+        while (left < right && nums[right] >= key) {
+            right --;
+        }
+        nums[left] = nums[right];
+        while (left < right && nums[left] <= key) {
+            left ++;
+        }
+        nums[right] = nums[left];
+    }
+    nums[left] = key;
+    quickSort(nums, start, left-1);
+    quickSort(nums, left+1, end);
+}
+```
+
+>>>>>>> d9fe78f0d1e46ed51c2d44c3c403a90de4367cc0
