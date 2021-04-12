@@ -25,7 +25,7 @@ public class H224_BasicCalculator {
                 number = 0;
                 sign = 1;
             }else if (c == '-') {
-                result -= sign * number;
+                result += sign * number;
                 number = 0;
                 sign = -1;
             }else if (c == '(') {

@@ -980,7 +980,6 @@ public boolean exist(char[][] board, String word) {
     char[] wordCharArray = word.toCharArray();
     for (int i = 0; i < board.length; i++) {
         for (int j = 0; j < board[0].length; j++) {
-
             if (backtrack(board, wordCharArray, 0, i, j)) {
                 return true;
             }
@@ -1004,6 +1003,36 @@ private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row
                                                                                     idx+1, row+1, col) || backtrack(board, wordCharArray, idx+1, row, col-1) || backtrack(board, wordCharArray, idx+1, row, col+1);
     board[row][col] = wordCharArray[idx];
     return exist;
+}
+```
+
+#### lc22 括号生成
+
+```java
+/**
+ * 当 "(" 的数量小于n时，添加 "("；当 "(" 的数量大于 ")" 时，添加")"
+ * @param n
+ * @return
+ */
+public List<String> generateParenthesis(int n) {
+
+    List<String> res = new ArrayList<String>();
+    backtrack(res, "", 0, 0, n);
+    return res;
+}
+
+public void backtrack(List<String> res, String cur, int open, int close, int max) {
+    // 结束条件
+    if (cur.length() == max*2) {
+        res.add(cur);
+    }
+
+    if (open < max) {
+        backtrack(res, cur+"(", open+1, close, max);
+    }
+    if (open > close) {
+        backtrack(res, cur+")", open, close+1, max);
+    }
 }
 ```
 
@@ -1833,6 +1862,8 @@ private ListNode mergeLists(ListNode left, ListNode right) {
 
 #### lc83 删除有序链表中的重复元素
 
+思路：遍历结点，判断cur.val ?= next.val，如果相等，cur连接到next的下一个节点，否则，cur向前移动
+
 ```java
 public ListNode deleteDuplicates(ListNode head) {
     if (head == null || head.next == null) {
@@ -1849,6 +1880,178 @@ public ListNode deleteDuplicates(ListNode head) {
         }
     }
     return head;
+}
+```
+
+#### lc82 删除有序链表中的重复元素 II
+
+```java
+/**
+ * 使用fake head在原链表上修改
+ * @param head
+ * @return
+*/
+public ListNode deleteDuplicates2(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+
+    ListNode fakeHead = new ListNode(-1);
+    fakeHead.next = head;
+    ListNode prev = fakeHead;
+    ListNode cur = head;
+    while (cur != null) {
+        // 找到等于cur.val的元素的最后一个
+        while (cur.next != null && cur.val == cur.next.val) {
+            cur = cur.next;
+        }
+        // 如果该元素只有一个
+        if (prev.next == cur) {
+            prev = prev.next;
+        }else {// 该元素有多个
+            prev.next = cur.next;
+        }
+        cur = cur.next;
+    }
+    return fakeHead.next;
+}
+
+/**
+ * hashMap统计元素出现频率，找出频率为1的元素，新建链表 -- 可以用来删除无序链表的重复节点
+ * @param head
+ * @return
+*/
+public ListNode deleteDuplicates(ListNode head) {
+    if (head == null || head.next == null) {
+        return head;
+    }
+
+    Map<Integer, Integer> map = new HashMap<>();
+    // count the frequency of the elements
+    ListNode cur = head;
+    while (cur != null) {
+        map.put(cur.val, map.getOrDefault(cur.val,0)+1);
+        cur = cur.next;
+    }
+
+    cur = head;
+    ListNode dummy = new ListNode(-1);
+    ListNode newCur = dummy;
+    while (cur != null) {
+        if (map.get(cur.val) == 1) {
+            newCur.next = new ListNode(cur.val);
+            newCur = newCur.next;
+        }
+        cur = cur.next;
+    }
+    return dummy.next;
+}
+```
+
+#### 剑指offer22 链表中倒数第k个节点
+
+思路：快慢指针，快的先走k步
+
+```java
+public ListNode getKthFromEnd(ListNode head, int k) {
+    ListNode dmy = new ListNode(-1);
+    dmy.next = head;
+    ListNode fast = dmy;
+    ListNode slow = dmy;
+
+    for (int i = 0; i < k; i++) {
+        fast = fast.next;
+    }
+
+    while (fast != null) {
+        slow = slow.next;
+        fast = fast.next;
+    }
+    return slow;
+}
+```
+
+#### lc19 [删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+```java
+public ListNode removeNthFromEnd(ListNode head, int n) {
+    ListNode dmy = new ListNode(-1);
+    dmy.next = head;
+    ListNode slow = dmy;
+    ListNode fast= dmy;
+
+    
+    for (int i = 0; i < n; i++) {
+        fast = fast.next;
+    }
+    // 获得倒数第n+1个节点
+    while (fast.next != null) {
+        fast = fast.next;
+        slow = slow.next;
+    }
+
+    slow.next = slow.next.next;
+    return dmy.next;
+
+}
+```
+
+#### [lc138. 复制带随机指针的链表](https://leetcode-cn.com/problems/copy-list-with-random-pointer/)
+
+思路：
+
+第一轮迭代，复制每一个节点并连接在该节点后面
+
+第二轮循环：为每个copy节点安排随机节点
+
+第三轮: 提取复制节点同时保持原始的链表顺序不变
+
+```java
+public Node copyRandomList(Node head) {
+    Node iter = head;
+
+    // 第一轮迭代，复制每一个节点并连接在该节点后面
+    while (iter != null) {
+        Node next = iter.next;
+        Node newIter = new Node(iter.val);
+        iter.next = newIter;
+        newIter.next = next;
+        iter = next;
+    }
+
+    // 第二轮循环：为每个copy节点安排随机节点
+    iter = head;
+    while (iter != null) {
+        Node random = iter.random;
+        Node copy = iter.next;
+        // 处理 random 指向 null 的情况
+        if (random == null) {
+            copy.random = null;
+        }else {
+            copy.random = random.next;
+        }
+
+        iter = copy.next;
+    }
+
+    // 第三轮: 提取复制节点
+    Node dmy = new Node(-1);
+    Node cur = dmy;
+    iter = head;
+
+    while (iter != null) {
+        // 提取copy节点
+        Node copy = iter.next;
+        Node next = copy.next;
+        cur.next = copy;
+        cur = cur.next;
+
+        // 存储原始节点
+        iter.next = next;
+        iter = next;
+    }
+
+    return dummy.next;
 }
 ```
 
@@ -2409,6 +2612,94 @@ public boolean isSymmetric(TreeNode root) {
     return true;
 }
 ```
+
+#### lc662 二叉树最大宽度
+
+思路：BFS，每一个节点的值改为二叉树节点的序号，使用每一层的最后一个节点的id减去第一个节点的id（注意加一）；
+
+```java
+public int widthOfBinaryTree(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+
+    Deque<TreeNode> queue = new LinkedList<>();
+    root.val = 0;
+    queue.offer(root);
+    int ans = 0; 
+
+    while (!queue.isEmpty()) {
+        int size = queue.size();
+        ans = Math.max(ans, queue.getLast().val - queue.getFirst().val + 1);
+
+        for (int i = 0; i < size; i ++) {
+            TreeNode cur = queue.poll();
+            if (cur.left != null) {
+                cur.left.val = cur.val * 2 + 1;
+                queue.offer(cur.left);
+            }
+
+            if (cur.right != null) {
+                cur.right.val = cur.val * 2 + 2;
+                queue.offer(cur.right);
+            }
+        }
+    }
+    return ans;
+}
+```
+
+#### lc110 平衡二叉树
+
+思路：
+
+1. 递归方法：针对每个结点，左右子树的高度差小于等于1并且该节点的左右子树都是平衡二叉树
+
+   因为需要重复判断左右子树，所以时间复杂度：O(N^2)
+
+2. 自底向上递归方法：
+
+   时间复杂度：O(N)
+
+```java
+public boolean isBalanced(TreeNode root) {
+    if (root == null) {
+        return true;
+    }
+    return Math.abs(height(root.left)-height(root.right)) <= 1 && isBalanced(root.left) && isBalanced(root.right);
+}
+
+private int height(TreeNode node) {
+    if (node == null) {
+        return 0;
+    }
+    return 1 + Math.max(height(node.left), height(node.right));
+}
+```
+
+```java
+boolean res = true;
+public boolean isBalanced(TreeNode root) {
+    height(root);
+    return res;
+}
+
+private int height(TreeNode node) {
+    if (node == null) {
+        return 0;
+    }
+    int left = height(node.left) + 1;
+    int right = height(node.right) + 1;
+    if (Math.abs(left-right) > 1) {
+        res = false;
+    }
+    return Math.max(left, right);
+}
+```
+
+
+
+
 
 ### 数组
 
@@ -3085,6 +3376,66 @@ private void swap(int[][] matrix, int i1, int j1, int i2, int j2) {
 }
 ```
 
+#### lc26 删除有序数组中的重复项
+
+思路：定义一个慢指针指向第二个元素，遇到两个不相同的相邻元素，将后一个元素赋给慢指针所指的元素，并慢指针自增
+
+```java
+public int removeDuplicates(int[] nums) {
+    int insert = 1;
+    for (int i = 1; i < nums.length; i++) {
+        if (nums[i] != nums[i-1]) {
+            nums[insert++] = nums[i]; 
+        }
+    }
+    return insert;
+}
+```
+
+#### lc80 删除有序数组中的重复项 II
+
+```java
+public int removeDuplicates(int[] nums) {
+    int n = nums.length;
+    if (n <= 2) {
+        return n;
+    }
+    int slow = 2, fast = 2;
+    while (fast < n) {
+        if (nums[slow - 2] != nums[fast]) {
+            nums[slow] = nums[fast];
+            ++slow;
+        }
+        ++fast;
+    }
+    return slow;
+}
+```
+
+#### lc240 搜索二维矩阵 II
+
+思路：从**右上角**开始搜索，如果matrix\[i][j] > target，左移；如果matrix\[i][j] < target，下移；如果相等，输出true
+
+```java
+public boolean searchMatrix(int[][] matrix, int target) {
+    int row = 0;
+    int col = matrix[0].length - 1;
+
+    while (row < matrix.length && col >= 0) {
+        if (matrix[row][col] == target) {
+            return true;
+        }else if (matrix[row][col] > target) {
+            col --;
+        }else {
+            row ++;
+        }
+    }
+    return false;
+}
+```
+
+
+
 ### 双指针
 
 #### lc3 无重复字符的最长子串
@@ -3218,6 +3569,31 @@ public int trap(int[] height) {
 ```
 
 [Leetcode 42：接雨水](https://blog.csdn.net/qq_17550379/article/details/84945427)
+
+#### lc11 盛最多水的容器
+
+思路：采用双指针，每次移动较矮的指针，因为移动较矮的指针才会改变盛水的容量
+
+```java
+public int maxArea(int[] height) {
+    int maxVolume = 0;
+    int left = 0;
+    int right = height.length - 1;
+
+    while (left < right) {
+        if (height[left] < height[right]) {
+            maxVolume = Math.max(height[left] * (right - left), maxVolume);
+            left ++;
+        }else {
+            maxVolume = Math.max(height[right] * (right - left), maxVolume);
+            right --;
+        }
+    }
+    return maxVolume;
+}
+```
+
+
 
 #### lc234 回文链表
 
@@ -3793,6 +4169,56 @@ public String addStrings(String num1, String num2){
     return sb.toString();
 }
 ```
+
+#### lc224 基本计算器
+
+有点复杂啊。。。
+
+```java
+public int calculate(String s) {
+
+    Stack<Integer> stack = new Stack<>();
+    int result = 0;
+    int sign = 1;
+    int number = 0;
+
+    for (int i = 0; i < s.length(); i++) {
+        char c = s.charAt(i);
+        if (Character.isDigit(c)) {
+            number = 10 * number + (int)(c - '0');
+        }else if (c == '+') {
+            result += sign * number;
+            number = 0;
+            sign = 1;
+        }else if (c == '-') {
+            result += sign * number;
+            number = 0;
+            sign = -1;
+        }else if (c == '(') {
+            // 先将结果和sign压入栈
+            stack.push(result);
+            stack.push(sign);
+            // 重置sign和result
+            sign = 1;
+            result = 0;
+        } else if (c == ')') {
+            // 此时的result是该对括号内部的result
+            result += sign * number;
+            number = 0;
+            result *= stack.pop();
+            result += stack.pop();
+        }
+    }
+    if (number != 0) {
+        result += sign * number;
+    }
+    return result;
+}
+```
+
+
+
+
 
 ### Random
 
