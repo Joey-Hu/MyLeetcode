@@ -345,6 +345,40 @@ public int backToOrigin(int length, int n) {
 }
 ```
 
+#### lc64 最小路径和
+
+思路：
+
+1. dp\[0][0] = grid\[0][0]
+2. 首先对于第一行各个位置的最小路径和只能是左边元素的累加和，所以先初始化 dp 数组的第一行；同理，第一列也只能是上方元素的累加和；
+3. 转移方程：dp\[i][j] = min\{dp\[i-1][j], dp\[i][j-1]} + grid\[i][j]；
+
+```java
+public int minPathSum(int[][] grid) {
+    int rows = grid.length;
+    int cols = grid[0].length;
+    int[][] dp = new int[rows][cols];
+    dp[0][0] = grid[0][0];
+
+    // 初始化首行和首列
+    for (int j = 1; j < cols; j ++) {
+        dp[0][j] = dp[0][j-1] + grid[0][j]; 
+    }
+
+    for (int i = 1; i < rows; i ++) {
+        dp[i][0] = dp[i-1][0] + grid[i][0];
+    } 
+
+    // 动态规划：最小路径和
+    for (int i = 1; i < rows; i ++) {
+        for (int j = 1; j < cols; j ++) {
+            dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + grid[i][j];
+        } 
+    }
+    return dp[rows-1][cols-1];
+}
+```
+
 
 
 ### 队列
@@ -1005,6 +1039,48 @@ private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row
     return exist;
 }
 ```
+
+#### lc113 路径总和
+
+思路：每当DFS搜索到新结点时，保存该节点，每当找到一条路径时，保存该路径，如果 搜索到叶子节点，发现不是路径时，返回上一节点
+
+```java
+public List<List<Integer>> pathSum(TreeNode root, int sum) {
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> temp = new ArrayList<>();
+    pathSum(root, sum, temp, res);
+    return res;
+}
+
+private void pathSum(TreeNode root, int sum, List<Integer> temp, List<List<Integer>> res) {
+    // 终止条件1: 节点是叶子结点
+    if (root == null) {
+        return;
+    }
+
+    temp.add(new Integer(root.val));
+    // 终止条件2
+    if (root.left == null && root.right == null && sum-root.val==0) {
+        // 添加的是引用
+        // res.add(temp);
+        res.add(new ArrayList<>(temp));
+    }
+    pathSum(root.left, sum-root.val, temp, res);
+    pathSum(root.right, sum-root.val, temp, res);
+
+    temp.remove(temp.size()-1);
+}
+```
+
+#### lc129 求根节点到叶子结点数字之和
+
+思路：
+
+```java
+
+```
+
+
 
 #### lc22 括号生成
 
@@ -2697,6 +2773,26 @@ private int height(TreeNode node) {
 }
 ```
 
+#### lc114 二叉树展开为链表
+
+思路：递归+后序遍历
+
+```java
+TreeNode prev = null;
+
+public void flatten(TreeNode root) {
+    if  (root == null) {
+        return;
+    }
+
+    flatten(root.right);
+    flatten(root.left);
+    root.right = prev;
+    root.left = null;
+    prev = root;
+}
+```
+
 
 
 
@@ -3705,6 +3801,8 @@ public String minWindow(String s, String t) {
 
 }
 ```
+
+#### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
 
 
 

@@ -19,7 +19,6 @@ public class M64_MinimumPathSum {
     public int minPathSum(int[][] grid) {
         int row = grid.length;
         int col = grid[0].length;
-        int minPathSum = Integer.MAX_VALUE;
         int[][] dp = new int[row][col];
         dp[0][0] = grid[0][0];
 
