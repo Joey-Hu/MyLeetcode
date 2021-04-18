@@ -379,6 +379,41 @@ public int minPathSum(int[][] grid) {
 }
 ```
 
+#### lc5 最长回文子串
+
+思路：中心扩散
+
+由中心向外扩散，起始情况有两种：一种是中心是一个字符，另一种是中心是两个字符
+
+```java
+public String longestPalindrome(String s) {
+        
+    int start = 0;
+    int end = 0;
+    for (int i = 0; i < s.length(); i++) {
+        int len1 = expandingFromCenter(s, i, i);
+        int len2 = expandingFromCenter(s, i, i+1);
+        int maxLen = Math.max(len1, len2);
+        if (maxLen > end - start) {
+            start = i - (maxLen-1)/2;
+            end = i + (maxLen)/2; 
+        }
+    }
+    return s.substring(start, end+1);
+}
+
+private int expandingFromCenter(String s, int left, int right) {
+    while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+        left --;
+        right ++;
+    }
+    // 上面 while 循环结束时，left和right都往外扩了一个, 所以长度应为 right - left - 1
+    return right - left - 1;
+}
+```
+
+
+
 
 
 ### 队列
