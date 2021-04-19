@@ -2,7 +2,7 @@
 
 #### lc200 岛屿数量
 
-深度优先遍历，当遍历到某个位置grid\[i][j] 时，判断结果为1时，res ++，并标记该元素已访问过，然后进行深度优先遍历其周围的元素
+思路：深度优先遍历，当遍历到某个位置grid\[i][j] 时，判断结果为1时，res ++，并标记该元素已访问过，然后进行深度优先遍历其周围的元素
 
 注意终止条件
 
@@ -30,32 +30,58 @@ public int numIslands(char[][] grid) {
 
 private void boundaryDFS(char[][] grid, int i, int j) {
     // terminal condition
-    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length) {
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != '1') {
         return;
     }
     // 标记已访问过的元素
-    if (grid[i][j] == '1') {
-        grid[i][j] = '*';
-    }
+    grid[i][j] = '*';
+    
     // 深度遍历未访问过的元素
-    if (i > 0 && grid[i-1][j] == '1') {
-        boundaryDFS(grid, i-1, j);
-    }
-
-    if (i < grid.length-1 && grid[i+1][j] == '1') {
-        boundaryDFS(grid, i+1, j);
-    }
-
-    if (j > 0 && grid[i][j-1] == '1') {
-        boundaryDFS(grid, i, j-1);
-    }
-
-    if (j < grid[0].length-1 && grid[i][j+1] == '1') {
-        boundaryDFS(grid, i, j+1);
-    }
-    return;
+    dfs(grid, i-1, j);        
+    dfs(grid, i+1, j);
+    dfs(grid, i, j-1);
+    dfs(grid, i, j+1);
 }
 ```
+
+#### 岛屿问题
+
+[岛屿类问题的通用解法、DFS 遍历框架](https://leetcode-cn.com/problems/number-of-islands/solution/dao-yu-lei-wen-ti-de-tong-yong-jie-fa-dfs-bian-li-/)
+
+- [L200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/) （Easy）
+- [463. 岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/) （Easy）
+- [695. 岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/) （Medium）
+
+```java
+public int maxAreaOfIsland(int[][] grid) {
+    int maxArea = 0;
+    int rows = grid.length;
+    int cols = grid[0].length;
+
+    for (int i = 0; i < rows; i ++) {
+        for (int j = 0; j < cols; j++) {
+            if (grid[i][j] == 1) {
+                maxArea = Math.max(maxArea, dfs(grid, i, j));
+            }
+        }
+    }
+    return maxArea;
+}
+
+private int dfs(int[][] grid, int i, int j) {
+    if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != 1) {
+        return 0;
+    }
+	// 
+    grid[i][j] = 9;
+
+    return 1 + dfs(grid, i-1, j) + dfs(grid, i+1, j) + dfs(grid, i, j-1) + dfs(grid, i, j+1);
+}
+```
+
+- [827. 最大人工岛](https://leetcode-cn.com/problems/making-a-large-island/) （Hard）
+
+
 
 ### 动态规划
 
@@ -63,11 +89,12 @@ private void boundaryDFS(char[][] grid, int i, int j) {
 
 [url](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
 
+思路：dp[i]：表示到第 i 天为止能获得的最大利润，所以 dp[i] 等于max\{今天的价格prices[i] - 从第 1 到第 i-1天之中股票最低价格minPrice，dp\[i-1]}，所以需要一个变量 minPrice 记录到第 i-1 天为止的股票最低价格。
+
 ```java
 /**
  * 状态转移方程 dp[i] = max{dp[i-1], prices[i]-min_price[i]}
  * dp[i]：表示到ith天为止能获得的最大利润
- * min_price[i] ：表示到ith天为止最小的价格
  * @param prices
  * @return
  */
@@ -75,23 +102,23 @@ public int maxProfit(int[] prices) {
     if (prices.length < 1) {
         return 0;
     }
-    int[] dp = new int[prices.length];
-    int[] minPrice = new int[prices.length];
-    dp[0] = 0;
-    minPrice[0] = prices[0];
-    for (int i = 1; i < prices.length; i++) {
-        if (prices[i] < minPrice[i-1]) {
-            minPrice[i] = prices[i];
-        } else {
-            minPrice[i] = minPrice[i-1];
+    int[] profit = new int[prices.length];
+    int minPirces = prices[0];
+    profit[0] = 0;
+
+    for (int i = 1; i < profit.length; i++) {
+        if (prices[i] < minPirces) {
+            minPirces = prices[i];
         }
-        dp[i] = Math.max(dp[i-1], prices[i]-minPrice[i]);
+        profit[i] = Math.max(profit[i-1], prices[i]-minPirces);
     }
-    return dp[prices.length-1];
+    return profit[profit.length-1];
 }
 ```
 
 #### lc122 买卖股票最佳时机II
+
+思路：dp[i] 表示到第 i 天为止能获得的最大利润，dp[i] = 前一天的最大利润dp[i-1] + Math.max(prices[i]-prices[i-1], 0)， Math.max(prices[i]-prices[i-1], 0)表示当天卖出收益是否大于0，如果大于0，则卖出，如果小于0，则不卖出。
 
 ```java
 /**
@@ -113,9 +140,116 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-[123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)
+#### [lc123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)
 
-[188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)
+思路：
+
+[参考](https://zhuanlan.zhihu.com/p/92908822)
+
+根据手头是否持有股票，我们定义两个二维数组来定义状态：
+
+dp0\[i][j]: 第i天结束，已有j次买卖，手头没有股票时的最大利润
+
+dp1\[i][j]: 第i天结束，已有j次买卖，手头有股票时的最大利润
+
+初始化：
+
+dp0\[0][j]对于所有 j 都要初始化为0，而dp1\[0][j]对于所有j都要初始化为-prices[i]
+
+返回结果：
+
+dp0\[n-1][k]就是在最后一天结束时已进行k次交易且手头无股票时的最大收益，也即返回结果
+
+状态转移方程：
+
+dp0\[i][j] = max(dp0\[i-1][j], dp1\[i-1][j-1] + prices[i])
+
+今天我没有持有股票，有两种可能：
+
+* 昨天我也没有股票，今天选择保持，所以今天也没有股票
+* 昨天我持有股票，今天选择卖出，所以我今天没有股票了
+
+dp1\[i][j] = max(dp1\[i-1][j], dp0\[i-1][j] - prices[i])
+
+今天我持有股票，有两种可能：
+
+* 昨天我持有股票，今天选择保持，今天还有股票
+* 昨天我没有股票，今天选择买入，今天持有股票
+
+```java
+public int maxProfit(int[] prices) {
+    if (prices.length == 0) {
+        return 0;
+    }
+
+    int[][] dp0 = new int[prices.length][3];
+    int[][] dp1 = new int[prices.length][3];
+
+    dp1[0][0] = -prices[0];
+    dp1[0][1] = -prices[0];
+
+    for (int i = 1; i < prices.length; i++) {
+        // j=0
+        // 持股，未卖出过，可能是今天买的，可能是之前买的
+        dp1[i][0] = Math.max(dp1[i-1][0], -prices[i]);
+        // j=1
+        // 未持股，卖出过1次，可能是今天卖的，可能是之前卖的
+        dp0[i][1] = Math.max(dp0[i-1][1], dp1[i-1][0] + prices[i]);
+        // 持股，卖出过1次，可能是今天买的，可能是之前买的
+        dp1[i][1] = Math.max(dp1[i-1][1], dp0[i-1][1] - prices[i]);
+
+        // j=2
+        // 未持股，卖出过2次，可能是今天卖的，可能是之前卖的
+        dp0[i][2] = Math.max(dp0[i-1][2], dp1[i-1][1] + prices[i]);
+    }
+    // 返回最后一天状态为为持股，卖出过两次的最大利润
+    return dp0[prices.length-1][2];
+}
+```
+
+#### [lc188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)
+
+与上一题类似	
+
+```java
+public int maxProfit(int k, int[] prices) {
+    if (prices.length == 0 || k == 0) {
+        return 0;
+    }
+
+    // 当k很大时相当于不限制次数
+    if (k > prices.length / 2) {
+        int max = 0;
+        for (int i = 1; i < prices.length; i++) {
+            max += Math.max(0, prices[i] - prices[i-1]);
+        }
+        return max;
+    }
+
+    int[][] dp0 = new int[prices.length][k+1];
+    int[][] dp1 = new int[prices.length][k+1];
+
+    for(int j = 0; j <= k; j++) {
+        dp1[0][j] = -prices[0]; // i = 0
+    }
+
+    for (int i = 1; i < prices.length; i++) {
+        // j=0
+        dp1[i][0] = Math.max(dp1[i-1][0], -prices[i]);
+
+        // j>0
+        for (int j = 1; j <= k; j++) {
+            // 保持或卖出
+            dp0[i][j] = Math.max(dp0[i-1][j], dp1[i-1][j-1] + prices[i]);
+            // 保持或卖出
+            dp1[i][j] = Math.max(dp1[i-1][j], dp0[i-1][j] - prices[i]);
+        }
+    }
+    return dp0[prices.length-1][k];
+}
+```
+
+
 
 #### lc198 打家劫舍
 
@@ -148,7 +282,7 @@ public int rob(int[] nums) {
 }
 ```
 
-#### lc322 零钱兑换
+#### lc322 零钱兑换 c
 
 思路：类似于爬楼梯那道题目
 
@@ -4463,6 +4597,7 @@ public int minSideJumps(int[] obstacles) {
 
 #### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
 =======
+
 ### 排序
 
 #### 数组排列
