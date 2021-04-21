@@ -5,7 +5,7 @@ import java.util.Scanner;
 /**
  * @author: huhao
  * @time: 2020/11/3 10:16
- * @desc: https://www.nowcoder.com/test/question/fe298c55694f4ed39e256170ff2c205f?pid=1088888&tid=39117847
+ * @desc: https://www.nowcoder.com/Test/question/fe298c55694f4ed39e256170ff2c205f?pid=1088888&tid=39117847
  */
 public class problem1 {
     public static int numOfDrinks(int num) {

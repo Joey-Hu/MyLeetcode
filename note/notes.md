@@ -546,6 +546,27 @@ private int expandingFromCenter(String s, int left, int right) {
 }
 ```
 
+#### lc1143 最长公共子序列
+
+思路：二维动态规划
+
+```java
+public int longestCommonSubsequence(String text1, String text2) {
+    int[][] dp = new int[text1.length()+1][text2.length()+1];
+
+    for (int i = 1; i < dp.length; i++) {
+        for (int j = 1; j < dp[0].length; j++) {
+            if (text1.charAt(i-1) == text2.charAt(j-1)) {
+                dp[i][j] = dp[i-1][j-1] + 1;
+            }else {
+                dp[i][j] = Math.max(dp[i][j-1], dp[i-1][j]);
+            }
+        }
+    }
+    return dp[text1.length()][text2.length()];
+}
+```
+
 
 
 
@@ -1086,6 +1107,57 @@ public int[] twoSum(int[] nums, int target) {
     return res;
 }
 ```
+
+#### lc560 和为K的子数组
+
+思路：
+
+* 暴力解法 O(N^2)
+* 前缀和 + 哈希表
+
+```java
+// 暴力解法
+public int subarraySum(int[] nums, int k) {
+    int res = 0;
+    for (int i = 0; i < nums.length; i++) {
+        int sum = 0;
+        for (int j = i; j < nums.length; j ++) {
+            sum += nums[j];
+            // 不用担心sum>k的情况，后面可能存在抵消
+            if (sum == k) {
+                res ++;
+            }
+        }
+    }
+    return res;
+}
+
+// 前缀和 + 哈希表
+public int subarraySum(int[] nums, int k) {
+    // key：前缀和，value：key 对应的前缀和的个数
+    Map<Integer, Integer> preSumFreq = new HashMap<>();
+    // 对于下标为 0 的元素，前缀和为 0，个数为 1
+    preSumFreq.put(0, 1);
+
+    int preSum = 0;
+    int count = 0;
+    for (int num : nums) {
+        preSum += num;
+
+        // 先获得前缀和为 preSum - k 的个数，加到计数变量里
+        // 因为满足 preSum - (preSum - k) == k 的区间的个数是我们所关心的。
+        if (preSumFreq.containsKey(preSum - k)) {
+            count += preSumFreq.get(preSum - k);
+        }
+
+        // 然后维护 preSumFreq 的定义
+        preSumFreq.put(preSum, preSumFreq.getOrDefault(preSum, 0) + 1);
+    }
+    return count;
+}
+```
+
+
 
 ### 回溯法
 
@@ -2962,6 +3034,33 @@ public void flatten(TreeNode root) {
 }
 ```
 
+#### lc129 求根节点到叶节点数字之和
+
+思路：dfs
+
+```java
+public int sumNumbers(TreeNode root) {
+        // dfs
+        return dfs(root, 0);
+    }
+
+    private int dfs(TreeNode root, int prevSum) {
+        // 结束条件
+        if (root == null) {
+            return 0;
+        }
+
+        int sum = prevSum * 10 + root.val;
+        if (root.left == null && root.right == null) {
+            // 到达一个叶子结点
+            return sum;
+        }else {
+            // 计算左右子树
+            return dfs(root.left, sum) + dfs(root.right, sum);
+        }
+    }
+```
+
 
 
 
@@ -4483,7 +4582,86 @@ public int calculate(String s) {
 }
 ```
 
+#### lc8. 字符串转换整数 (atoi)
 
+思路：注意判断条件
+
+```java
+public int myAtoi(String s) {
+    int i = 0;
+    int sign = 1;
+    int res = 0;
+
+    if (s.length() == 0) {
+        return 0;
+    }
+
+    // 去掉空格
+    while (i < s.length() && s.charAt(i) == ' ') {
+        i ++;
+    }
+
+    // 如果出现符号字符，仅第 1 个有效，并记录正负
+    if (i < s.length() && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+        sign = (s.charAt(i++) == '-') ? -1 : 1;
+    }
+
+    while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+        // 必须先判断res和MAX_VALUE的大小然后再进行res更新，不然会造成res越界，从而造成res值发生错误
+        if (res > Integer.MAX_VALUE / 10 || (res == Integer.MAX_VALUE / 10 && (s.charAt(i) - '0') > Integer
+                                             .MAX_VALUE % 10)) {
+            return (sign == 1) ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        res = res * 10 + (s.charAt(i++) - '0');
+    }
+    return res * sign;
+}
+```
+
+
+
+#### lc135 分发糖果
+
+思路：[参考](https://leetcode-cn.com/problems/candy/solution/candy-cong-zuo-zhi-you-cong-you-zhi-zuo-qu-zui-da-/)
+
+规则可以分为两个部分：
+
+* 左规则：当 ratings i > ratings i-1 时，i 的糖比 i-1 的糖数量多
+* 右规则：当 ratings i < ratings i-1 时，i-1 的糖比 i 的糖数量多
+
+算法流程：
+
+![candy.png](./images/candy.png)
+
+```java
+public int candy(int[] ratings) {
+        int[] left = new int[ratings.length];
+        int[] right = new int[ratings.length];
+        int res = 0;
+
+        for (int i = 0; i < ratings.length; i ++) {
+            left[i] = 1;
+            right[i] = 1;
+        }
+
+        for (int i = 1; i < left.length; i ++) {
+            if (ratings[i] > ratings[i-1]) {
+                left[i] = left[i-1] + 1;
+            }
+        }
+
+        for (int i = right.length-1; i > 0; i --) {
+            if (ratings[i] < ratings[i-1]) {
+                right[i-1] = right[i] + 1;
+            }
+        }
+
+        for (int i = 0; i < ratings.length; i ++) {
+            res += Math.max(left[i], right[i]);
+        }
+        return res;
+    }
+```
 
 
 

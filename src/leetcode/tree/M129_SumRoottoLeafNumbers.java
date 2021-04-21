@@ -33,31 +33,7 @@ public class M129_SumRoottoLeafNumbers {
         return sum(root.left, sum*10+root.val) + sum(root.right, sum*10+root.val);
     }
 
-    /**
-     * BFS + queue
-     * @param root
-     * @return
-     */
-    public int sumNumbers2(TreeNode root) {
-        int sum = 0;
-        Queue<TreeNode> queue = new LinkedList<>();
-        queue.offer(root);
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                TreeNode cur = queue.poll();
-                sum = sum*size + cur.val;
-                if (cur.left != null) {
-                    queue.offer(cur.left);
-                }
-                if (cur.right != null) {
-                    queue.offer(cur.right);
-                }
-            }
-            sum = sum * 10;
-        }
-        return sum;
-    }
+
 
     class TreeNode {
         int val;
