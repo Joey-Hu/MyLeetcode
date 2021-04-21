@@ -567,7 +567,9 @@ public int longestCommonSubsequence(String text1, String text2) {
 }
 ```
 
+#### lc62 不同路径
 
+压缩成一维
 
 
 
@@ -1157,7 +1159,7 @@ public int subarraySum(int[] nums, int k) {
 }
 ```
 
-
+[【前缀和】秒杀七道题](https://leetcode-cn.com/problems/subarray-sum-equals-k/solution/de-liao-yi-wen-jiang-qian-zhui-he-an-pai-yhyf/)
 
 ### 回溯法
 
@@ -1349,6 +1351,57 @@ public void backtrack(List<String> res, String cur, int open, int close, int max
     }
     if (open > close) {
         backtrack(res, cur+")", open, close+1, max);
+    }
+}
+```
+
+#### [lc93 复原 IP 地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+
+思路：有点难
+
+```java
+public List<String> restoreIpAddresses(String s) {
+    List<String> ans = new ArrayList<>();
+    if (s == null || s.length() == 0) {
+        return ans;
+    }
+    backtrack(s, ans, 0, new ArrayList<>());
+    return ans;
+}
+
+// pos-当前遍历到 s 字符串中的位置，tmp-当前存放已经确定好的 ip 段的数量
+private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
+    if (tmp.size() == 4) {
+        // 如果此时 pos 也刚好遍历完整个 s
+        if (pos == s.length()) {
+            // join 用法：例如 [[255],[255],[111],[35]] -> 255.255.111.35
+            ans.add(String.join(".", tmp));
+        }
+        // 否则直接返回
+        return;
+    }
+
+    // ip 地址每段最多有三个数字
+    for (int i = 1; i <= 3; i++) {
+        // 如果当前位置距离 s 末尾小于 3 就不用再分段了，直接跳出循环即可。
+        if (pos + i > s.length()) {
+            break;
+        }
+
+        // 将 s 的子串开始分段
+        String segment = s.substring(pos, pos + i);
+        int val = Integer.valueOf(segment);
+        // 剪枝条件：段的起始位置不能为 0，段拆箱成 int 类型的长度不能大于 255
+        if (segment.startsWith("0") && segment.length() > 1 || (i == 3 && val > 255)) {
+            continue;
+        }
+
+        // 符合要求就加入到 tmp 中
+        tmp.add(segment);
+        // 继续递归遍历下一个位置
+        backtrack(s, ans, pos + i, tmp);
+        // 回退到上一个元素，即回溯
+        tmp.remove(tmp.size() - 1);
     }
 }
 ```
@@ -3061,6 +3114,34 @@ public int sumNumbers(TreeNode root) {
     }
 ```
 
+#### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+
+思路：
+
+1. 中序遍历得到排序链表，输出倒数第k个节点
+
+```java
+public int kthLargest(TreeNode root, int k) {
+    // 中序排列，选中倒数第k个节点
+    List<Integer> list = new ArrayList<>();
+    inorderTraversal(root, list);
+    return list.get(list.size()-k);
+
+}
+
+private void inorderTraversal(TreeNode root, List list) {
+    if (root == null) {
+        return;
+    }
+
+    inorderTraversal(root.left, list);
+    list.add(root.val);
+    inorderTraversal(root.right, list);
+}
+```
+
+
+
 
 
 
@@ -4071,6 +4152,27 @@ public String minWindow(String s, String t) {
 ```
 
 #### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
+
+#### [lc287 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number)
+
+思路：
+
+1. HashSet
+2. 快慢指针
+
+```java
+public int findDuplicate(int[] nums) {
+    // hashSet
+    Set<Integer> uniqNum = new HashSet<>();
+
+    for (int num : nums) {
+        if (!uniqNum.add(num)) {
+            return num;
+        } 
+    }
+    throw new IllegalArgumentException("No solution");
+}
+```
 
 
 

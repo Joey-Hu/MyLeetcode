@@ -11,19 +11,49 @@ import java.util.List;
  * @desc:
  */
 public class Test {
-    public int longestCommonSubsequence(String text1, String text2) {
-        int[][] dp = new int[text1.length()+1][text2.length()+1];
 
-        for (int i = 1; i < dp.length; i++) {
-            for (int j = 1; j < dp[0].length; j++) {
-                if (text1.charAt(i-1) == text2.charAt(j-1)) {
-                    dp[i][j] = dp[i-1][j-1] + 1;
-                }else {
-                    dp[i][j] = dp[i][j-1];
-                }
-            }
+    public List<String> restoreIpAddresses(String s) {
+        List<String> ans = new ArrayList<>();
+        if (s == null || s.length() == 0) {
+            return ans;
         }
-        return dp[text1.length()][text2.length()];
+        backtrack(s, ans, 0, new ArrayList<>());
+        return ans;
+    }
+    // pos-当前遍历到 s 字符串中的位置，tmp-当前存放已经确定好的 ip 段的数量
+    private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
+        if (tmp.size() == 4) {
+            // 如果此时 pos 也刚好遍历完整个 s
+            if (pos == s.length()) {
+                // join 用法：例如 [[255],[255],[111],[35]] -> 255.255.111.35
+                ans.add(String.join(".", tmp));
+            }
+            // 否则直接返回
+            return;
+        }
+
+        // ip 地址每段最多有三个数字
+        for (int i = 1; i <= 3; i++) {
+            // 如果当前位置距离 s 末尾小于 3 就不用再分段了，直接跳出循环即可。
+            if (pos + i > s.length()) {
+                break;
+            }
+
+            // 将 s 的子串开始分段
+            String segment = s.substring(pos, pos + i);
+            int val = Integer.valueOf(segment);
+            // 剪枝条件：段的起始位置不能为 0，段拆箱成 int 类型的长度不能大于 255
+            if (segment.startsWith("0") && segment.length() > 1 || (i == 3 && val > 255)) {
+                continue;
+            }
+
+            // 符合要求就加入到 tmp 中
+            tmp.add(segment);
+            // 继续递归遍历下一个位置
+            backtrack(s, ans, pos + i, tmp);
+            // 回退到上一个元素，即回溯
+            tmp.remove(tmp.size() - 1);
+        }
     }
 
 
@@ -56,7 +86,7 @@ public class Test {
 //        cur.next = null;
 
         Test test = new Test();
-        System.out.println(test.longestCommonSubsequence("abcde", "ace"));
+        System.out.println(test.restoreIpAddresses("25525511135"));
 
 
     }
