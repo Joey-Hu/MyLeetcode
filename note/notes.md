@@ -3140,9 +3140,60 @@ private void inorderTraversal(TreeNode root, List list) {
 }
 ```
 
+#### [lc108. 将有序数组转换为二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-array-to-binary-search-tree/)
 
+思路：有序数组转换为二叉搜索树，使用 DFS，找到中间元素 nums[mid] 作为根节点，mid 左边的元素作为左子树，mid 右边的元素作为右子树，DFS
 
+```java
+public TreeNode sortedArrayToBST(int[] nums) {
+    return toBST(nums, 0, nums.length-1);
+}
 
+private TreeNode toBST(int[] nums, int left, int right) {
+    // terminal condition
+    if (left > right) {
+        return null;
+    }
+    int mid = left + (right - left) / 2;
+    TreeNode root = new TreeNode(nums[mid]);
+    root.left = toBST(nums, left, mid-1);
+    root.right = toBST(nums, mid+1, right);
+    return root;
+}
+```
+
+#### [lc109. 有序链表转换二叉搜索树](https://leetcode-cn.com/problems/convert-sorted-list-to-binary-search-tree/)
+
+思路：和108 类似，要注意的是链表求解中间节点
+
+```java
+public TreeNode sortedListToBST(ListNode head) {
+    return toBST(head, null);
+}
+
+private TreeNode toBST(ListNode left, ListNode right) {
+    if (left == right) {
+        return null;
+    }
+    ListNode mid = getMidNode(left, right);
+    TreeNode root = new TreeNode(mid.val);
+    root.left = toBST(left, mid);
+    root.right = toBST(mid.next, right);
+    return root;
+
+}
+
+private ListNode getMidNode(ListNode left, ListNode right) {
+    ListNode slow = left;
+    ListNode fast = left;
+
+    while (fast != right && fast.next != right) {
+        fast = fast.next.next;
+        slow = slow.next;
+    }
+    return slow;
+}
+```
 
 
 
@@ -4763,6 +4814,86 @@ public int candy(int[] ratings) {
         }
         return res;
     }
+```
+
+#### [lc151. 翻转字符串里的单词](https://leetcode-cn.com/problems/reverse-words-in-a-string/)
+
+思路：利用栈的先进后出的特性，进行句子逆转；其次就是去掉空格，每次 idx 遍历到非空格，start 赋值 idx，另取一个变量 end 向后遍历直到空格，利用substring(start, end) 获取单词并入栈，结束后将 end 赋值给 idx。
+
+```java
+public String reverseWords(String s) {
+    String res = "";
+    Stack<String> stack = new Stack<>();
+
+    int idx = 0;
+    int len = s.length();
+
+    while (idx < len) {
+        char ch = s.charAt(idx);
+        if (ch != ' ') {
+            int start = idx;
+            int end = start;
+            while (end < len && s.charAt(end) != ' ') {
+                end ++;
+            }
+            stack.push(s.substring(start, end));
+            idx = end;
+        }
+        idx ++;
+    }
+
+    while (!stack.empty()) {
+        res += stack.pop();
+        res += " ";
+    }
+    return res.substring(0, res.length()-1);
+}
+```
+
+#### lc186 翻转字符串里的单词 II
+
+给定一个字符串，逐个翻转字符串中的每个单词。
+
+示例：
+
+```
+输入: ["t","h","e"," ","s","k","y"," ","i","s"," ","b","l","u","e"]
+输出: ["b","l","u","e"," ","i","s"," ","s","k","y"," ","t","h","e"]
+```
+
+注意：
+
+* 单词的定义是不包含空格的一系列字符
+* 输入字符串中不会包含前置或尾随的空格
+* 单词与单词之间永远是以单个空格隔开的
+
+进阶：使用 O(1) 额外空间复杂度的原地解法。
+
+思路：先找到每个单词翻转，在整个翻转
+
+
+
+#### [lc1047. 删除字符串中的所有相邻重复项](https://leetcode-cn.com/problems/remove-all-adjacent-duplicates-in-string/)
+
+思路：利用栈的思想，与栈头相同，则弹出栈头，否则入栈
+
+```java
+public String removeDuplicates(String S) {
+    StringBuilder stack = new StringBuilder();
+    // top用于指示“栈头”元素
+    int top = -1;
+    for (int i = 0; i < S.length(); i++) {
+        char ch = S.charAt(i);
+        if (top >= 0 && stack.charAt(top) == ch) {
+            stack.deleteCharAt(top);
+            top --;
+        }else {
+            stack.append(ch);
+            top ++;
+        }
+    }
+    return stack.toString();
+}
 ```
 
 
