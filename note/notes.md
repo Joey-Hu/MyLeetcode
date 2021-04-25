@@ -787,6 +787,41 @@ public class Solution {
 
 #### lc215 数组中第k大的元素
 
+
+
+#### lc[239. 滑动窗口最大值（HARD）](https://leetcode-cn.com/problems/sliding-window-maximum/)
+
+思路：单调队列 + 滑动窗口
+
+```java
+public int[] maxSlidingWindow(int[] nums, int k) {
+    if (nums == null || nums.length < 2) {
+        return nums;
+    }
+    int[] res = new int[nums.length-k+1];
+    // 单调队列
+    Deque<Integer> queue = new LinkedList<>();
+    for (int i = 0; i < nums.length; i ++) {
+        // 单调队列
+        while (!queue.isEmpty() && nums[i] > nums[queue.peekLast()]) {
+            queue.pollLast();
+        }
+        queue.offer(i);
+        // 判断队首下标是否超出窗口，超出则移除
+        if (queue.peekFirst() <= i-k) {
+            queue.pollFirst();
+        }
+        // 队首元素即为窗口内最大值
+        if (i >= k-1) {
+            res[i-k+1] = nums[queue.peekFirst()];
+        }
+    }
+    return res;
+}
+```
+
+
+
 ### 二分 & 分治
 
 #### lc69 sqrt(x)
@@ -864,6 +899,29 @@ public int findMinIndex(int[] nums) {
     return low;
 }
 ```
+
+#### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+
+寻找旋转数组中最小值
+
+```java
+public int findMin(int[] nums) {
+    int left = 0;
+    int right = nums.length - 1;
+
+    while (left < right) {
+        int mid = left + (right-left) / 2;
+        if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        }else {
+            right = mid;
+        }
+    }
+    return nums[left];
+}
+```
+
+
 
 #### lc162 寻找峰值
 
@@ -1535,56 +1593,6 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
  */
 public class M146_LRUCache {
 
-    class DLinkedNode {
-        int key;
-        int value;
-        DLinkedNode pre;
-        DLinkedNode post;
-    }
-
-    /**
-     * 把结点添加在head的后面
-     * @param node
-     */
-    private void addNode(DLinkedNode node) {
-        node.pre = head;
-        node.post = head.post;
-
-        head.post.pre = node;
-        head.post = node;
-    }
-
-    /**
-     * 从链表中移除一个结点
-     * @param node
-     */
-    private void removeNode(DLinkedNode node) {
-        DLinkedNode pre = node.pre;
-        DLinkedNode post = node.post;
-
-        pre.post = post;
-        post.pre = pre;
-    }
-
-    /**
-     * 将中间的某个结点移动到头部
-     * @param node
-     */
-    private void moveToHead(DLinkedNode node) {
-        this.removeNode(node);
-        this.addNode(node);
-    }
-
-    /**
-     * 弹出最后一个双向节点（非尾节点）
-     * @return
-     */
-    private DLinkedNode popTail() {
-        DLinkedNode res = tail.pre;
-        this.removeNode(res);
-        return res;
-    }
-
     private HashMap<Integer, DLinkedNode> cache = new HashMap<>();
     private int capacity;
     private DLinkedNode head;
@@ -1639,6 +1647,56 @@ public class M146_LRUCache {
             node.value = value;
             this.moveToHead(node);
         }
+    }
+    
+    class DLinkedNode {
+        int key;
+        int value;
+        DLinkedNode pre;
+        DLinkedNode post;
+    }
+
+    /**
+     * 把结点添加在head的后面
+     * @param node
+     */
+    private void addNode(DLinkedNode node) {
+        node.pre = head;
+        node.post = head.post;
+
+        head.post.pre = node;
+        head.post = node;
+    }
+
+    /**
+     * 从链表中移除一个结点
+     * @param node
+     */
+    private void removeNode(DLinkedNode node) {
+        DLinkedNode pre = node.pre;
+        DLinkedNode post = node.post;
+
+        pre.post = post;
+        post.pre = pre;
+    }
+
+    /**
+     * 将中间的某个结点移动到头部
+     * @param node
+     */
+    private void moveToHead(DLinkedNode node) {
+        this.removeNode(node);
+        this.addNode(node);
+    }
+
+    /**
+     * 弹出最后一个双向节点（非尾节点）
+     * @return
+     */
+    private DLinkedNode popTail() {
+        DLinkedNode res = tail.pre;
+        this.removeNode(res);
+        return res;
     }
 }
 ```
@@ -3261,9 +3319,7 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法篇-螺旋矩阵
-
-[url](https://www.nowcoder.com/practice/7edf70f2d29c4b599693dc3aaeea1d31?tpId=117&&tqId=34959&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
+#### lc54 螺旋矩阵
 
 同leetcode54
 
@@ -3316,6 +3372,58 @@ public List<Integer> spiralOrder(int[][] matrix) {
     return res;
 }
 ```
+
+#### [lc59. 螺旋矩阵 II](https://leetcode-cn.com/problems/spiral-matrix-ii/)
+
+思路：和上一题类似
+
+```java
+public int[][] generateMatrix(int n) {
+    int left = 0;
+    int right = n-1;
+    int top = 0;
+    int bottom = n-1;
+    int[][] matrix = new int[n][n];
+    int num = 1;
+
+    while (left <= right && top <= bottom) {
+        // 向右
+        for (int j = left; j <= right; j ++) {
+            matrix[top][j] = num;
+            num ++;
+        }
+        top ++;
+
+        // 向下
+        for (int i = top; i <= bottom; i ++) {
+            matrix[i][right] = num;
+            num ++;
+        }
+        right --;
+
+        // 向左
+        if (top <= bottom) {
+            for (int j = right; j >= left; j --) {
+                matrix[bottom][j] = num;
+                num ++;
+            }
+            bottom --;
+        }
+
+        // 向上
+        if (left <= right) {
+            for (int i = bottom; i >= top; i --) {
+                matrix[i][left] = num;
+                num ++;
+            }
+        }
+        left ++;
+    }
+    return matrix;
+}
+```
+
+
 
 #### 牛客题霸-算法篇-数组中相加和为0的三元组
 
@@ -3927,6 +4035,45 @@ public boolean searchMatrix(int[][] matrix, int target) {
         }
     }
     return false;
+}
+```
+
+#### [lc169. 多数元素](https://leetcode-cn.com/problems/majority-element/)
+
+思路：
+
+1. 排序，nums[len/2] 即为多数元素
+
+2. #### Boyer-Moore 投票算法
+
+   我们维护一个候选众数 candidate 和它出现的次数 count。初始时 candidate 可以为任意值，count 为 0；
+
+   我们遍历数组 nums 中的所有元素，对于每个元素 x，在判断 x 之前，如果 count 的值为 0，我们先将 x 的值赋予 candidate，随后我们判断 x：
+
+   如果 x 与 candidate 相等，那么计数器 count 的值增加 1；
+
+   如果 x 与 candidate 不等，那么计数器 count 的值减少 1。
+
+   在遍历完成后，candidate 即为整个数组的众数。
+
+
+```java
+public int majorityElement(int[] nums) {
+    int candidate = 0;
+    int count = 0;
+
+    for (int num : nums) {
+        if (count == 0) {
+            candidate = num;
+        }
+
+        if (candidate == num) {
+            count ++;
+        }else {
+            count --;
+        }
+    }
+    return candidate;
 }
 ```
 
@@ -4905,7 +5052,7 @@ public String removeDuplicates(String S) {
 <<<<<<< HEAD
 
 
-### leetcode 周赛
+### leetcode 周赛237
 
 #### [5726. 数组元素积的符号](https://leetcode-cn.com/problems/sign-of-the-product-of-an-array/)
 
@@ -5008,6 +5155,91 @@ public int minSideJumps(int[] obstacles) {
 
 #### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
 =======
+
+#### leetcode 周赛 238
+
+#### [5738. K 进制表示下的各位数字总和](https://leetcode-cn.com/problems/sum-of-digits-in-base-k/)
+
+```java
+public int sumBase(int n, int k) {
+    int res = 0;
+    while (n > 0) {
+        res += n % k;
+        n = n / k;
+    }
+    return res;
+
+}
+```
+
+#### [5739. 最高频元素的频数](https://leetcode-cn.com/problems/frequency-of-the-most-frequent-element/)
+
+解题思路
+
+首先很容易想到，先对数组进行排序。
+
+接下来，我们只需要找到某一段区间内，每个值与该区间内最后一个值相差的总和，不超过目标k的最大值
+
+[**参考**](https://leetcode-cn.com/problems/frequency-of-the-most-frequent-element/solution/jian-dan-yi-dong-zui-zi-ran-de-chu-li-lu-9i9a/)
+
+```java
+public int maxFrequency(int[] nums, int k) {
+    Arrays.sort(nums);
+    int ans = 1;
+    int left = 0;
+    long chaSum = 0;
+    for (int i = 1; i < nums.length; i ++) {
+        //计算区间内每个值，与区间内最后一个值相差的总和
+        chaSum += (nums[i]-nums[i-1]) * (i-left);
+        while (chaSum > k) {
+            //那么就减去区间内最左侧的值与最后一个值的差距。
+            //然后再让区间左侧向右移动一位，相等于整个区间缩小了一位距离，在缩小的区间内再判断是否满足要求
+            chaSum -= nums[i] - nums[left];
+            left++;
+        }
+        ans = Math.max(i - left + 1, ans);
+    }
+    return ans;
+}
+```
+
+
+
+#### [5740. 所有元音按顺序排布的最长子字符串](https://leetcode-cn.com/problems/longest-substring-of-all-vowels-in-order/)
+
+思路：判断字符种类和大小
+
+这5个元音字符是升序的且字符串中仅包含这些元音字母，所以**当字符串满足整体升序的同时字符种类达到5,那么这个字符串就是美丽的**
+
+```java
+public int longestBeautifulSubstring(String word) {
+    int types = 1;
+    int len = 1;
+    int ans = 0;
+    for (int i = 1; i < word.length(); i ++) {
+        if (word.charAt(i) >= word.charAt(i-1)) {
+            //更新当前字符串长度
+            len ++;
+        }
+        if (word.charAt(i) > word.charAt(i-1)) {
+            //更新当前字符种类
+            types ++;
+        }
+        if (word.charAt(i) < word.charAt(i-1)) {
+            // 不美丽，从当前字符开始
+            types = 1;
+            len = 1;
+        }
+        if (types == 5) {
+            //更新最大字符串
+            ans = Math.max(ans, len);
+        }
+    }
+    return ans;
+}
+```
+
+#### [5741. 最高建筑高度](https://leetcode-cn.com/problems/maximum-building-height/)
 
 ### 排序
 
