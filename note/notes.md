@@ -623,9 +623,7 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法-寻找第K大
-
-[url](https://www.nowcoder.com/practice/e016ad9b7f0b45048c58a9f27ba618bf?tpId=190&&tqId=35209&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
+#### [lc215 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
 
 1. Arrays.sort() 快排，直接取前k个元素，时间复杂度：O(NlogN)
 
@@ -1430,7 +1428,7 @@ public List<String> restoreIpAddresses(String s) {
 // pos-当前遍历到 s 字符串中的位置，tmp-当前存放已经确定好的 ip 段的数量
 private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
     if (tmp.size() == 4) {
-        // 如果此时 pos 也刚好遍历完整个 s
+        // 如果此时tmp的数量等于4，pos 也刚好遍历完整个 s
         if (pos == s.length()) {
             // join 用法：例如 [[255],[255],[111],[35]] -> 255.255.111.35
             ans.add(String.join(".", tmp));
@@ -4749,6 +4747,35 @@ public int longestValidParentheses(String s) {
 }
 ```
 
+#### [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
+
+思路：用一个stack来模拟出入栈的情况
+
+初始化： 辅助栈 stackstack ，弹出序列的索引 ii ；
+
+遍历压栈序列： 各元素记为 num ；元素 num 入栈；
+
+循环出栈：若 stack 的栈顶元素 == 弹出序列元素 popped[i] ，则执行出栈与 i++；
+
+返回值： 若 stackstack 为空，则此弹出序列合法。
+
+链接：https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/solution/mian-shi-ti-31-zhan-de-ya-ru-dan-chu-xu-lie-mo-n-2/
+
+```java
+public boolean validateStackSequences(int[] pushed, int[] popped) {
+    Stack<Integer> stack = new Stack<>();
+    int popIdx = 0;
+    for (int num : pushed) {
+        stack.push(num);
+        while (!stack.empty() && stack.peek() == popped[popIdx]) {
+            stack.pop();
+            popIdx ++;
+        }
+    }
+    return stack.empty();
+}
+```
+
 
 
 ### 单调栈
@@ -4810,31 +4837,33 @@ public int[] nextGreaterElement(int[] nums1, int[] nums2) {
 #### lc415 两字符串相加
 
 ```java
-public String addStrings(String num1, String num2){
-    StringBuilder sb = new StringBuilder();
+public String addStrings(String num1, String num2) {
     int idx1 = num1.length() - 1;
     int idx2 = num2.length() - 1;
+    StringBuilder res = new StringBuilder();
     int carry = 0;
 
-    int sum = 0;
     while (idx1 >= 0 || idx2 >= 0 || carry != 0) {
-
+        int tmp = carry;
         if (idx1 >= 0) {
-            sum += num1.charAt(idx1) - '0';
+            tmp += num1.charAt(idx1--) - '0';
         }
+
         if (idx2 >= 0) {
-            sum += num2.charAt(idx2) - '0';
+            tmp += num2.charAt(idx2--) - '0';
         }
-        sum += carry;
-        carry = sum / 10;
-        sb.insert(0, (char)(sum % 10 + '0'));
-        sum = 0;
-        idx1 --;
-        idx2 --;
+
+        carry = tmp / 10;
+        res.insert(0, (char)(tmp % 10 + '0'));
     }
-    return sb.toString();
+
+    return res.toString();
 }
 ```
+
+#### 字节高频题补充——36进制加法
+
+思路：和上一题思路一样，区别主要在于10进制转换为36进制，涉及到 char 转 int 和 int 转 char
 
 #### lc224 基本计算器
 
@@ -5052,7 +5081,7 @@ public String removeDuplicates(String S) {
 <<<<<<< HEAD
 
 
-### leetcode 周赛237
+### leetcode 周赛236
 
 #### [5726. 数组元素积的符号](https://leetcode-cn.com/problems/sign-of-the-product-of-an-array/)
 
@@ -5084,22 +5113,12 @@ public int findTheWinner(int n, int k) {
     }
     int start = 0;
     while (list.size() > 1) {
-        //模size防止越界
+        //注意这里的获取id的方式，模size防止越界
         int id = (start + k - 1) % list.size();
         list.remove(id);
         start = id;
     }
     return list.get(0);
-}
-
-public int findTheWinner(int n, int k) {
-    int res = 0;
-	// 倒退求解
-    for (int i = 2; i <=n; i++) {
-        res = (res + k) % i;
-    }
-    return res + 1;
-
 }
 ```
 
@@ -5154,9 +5173,7 @@ public int minSideJumps(int[] obstacles) {
 ```
 
 #### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
-=======
-
-#### leetcode 周赛 238
+### leetcode 周赛 238
 
 #### [5738. K 进制表示下的各位数字总和](https://leetcode-cn.com/problems/sum-of-digits-in-base-k/)
 
@@ -5241,6 +5258,36 @@ public int longestBeautifulSubstring(String word) {
 
 #### [5741. 最高建筑高度](https://leetcode-cn.com/problems/maximum-building-height/)
 
+### leetcode 周赛 239
+
+#### [5746. 到目标元素的最小距离](https://leetcode-cn.com/problems/minimum-distance-to-the-target-element/)
+
+思路：从 start 两侧开始逐个遍历，找到等于 target 且离 start 最近的元素
+
+```java
+public int getMinDistance(int[] nums, int target, int start) {
+    int len = nums.length;
+    int minDist = 0;
+    while (start + minDist < len || start - minDist >= 0) {
+        if (start + minDist < len && nums[start + minDist] == target) {
+            return minDist; 
+        }
+        if (start - minDist >= 0 && nums[start - minDist] == target) {
+            return minDist;
+        }
+        minDist ++;
+    }
+    return -1;
+
+}
+```
+
+####   [5747. 将字符串拆分为递减的连续值](https://leetcode-cn.com/problems/splitting-a-string-into-descending-consecutive-values/)
+
+#### [5749. 邻位交换的最小次数](https://leetcode-cn.com/problems/minimum-adjacent-swaps-to-reach-the-kth-smallest-number/)
+
+#### [5748. 包含每个查询的最小区间](https://leetcode-cn.com/problems/minimum-interval-to-include-each-query/)
+
 ### 排序
 
 #### 数组排列
@@ -5277,4 +5324,3 @@ private void quickSort(int[] nums, int start, int end) {
 }
 ```
 
->>>>>>> d9fe78f0d1e46ed51c2d44c3c403a90de4367cc0
