@@ -623,7 +623,7 @@ public class Solution {
 }
 ```
 
-#### [lc215 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+#### [lc215 数组中的第K个大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
 
 1. Arrays.sort() 快排，直接取前k个元素，时间复杂度：O(NlogN)
 
@@ -780,10 +780,6 @@ public class Solution {
 #### 牛客题霸-算法-随时找到数据流的中位数
 
 [同leetcode](https://leetcode.com/submissions/detail/441062711/)
-
-
-
-#### lc215 数组中第k大的元素
 
 
 
@@ -1470,37 +1466,87 @@ private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
 
 ### 链表
 
-#### lc25 K 个一组翻转链表
+#### lc25 K 个一组翻转链表（字节高频）
 
 [url](https://leetcode.com/problems/reverse-nodes-in-k-group/)
+
+思路：
+
+1. 递归
+2. 迭代
 
 ```java
 // 递归
 public ListNode reverseKGroup(ListNode head, int k) {
 
-        ListNode cur = head;
-        int count = 0;
-        // 找到第k+1个结点
-        while (count < k) {
-            if (cur == null) {
-                return head;
-            }
-            cur = cur.next;
-            count ++;
+    ListNode cur = head;
+    int count = 0;
+    // 找到第k+1个结点
+    while (count < k) {
+        if (cur == null) {
+            return head;
         }
-
-        ListNode prev = reverseKGroup(cur, k);
-        // reverse
-        while (count > 0) {
-            ListNode tmp = head.next;
-            head.next = prev;
-            prev = head;
-            head = tmp;
-            count --;
-        }
-        return prev;
+        cur = cur.next;
+        count ++;
     }
+
+    ListNode prev = reverseKGroup(cur, k);
+    // reverse
+    while (count > 0) {
+        ListNode tmp = head.next;
+        head.next = prev;
+        prev = head;
+        head = tmp;
+        count --;
+    }
+    return prev;
+}
 ```
+
+```java
+// 迭代
+public ListNode reverseKGroup(ListNode head, int k) {
+    ListNode begin;
+    if (head == null || head.next == null || k == 1) {
+        return head;
+    }
+
+    ListNode dmy = new ListNode(-1);
+    dmy.next = head;
+    begin = dmy;
+    int count = 0;
+    while (head != null) {
+        count ++;
+        // 找到k个节点
+        if (count % k == 0) {
+            // 翻转从begin开始的k个节点，注意end
+            begin = reverse(begin, head.next);
+            head = begin.next;
+        }else {
+            head = head.next;
+        }
+    }
+    return dmy.next;
+}
+
+private ListNode reverse(ListNode begin, ListNode end) {
+    ListNode cur = begin.next;
+    ListNode first = cur;
+    ListNode prev = begin;
+    while(cur != end) {
+        ListNode next = cur.next;
+        cur.next = prev;
+        prev = cur;
+        cur = next;
+    }
+    // 调节begin节点和first节点与翻转后的链表的关系
+    begin.next = prev;
+    first.next = cur;
+    return first;
+}
+```
+
+
 
 #### lc206 翻转链表
 
@@ -4108,6 +4154,10 @@ public int lengthOfLongestSubstring(String s) {
     return ans;
 }
 ```
+
+Follow-up：如果允许重复一次字符呢——微软-苏州-Lead面（2020.11.24）
+
+![lc3_follow up.png](./images/lc3_follow up.png)
 
 [159. Longest Substring with At Most Two Distinct Characters 最多有2个不同字符的最长子串](https://www.cnblogs.com/grandyang/p/5185561.html)
 
