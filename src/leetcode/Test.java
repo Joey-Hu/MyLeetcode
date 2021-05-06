@@ -13,26 +13,30 @@ import java.util.Stack;
  */
 public class Test {
 
-    public String removeDuplicates(String S) {
-        Stack<Character> stack = new Stack<>();
+    public int trap(int[] height) {
+        // 左右指针
+        int left = 0;
+        int right = height.length - 1;
+        // 记录左右最大高度
+        int maxLeft = 0;
+        int maxRight = 0;
+        int res = 0;
 
-        for (int i = 0; i < S.length(); i++) {
-            if (stack.empty()) {
-                stack.push(S.charAt(i));
-            }
-
-            if (S.charAt(i) == stack.peek()) {
-                stack.pop();
+        while (left < right) {
+            // 用于移动指针，if成立，移动左指针，否则，移动右指针
+            if (height[left] <  height[right]) {
+                // 更新最大值
+                maxLeft = Math.max(height[left], maxLeft);
+                // 获取雨水
+                res += maxLeft - height[left];
+                left ++;
             }else {
-                stack.push(S.charAt(i));
+                maxRight = Math.max(height[right], maxRight);
+                res += maxRight - height[right];
+                right --;
             }
         }
-        StringBuilder sb = new StringBuilder();
-        while (!stack.empty()) {
-            sb.insert(0, stack.pop());
-        }
-        return sb.toString();
-
+        return res;
     }
 
 
@@ -65,7 +69,8 @@ public class Test {
 //        cur.next = null;
 
         Test test = new Test();
-        System.out.println(test.removeDuplicates("abbaca"));
+        int[] height = {0,1,0,2,1,0,1,3,2,1,2,1};
+        System.out.println(test.trap(height));
 
 
     }
