@@ -659,54 +659,39 @@ public class Solution {
 3. 快排思想，时间复杂度：O(N)
 
 ```java
-public class Solution {
-    // 注意手推一遍过程
-    public int findKth(int[] a, int n, int K) {
-        
-        if (a == null || a.length == 0) {
-            return Integer.MAX_VALUE;
+public int findKthLargest(int[] nums, int k) {
+    int left = 0;
+    int right = nums.length - 1;
+    int len = nums.length;
+
+    while (left < right) {
+        int pos = partion(nums, left, right);
+        if (pos == len - k) {
+            break;
+        }else if (pos > len - k) {
+            right = pos - 1;
+        }else {
+            left = pos + 1;
         }
-        
-        int left = 0;
-        int right = a.length - 1;
-        while (left < right) {
-            // 每次过后保证左边的元素是有序的
-            int pos = partion(a, left, right);
-            if (pos == n-K) {
-                break;
-            }else if (pos > n-K) {
-                right = pos - 1;
-            }else {
-                left = pos + 1;
-            }
+    }
+    return nums[len - k];
+}
+
+private int partion(int[] nums, int left, int right) {
+    int base = nums[left];
+
+    while (left < right) {
+        while (left < right && nums[right] >= base) {
+            right --;
         }
-        return a[n-K];
+        nums[left] = nums[right];
+        while (left < right && nums[left] <= base) {
+            left ++;
+        } 
+        nums[right] = nums[left];
     }
-    
-    private int partion(int[] a, int l, int r) {
-        int left = l;
-        int right = r;
-        
-        while (left < right) {
-            // 分治，把所有大于等于pivot的元素移到右边，所有小于等于pivot的元素移到左边
-            while (right > l && a[right] > a[l]) {
-                right --;
-            }
-            while (left < r && a[left] < a[l]) {
-                left ++;
-            }
-            swap(a, left, right);
-        }
-        // 交换基准元素和 right 所指代元素
-        swap(a, l, right);
-        return right;
-    }
-    
-    private void swap(int[] a, int i, int j) {
-        int temp = a[i];
-        a[i] = a[j];
-        a[j] = temp;
-    }
+    nums[left] = base;
+    return left;
 }
 ```
 
@@ -1636,7 +1621,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
  * LRU 缓存算法的核心数据结构就是哈希链表，双向链表和哈希表的结合体。
  */
 public class M146_LRUCache {
-
+    
     private HashMap<Integer, DLinkedNode> cache = new HashMap<>();
     private int capacity;
     private DLinkedNode head;
