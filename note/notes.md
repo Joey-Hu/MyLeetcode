@@ -336,7 +336,7 @@ public int change(int amount, int[] coins) {
 
 思路：
 
-使用动态规划思想，dp[i]表示到nums[i]为止的最长上升子序列，转移方程是 dp[i] = max(dp[i], dp[j]+1) if (dp[j] > dp[i] and i>j)
+使用动态规划思想，dp[i]表示到nums[i]为止的最长上升子序列长度，转移方程是 dp[i] = max(dp[i], dp[j]+1) if (dp[j] > dp[i] and i>j)
 
 上面转移方程的意思是：要在nums[i]之前找到小于 nums[i]的元素，如果有，即存在元素nums[j]<nums[i]并且j<i的时候，说明nums[i]可以添加在nums[j]之后增加子序列长度；如果没有，那以nums[i]结尾的最长子序列就是nums[i]本身。
 
@@ -352,7 +352,7 @@ public int change(int amount, int[] coins) {
 >
 > 然后再看一下下一个元素 a4 = 10; 令 dp[ 4 ] = 1;  那么需要依次检查前面的元素 a1  与 a2 与 a3 是否有比他小的 , 一看a1比它小，而且呢，dp[ 1 ] + 1 > dp[ 4 ] 所以呢 dp[ 4 ] = dp[ 1 ] + 1 == 2, 说明此时 a1 与 a4 可以构成一个长度为 2 的上升子序列，再来看看还可不可以构成更长的子序列呢，所以咱们再来看看 a2 , a2 < a4 而且呢 dp[ 2 ] + 1 == 3 > dp[ 4 ] == 2  所以呢dp[ 4 ] = dp[ 2 ] + 1 == 3,  即将a4承接在a2后面比承接在a1后更好，承接在a2后面的序列为：a1 a2 a4 ，构成一个长度为 3 的上升子序列; 然后再来看 a3 , a3 < a4 但是可惜的是 d[ 3 ] + 1 == 2  < dp[ 4 ] == 3 ,  所以呢就不能把a4加在a3的后面 。
 >
-> 然后就是重复上述过程，找到最大的dp [ i ] 那么这个数就是最长上升子序列
+> 然后就是重复上述过程，找到最大的dp [ i ] 那么这个数就是最长上升子序列长度
 > ————————————————
 > 版权声明：本文为CSDN博主「ltrbless」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 > 原文链接：https://blog.csdn.net/ltrbless/article/details/81318935
@@ -365,51 +365,52 @@ public int change(int amount, int[] coins) {
 // dp[i] = max(dp[i], dp[j]+1) if dp[j] > dp[i](j<i)
 public int lengthOfLIS(int[] nums) {
     int[] dp = new int[nums.length];
+    int res = 1;
+
     for (int i = 0; i < dp.length; i++) {
         dp[i] = 1;
-    }
-
-    int maxLen = 0;
-
-    for (int i = 0; i < nums.length; i++) {
-        for (int j = 0; j < i; j++) {
-            if (nums[i] > nums[j]) {
-                dp[i] = Math.max(dp[i], dp[j]+1);
+        for (int j = i-1; j >= 0; j--) {
+            if (nums[i] > nums[j]){
+                dp[i] = Math.max(dp[i], dp[j]+1);                    
+            }
+            else if (nums[i] == nums[j]) {
+                break;
             }
         }
-        maxLen = Math.max(maxLen, dp[i]);
+        res = Math.max(res, dp[i]);
     }
-    return maxLen;
+    return res;
 }
 ```
 
-二分查找：
+[二分查找](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-by-leetcode-soluti/)：O(NlogN)
 
 ```java
-public int lengthOfLIS2(int[] nums) {
-    // tails[i]表示的是所有长度为i+1的递增子序列中的最小的尾部
-    int[] tails = new int[nums.length];
-    int size = 0;
-    for (int x : nums) {
-        int i = 0;
-        int j = size;
-        while (i != j) {
-            int m = i + (j-i) / 2;
-            // 找到最后一个大于x的tail
-            if (tails[m] < x) {
-                i = m + 1;
-            }else {
-                j = m;
+public int lengthOfLIS(int[] nums) {
+    int len = 1, n = nums.length;
+    if (n == 0) {
+        return 0;
+    }
+    int[] d = new int[n + 1];
+    d[len] = nums[0];
+    for (int i = 1; i < n; ++i) {
+        if (nums[i] > d[len]) {
+            d[++len] = nums[i];
+        } else {
+            int l = 1, r = len, pos = 0; // 如果找不到说明所有的数都比 nums[i] 大，此时要更新 d[1]，所以这里将 pos 设为 0
+            while (l <= r) {
+                int mid = (l + r) >> 1;
+                if (d[mid] < nums[i]) {
+                    pos = mid;
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
             }
-        }
-        // 如果 tails[i-1] < x <= tails[i]，则更新tail[i]
-        tails[i] = x;
-        // 如果所有的tail都小于x，则将将x添加进去，并更新size
-        if (i == size) {
-            ++ size;
+            d[pos + 1] = nums[i];
         }
     }
-    return size;
+    return len;
 }
 ```
 
@@ -1138,9 +1139,8 @@ public int[] twoSum(int[] nums, int target) {
             res[0] = numsMap.get(complement);
             res[1] = i;
             return res;
-        }else {
-            numsMap.put(nums[i], i);
         }
+        numsMap.put(nums[i], i);
     }
     return res;
 }
@@ -2101,6 +2101,36 @@ private ListNode reverse(ListNode head) {
     return prev;
 }
 ```
+
+#### [lc328. 奇偶链表](https://leetcode-cn.com/problems/odd-even-linked-list/)
+
+思路：对于原始链表，每个节点都是奇数节点或偶数节点。头节点是奇数节点，头节点的后一个节点是偶数节点，相邻节点的奇偶性不同。因此可以将奇数节点和偶数节点分离成奇数链表和偶数链表，然后将偶数链表连接在奇数链表之后，合并后的链表即为结果链表。
+
+```java
+public ListNode oddEvenList(ListNode head) {
+    if (head == null ||head.next == null) {
+        return head;
+    }
+
+    // 提取出偶数节点组成的链表
+    ListNode evenList = head.next;
+    ListNode even = evenList;
+    ListNode odd = head;
+
+    // 针对链表个数的奇偶性，有两个结束条件，最终odd节点指向最后一个奇数节点
+    while (even != null && even.next != null) {
+        odd.next = even.next;
+        odd = odd.next;
+        even.next = odd.next;
+        even = even.next;
+    }
+    odd.next = evenList;
+    return head;
+
+}
+```
+
+
 
 #### lc142 环形链表 II
 
@@ -3921,7 +3951,7 @@ public int[][] merge(int[][] intervals) {
     for (int i = 0; i < intervals.length; i++) {
         int left = intervals[i][0];
         int right = intervals[i][1];
-
+		// 不断向右扩展，直到找到右边界
         while (i < intervals.length-1 && intervals[i+1][0] <= right) {
             i++;
             right = Math.max(right, intervals[i][1]);
@@ -3931,6 +3961,45 @@ public int[][] merge(int[][] intervals) {
     return res.toArray(new int[0][]);
 }
 ```
+
+#### [lc57. 插入区间](https://leetcode-cn.com/problems/insert-interval/)
+
+思路：对于左右与插入区间无重叠的区间，直接加入结果即可；对于有重叠的区间，记录下左右重叠的区间以便后续求解合并区间的边界
+
+```java
+public int[][] insert(int[][] intervals, int[] newInterval) {
+    if (intervals.length == 0) {
+        return new int[][]{newInterval};
+    }
+
+    int startInterval = -1;
+    int endInterval = -1;
+    List<int[]> asList = new ArrayList<>();
+
+    for (int i = 0; i < intervals.length; i ++) {
+        if (intervals[i][1] < newInterval[0] || intervals[i][0] > newInterval[1]) {
+            asList.add(intervals[i]);
+        }
+        // 记录起始区间
+        if (intervals[i][0] <= newInterval[0] && intervals[i][1] >= newInterval[0]) {
+            startInterval = i;
+        }
+        // 记录结束区间
+        if (intervals[i][0] <= newInterval[1] && intervals[i][1] >= newInterval[1]) {
+            endInterval = i;
+        }
+    }
+    // 如果等于-1，表示没有交集，则左边界等于newInterval[0]，否则等于起始区间的左边界；right类似
+    int left = startInterval == -1 ? newInterval[0] : intervals[startInterval][0];
+    int right = endInterval == -1 ? newInterval[1] : intervals[endInterval][1];
+    asList.add(new int[]{left, right});
+    int[][] res = asList.toArray(new int[0][]);
+    Arrays.sort(res, (a, b)->(a[0]-b[0]));
+    return res;
+}
+```
+
+[秒懂力扣区间题目：重叠区间、合并区间、插入区间](https://mp.weixin.qq.com/s/ioUlNa4ZToCrun3qb4y4Ow)
 
 #### lc41 缺失的第一个正数
 
