@@ -282,7 +282,7 @@ public int rob(int[] nums) {
 }
 ```
 
-#### lc322 零钱兑换 c
+#### lc322 零钱兑换 
 
 思路：类似于爬楼梯那道题目
 
@@ -530,6 +530,7 @@ public String longestPalindrome(String s) {
         int len2 = expandingFromCenter(s, i, i+1);
         int maxLen = Math.max(len1, len2);
         if (maxLen > end - start) {
+            // 注意此处的strat和end的更新
             start = i - (maxLen-1)/2;
             end = i + (maxLen)/2; 
         }
@@ -1259,7 +1260,11 @@ private void backtrack(int[] nums, List<List<Integer>> track, ArrayList<Integer>
 
 思路：回溯法
 
-注意要对 candidates 进行排序
+1，首先对数组进行排序，方便操作并且节省开支；
+
+2，数组[2,3,6,7],target = 7,定义一个存放临时结果的list，每次需要从start元素开始，比如，先将2存入list，然后target就变成7-2=5，再将2放入list，target就变成5-2=3，再将2放入list，target就是3-2=1，然后再拿start位置元素还是2，但是2比1大，所以不行，那么就将list最后一个元素2去掉，然后将下一个元素也就是3存入list，这时候target变成了0，满足条件，将这个list存入结果集res里面；
+
+3，按照第二步所描述的过程，递归迭代这个数组，将符合条件的元素组合全部拿到即可！
 
 ```java
 public List<List<Integer>> combinationSum(int[] candidates, int target) {
@@ -1273,15 +1278,16 @@ public List<List<Integer>> combinationSum(int[] candidates, int target) {
 private void backtrack(int[] candidates, List<List<Integer>> track, ArrayList<Integer> tempList, int remain, int start) {
     if (remain < 0) {
         return;
-    }else if(remain == 0) {
+    }
+    if(remain == 0) {
         track.add(new ArrayList<>(tempList));
-    }else {
-        for (int i = start; i < candidates.length; i++) {
-            tempList.add(candidates[i]);
-            // 注意这里的start，因为元素可以重复使用，所以递归到下一层起始元素还是candidates[i]
-            backtrack(candidates, track, tempList, remain-candidates[i], i);
-            tempList.remove(tempList.size()-1);
-        }
+    }
+    
+    for (int i = start; i < candidates.length; i++) {
+        tempList.add(candidates[i]);
+        // 注意这里的start，因为元素可以重复使用，所以递归到下一层起始元素还是candidates[i]
+        backtrack(candidates, track, tempList, remain-candidates[i], i);
+        tempList.remove(tempList.size()-1);
     }
 }
 ```
@@ -1607,7 +1613,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
 
 #### lc146 LRU 缓存机制
 
-![LRU cache.png](./images/LRU cache.png)
+![LRU_cache.png](./images/LRU_cache.png)
 
 ```java
 /**
@@ -1767,10 +1773,10 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
     while (cur1 != null && cur2 != null) {
         if (cur1.val < cur2.val) {
-            cur.next = new ListNode(cur1.val);
+            cur.next = cur1;
             cur1 = cur1.next;
         }else {
-            cur.next = new ListNode(cur2.val);
+            cur.next = cur2;
             cur2 = cur2.next;
         }
         cur = cur.next;
@@ -2026,6 +2032,8 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 
 #### lc415 字符串相加
 
+思路：双指针从后往前，注意循环结束条件：idx1 >= 0 or idx2 >= 0 or ==carry != 0==，使用 StringBuilder.insert(0, (char)(tmp % 10 + '0')) 进行计算结果的累加
+
 ```JAVA
 public String addStrings(String num1, String num2) {
     int idx1 = num1.length() - 1;
@@ -2131,6 +2139,31 @@ public ListNode oddEvenList(ListNode head) {
 ```
 
 
+
+#### lc141 环形链表
+
+思路：使用快慢指针判断是否存在环（注意循环结束条件）
+
+```java
+/**
+ * 快慢指针
+ * @param head
+ * @return
+ */
+public boolean hasCycle(ListNode head) {
+    ListNode slow = head;
+    ListNode fast = head;
+
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) {
+            return true;
+        }
+    }
+    return false;
+}
+```
 
 #### lc142 环形链表 II
 
@@ -2252,12 +2285,12 @@ public static ListNode swapPairs2(ListNode head) {
 public boolean isPalindrome(ListNode head) {
 
     // 找到中间节点
-    ListNode fast = head;
     ListNode slow = head;
+    ListNode fast = head;
 
     while (fast != null && fast.next != null) {
-        fast  = fast.next.next;
         slow = slow.next;
+        fast = fast.next.next;
     }
 
     // 如果是奇数个节点，将slow节点移动到下个节点
@@ -2265,19 +2298,16 @@ public boolean isPalindrome(ListNode head) {
         slow = slow.next;
     }
 
-    slow = reverse(slow); 
-    fast = head;
-
-    while (fast != null && slow != null) {
-        if (fast.val != slow.val) {
+    ListNode l1 = head;
+    ListNode l2 = reverseList(slow);;
+    while (l2 != null) {
+        if (l2.val != l1.val) {
             return false;
         }
-
-        slow = slow.next;
-        fast = fast.next;
+        l2 = l2.next;
+        l1 = l1.next;
     }
     return true;
-
 }
 
 private ListNode reverse(ListNode head) {
@@ -2333,10 +2363,10 @@ private ListNode mergeLists(ListNode left, ListNode right) {
 
     while (left != null && right != null) {
         if (left.val < right.val) {
-            cur.next = new ListNode(left.val);
+            cur.next = left;
             left = left.next;
         }else {
-            cur.next = new ListNode(right.val);
+            cur.next = right;
             right = right.next;
         }
         cur = cur.next;
@@ -2345,6 +2375,10 @@ private ListNode mergeLists(ListNode left, ListNode right) {
     return dmy.next;
 }
 ```
+
+思路2：[快排实现链表排序](https://leetcode-cn.com/problems/sort-list/solution/gui-bing-pai-xu-he-kuai-su-pai-xu-by-a380922457/)
+
+
 
 #### lc83 删除有序链表中的重复元素
 
@@ -2991,7 +3025,7 @@ public boolean isCompleteTree(TreeNode root) {
         queue.offer(cur.right);
     }
 
-    // 弹出空节点
+    // 弹出第一个空节点
     while (!queue.isEmpty() && queue.peek() == null) {
         queue.poll();
     }
@@ -3311,7 +3345,36 @@ private ListNode getMidNode(ListNode left, ListNode right) {
 }
 ```
 
+#### [lc113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
 
+思路：回溯法
+
+```java
+public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> tmp = new ArrayList<>();
+
+        dfs(root, res, tmp, targetSum);
+        return res;
+    }
+
+    private void dfs(TreeNode root, List<List<Integer>> res, List<Integer> tmp, int remain) {
+        if (root == null) {
+            return;
+        }
+        tmp.add(root.val);
+        // 当前节点是叶子结点时，并且remain值等于节点值，则路径符合条件；否则继续遍历
+        if (root.left == null && root.right == null && remain == root.val) {
+            res.add(new ArrayList(tmp));
+        }else {
+            dfs(root.left, res, tmp, remain-root.val);
+            dfs(root.right, res, tmp, remain-root.val);
+        }
+        tmp.remove(tmp.size()-1);        
+    }
+```
+
+与lc112 路径总和题类似
 
 ### 数组
 
@@ -4210,7 +4273,7 @@ public int lengthOfLongestSubstring(String s) {
 
 Follow-up：如果允许重复一次字符呢——微软-苏州-Lead面（2020.11.24）
 
-![lc3_follow up.png](./images/lc3_follow up.png)
+![lc3_followIp.png](./images/lc3_followUp.png)
 
 [159. Longest Substring with At Most Two Distinct Characters 最多有2个不同字符的最长子串](https://www.cnblogs.com/grandyang/p/5185561.html)
 
@@ -4373,31 +4436,6 @@ public int maxArea(int[] height) {
         }
         return true;
     }
-```
-
-#### lc141 环形链表
-
-思路：使用快慢指针判断是否存在环（注意循环结束条件）
-
-```java
-/**
- * 快慢指针
- * @param head
- * @return
- */
-public boolean hasCycle(ListNode head) {
-    ListNode slow = head;
-    ListNode fast = head;
-
-    while (fast != null && fast.next != null) {
-        slow = slow.next;
-        fast = fast.next.next;
-        if (slow == fast) {
-            return true;
-        }
-    }
-    return false;
-}
 ```
 
 #### lc76 最小覆盖子串
@@ -4606,61 +4644,47 @@ public class Solution {
 
 使用两个栈，一个栈负责入队列，一个栈负责出队列
 
-保证出栈始终是空的
-
 ```java
 class MyQueue {
-    private Stack<Integer> in;
-    private Stack<Integer> out;
+    Stack<Integer> pushStack;
+    Stack<Integer> popStack;
 
+    
     /** Initialize your data structure here. */
     public MyQueue() {
-        in = new Stack<>();
-        out = new Stack<>();
+        pushStack = new Stack<>();
+        popStack = new Stack<>();
     }
     
     /** Push element x to the back of queue. */
     public void push(int x) {
-        in.push(x);
+        pushStack.push(x);
     }
     
     /** Removes the element from in front of queue and returns that element. */
     public int pop() {
-        int res = 0;
-        
-        while (!in.empty()) {
-            out.push(in.pop());
+        if (popStack.empty()) {
+            while (!pushStack.empty()) {
+                popStack.push(pushStack.pop());
+            }
         }
-        
-        res = out.pop();
-        
-        while (!out.empty()) {
-            in.push(out.pop());
-        }
-        
-        return res;
+        return popStack.pop();
     }
     
     /** Get the front element. */
     public int peek() {
-        int res = 0;
-        
-        while (!in.empty()) {
-            out.push(in.pop());
+        if (popStack.empty()) {
+            while (!pushStack.empty()) {
+                popStack.push(pushStack.pop());
+            }
         }
-        
-        res = out.peek();
-        
-        while (!out.empty()) {
-            in.push(out.pop());
-        }
-        
-        return res;
+        return popStack.peek();
     }
     
     /** Returns whether the queue is empty. */
     public boolean empty() {
-        return in.empty();
+        
+        return pushStack.empty() && popStack.empty();
     }
 }
 ```
@@ -4883,11 +4907,11 @@ public boolean validateStackSequences(int[] pushed, int[] popped) {
 
 栈中只保存单调递增或单调递减的序列
 
-![Monotonous stack1.png](./images/Monotonous stack1.png)
+![Monotonous stack1.png](./images/Monotonous_stack1.png)
 
-![Monotonous stack2.png](./images/Monotonous stack2.png)
+![Monotonous stack2.png](./images/Monotonous_stack2.png)
 
-![Monotonous stack3.png](./images/Monotonous stack3.png)
+![Monotonous stack3.png](./images/Monotonous_stack3.png)
 
 #### lc739. Daily Temperatures
 
@@ -5391,9 +5415,9 @@ public int getMinDistance(int[] nums, int target, int start) {
 
 ### 排序
 
-#### 数组排列
+#### 数组排序
 
-快排
+##### 快排
 
 ```java
 public int[] sortArray(int[] nums) {
@@ -5424,4 +5448,46 @@ private void quickSort(int[] nums, int start, int end) {
     quickSort(nums, left+1, end);
 }
 ```
+
+##### 归并排序
+
+```java
+int[] tmp;
+public int[] sortArray(int[] nums) {
+    tmp = new int[nums.length];
+    mergeSort(nums, 0, nums.length-1);
+    return nums;      
+}
+
+private void mergeSort(int[] nums, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    mergeSort(nums, left, mid);
+    mergeSort(nums, mid+1, right);
+
+    // 合并
+    int i = left, j = mid + 1;
+    int cnt = 0;
+    while (i <= mid && j <= right) {
+        if (nums[i] <= nums[j]) {
+            tmp[cnt++] = nums[i++];
+        } else {
+            tmp[cnt++] = nums[j++];
+        }
+    }
+    while (i <= mid) {
+        tmp[cnt++] = nums[i++];
+    }
+    while (j <= right) {
+        tmp[cnt++] = nums[j++];
+    }
+    for (int k = 0; k < right - left + 1; ++k) {
+        nums[k + left] = tmp[k];
+    }
+}
+```
+
+##### 堆排序
 

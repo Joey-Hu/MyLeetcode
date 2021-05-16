@@ -13,27 +13,37 @@ import java.util.Stack;
  */
 public class Test {
 
-    public int trap(int[] height) {
-        // 左右指针
-        int left = 0;
-        int right = height.length - 1;
-        // 记录左右最大高度
-        int maxLeft = 0;
-        int maxRight = 0;
-        int res = 0;
+    public String longestPalindrome(String s) {
+        int maxLen = 0;
+        int start = 0;
 
-        while (left < right) {
-            // 用于移动指针，if成立，移动左指针，否则，移动右指针
-            if (height[left] <  height[right]) {
-                // 更新最大值
-                maxLeft = Math.max(height[left], maxLeft);
-                // 获取雨水
-                res += maxLeft - height[left];
-                left ++;
+        for (int i = 0; i < s.length()-1; i ++) {
+            int len1 = palindromeLen(s, i, i);
+            int len2 = palindromeLen(s, i, i+1);
+
+            int len = Math.max(len1, len2);
+            if (len > maxLen) {
+                maxLen = len;
+                start = i - maxLen / 2;
+            }
+        }
+        return s.substring(start, start+maxLen+1);
+    }
+
+    private int palindromeLen(String s, int idx1, int idx2) {
+        int res = 0;
+        if (idx1 == idx2) {
+            res ++;
+            idx1 --;
+            idx2 ++;
+        }
+        while (idx1 >= 0 && idx2 < s.length()) {
+            if (s.charAt(idx1) == s.charAt(idx2)) {
+                res += 2;
+                idx1 --;
+                idx2 ++;
             }else {
-                maxRight = Math.max(height[right], maxRight);
-                res += maxRight - height[right];
-                right --;
+                break;
             }
         }
         return res;
@@ -69,8 +79,7 @@ public class Test {
 //        cur.next = null;
 
         Test test = new Test();
-        int[] height = {0,1,0,2,1,0,1,3,2,1,2,1};
-        System.out.println(test.trap(height));
+        System.out.println(test.longestPalindrome("cbbd"));
 
 
     }
