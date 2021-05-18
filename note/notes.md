@@ -422,7 +422,7 @@ public int lengthOfLIS(int[] nums) {
 
 基本上就是斐波那契数列问题
 
-扩展：不能爬到 7 或者是 7 的倍数 -- 在计算 dp[i] 时，增加一个判断，如果 dp[i-1]  或者 dp[i-2] 是7的倍数时，不加
+扩展：不能爬到7及7的倍数——2021.3 字节跳动-教育-后端-一面：dp[7]
 
 ```java
 public int climbStairs(int n) {
@@ -1198,6 +1198,39 @@ public int subarraySum(int[] nums, int k) {
 
 [【前缀和】秒杀七道题](https://leetcode-cn.com/problems/subarray-sum-equals-k/solution/de-liao-yi-wen-jiang-qian-zhui-he-an-pai-yhyf/)
 
+#### [lc128. 最长连续序列](https://leetcode-cn.com/problems/longest-consecutive-sequence/)
+
+思路：看到这种题目，要求时间复杂度是O(N)，很难想出方法，就考虑使用hash数据结构
+
+```java
+public int longestConsecutive(int[] nums) {
+    // 首先使用set对nums进行去重
+    Set<Integer> numSet = new HashSet<>();
+
+    for (int num : nums) {
+        numSet.add(num);
+    }
+    int longestLen = 0;
+
+    for (int num : numSet) {
+        // 注意这个条件！！！
+        if (!numSet.contains(num-1)) {
+            int curNum = num;
+            int len = 1;
+
+            while (numSet.contains(curNum+1)) {
+                curNum ++;
+                len ++;
+            }
+            longestLen = Math.max(len, longestLen);
+        }
+    }
+    return longestLen;
+}
+```
+
+
+
 ### 回溯法
 
 #### lc78 集合的所有子集
@@ -1316,10 +1349,14 @@ private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row
     if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || board[row][col] != wordCharArray[idx]) {
         return false;
     }
+    if (board[row][col] != wordCharArray[idx]) {
+        return false;
+    }
 
     board[row][col] = '*';
     boolean exist = backtrack(board, wordCharArray, idx+1, row-1, col) || backtrack(board, wordCharArray,
                                                                                     idx+1, row+1, col) || backtrack(board, wordCharArray, idx+1, row, col-1) || backtrack(board, wordCharArray, idx+1, row, col+1);
+    // 递归退出时需要将字符还原
     board[row][col] = wordCharArray[idx];
     return exist;
 }
@@ -1399,7 +1436,7 @@ public void backtrack(List<String> res, String cur, int open, int close, int max
 
 #### [lc93 复原 IP 地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
 
-思路：有点难
+思路：有点难，直接背代码
 
 ```java
 public List<String> restoreIpAddresses(String s) {
@@ -2405,9 +2442,11 @@ public ListNode deleteDuplicates(ListNode head) {
 
 #### lc82 删除有序链表中的重复元素 II
 
+同理还有[26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)、[80. 删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
+
 ```java
 /**
- * 使用fake head在原链表上修改
+ * 使用fake head在原链表上修改（思想很有趣  *****）
  * @param head
  * @return
 */
@@ -2427,7 +2466,7 @@ public ListNode deleteDuplicates2(ListNode head) {
         }
         // 如果该元素只有一个
         if (prev.next == cur) {
-            prev = prev.next;
+            prev = cur;
         }else {// 该元素有多个
             prev.next = cur.next;
         }
@@ -2498,21 +2537,20 @@ public ListNode removeNthFromEnd(ListNode head, int n) {
     ListNode dmy = new ListNode(-1);
     dmy.next = head;
     ListNode slow = dmy;
-    ListNode fast= dmy;
-
-    
-    for (int i = 0; i < n; i++) {
+    ListNode fast = dmy;
+    int i = 0; 
+    while (i <= n) {
         fast = fast.next;
+        i ++;
     }
-    // 获得倒数第n+1个节点
-    while (fast.next != null) {
-        fast = fast.next;
+
+    while (fast != null) {
         slow = slow.next;
+        fast = fast.next;
     }
 
     slow.next = slow.next.next;
     return dmy.next;
-
 }
 ```
 
@@ -2628,9 +2666,29 @@ private void postOrder(List<Integer> res, TreeNode root) {
 }
 ```
 
-迭代方法
+非递归方法
 
 ```java
+// 先序遍历
+public List<Integer> preorderTraversal(TreeNode root) {
+    List<Integer> res = new ArrayList<>();
+    Stack<TreeNode> stack = new Stack<>();
+
+    if (root == null) {
+        return res;
+    }
+    stack.push(root);
+    while (!stack.empty()) {
+        TreeNode cur = stack.pop();
+        if (cur != null) {
+            res.add(cur.val);
+            stack.push(cur.right);
+            stack.push(cur.left);
+        }
+    }
+    return res;
+}
+
 // 中序遍历
 public List<Integer> inorderTraversal(TreeNode root) {
     List<Integer> res = new ArrayList<>();
@@ -2652,6 +2710,29 @@ private void pushAllLeft(TreeNode root, Stack stack) {
         stack.push(root);
         root = root.left;
     }
+}
+
+// 后序遍历
+public List<Integer> postorderTraversal(TreeNode root) {
+    List<Integer> res = new ArrayList<>();
+    Stack<TreeNode> stack = new Stack<>();
+
+    if (root == null) {
+        return res;
+    }
+
+    stack.push(root);
+    while (!stack.empty()) {
+        TreeNode cur = stack.pop();
+        if (cur != null) {
+            res.add(cur.val);
+            stack.push(cur.left);
+            stack.push(cur.right);
+        }
+    }
+
+    Collections.reverse(res);
+    return res;
 }
 ```
 
@@ -3376,6 +3457,55 @@ public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
 
 与lc112 路径总和题类似
 
+#### [lc226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+
+思路：
+
+* 递归交换每一个节点的左右子树，没啥可想的
+* BFS，非递归实现
+
+```java
+public TreeNode invertTree(TreeNode root) {
+    if (root == null) {
+        return null;
+    }
+
+    TreeNode left = root.left;
+    TreeNode right = root.right;
+    root.left = right;
+    root.right = left;
+
+    invertTree(root.left);
+    invertTree(root.right);
+    return root;
+}
+
+// BFS
+public TreeNode invertTree(TreeNode root) {
+    if (root == null) {
+        return null;
+    }
+
+    Queue<TreeNode> queue = new LinkedList<>();
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+        TreeNode cur = queue.poll();
+        TreeNode tmp = cur.left;
+        cur.left = cur.right;
+        cur.right = tmp;
+        if (cur.left != null) {
+            queue.offer(cur.left);
+        }
+        if (cur.right != null) {
+            queue.offer(cur.right);
+        }
+    }
+    return root;
+}
+```
+
+
+
 ### 数组
 
 #### 牛客题霸-算法篇-两数之和
@@ -3951,9 +4081,10 @@ public class Solution {
 
 思路：
 
-* 从右往左遍历，找到第一组前一个比后一个小的位置，标记为i
+* 从右往左遍历，找到第一组前一个比后一个小的位置，将前一个标记为i
 * 然后再从右往左遍历一次，找到第一个比 nums[i]大的数，位置标记为j
 * 交换i和j位置上的数，然后将i后面的数全部反转（即reverse(i + 1))
+* 本题与[556. 下一个更大元素 III](https://leetcode-cn.com/problems/next-greater-element-iii/)类似
 
 ```java
 public void nextPermutation(int[] nums) {
@@ -4234,6 +4365,23 @@ public int majorityElement(int[] nums) {
         }
     }
     return candidate;
+}
+```
+
+#### [lc53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+思路：O(N)，遍历数组，每遍历一个元素 nums[i]时，curSum = max(curSum, 0) + nums[i]；同时更新 maxsubArraySum
+
+```java
+public int maxSubArray(int[] nums) {
+    int curSum = nums[0];
+    int maxSubArraySum = nums[0];
+
+    for (int i = 1; i < nums.length; i ++) {
+        curSum = Math.max(curSum, 0) + nums[i];
+        maxSubArraySum = Math.max(curSum, maxSubArraySum);
+    }
+    return maxSubArraySum;
 }
 ```
 
@@ -4913,7 +5061,7 @@ public boolean validateStackSequences(int[] pushed, int[] popped) {
 
 ![Monotonous stack3.png](./images/Monotonous_stack3.png)
 
-#### lc739. Daily Temperatures
+#### lc739. [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
 思路：单调栈
 
@@ -4933,9 +5081,7 @@ public int[] dailyTemperatures(int[] T) {
 }
 ```
 
-#### lc496. Next Greater Element I
-
-url: https://leetcode.com/problems/next-greater-element-i/
+#### [lc496. Next Greater Element I](https://leetcode.com/problems/next-greater-element-i/)
 
 ```java
 public int[] nextGreaterElement(int[] nums1, int[] nums2) {
