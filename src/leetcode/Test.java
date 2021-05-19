@@ -13,42 +13,32 @@ import java.util.Stack;
  */
 public class Test {
 
-    public String longestPalindrome(String s) {
-        int maxLen = 0;
-        int start = 0;
+    private void allPop(char[] push, Stack<Character> stack, int begin,String out) {
+        if (stack.empty() && begin == push.length) {
+//            如果入栈完毕了，且也栈空了，就输出此出栈顺序，这个是递归的结束条件
+            System.out.println(out);
+        }else {
+            Stack<Character> s1 = (Stack<Character>) stack.clone();
+            Stack<Character> s2 = (Stack<Character>) stack.clone();
 
-        for (int i = 0; i < s.length()-1; i ++) {
-            int len1 = palindromeLen(s, i, i);
-            int len2 = palindromeLen(s, i, i+1);
+            // 选择入栈
+            if (begin < push.length) {
+                // 元素未全部入栈
+                s1.push(push[begin]);
+                allPop(push, s1, begin+1, out + "");
 
-            int len = Math.max(len1, len2);
-            if (len > maxLen) {
-                maxLen = len;
-                start = i - maxLen / 2;
+            }
+            // 选择出栈
+            if (!s2.empty()) {
+                //如果栈不空，并且，入栈元素不是最后一个
+                // 记录出栈元素
+                String tmp = out + s2.pop();
+//                s2.pop();
+                allPop(push, s2, begin, tmp);
+
             }
         }
-        return s.substring(start, start+maxLen+1);
     }
-
-    private int palindromeLen(String s, int idx1, int idx2) {
-        int res = 0;
-        if (idx1 == idx2) {
-            res ++;
-            idx1 --;
-            idx2 ++;
-        }
-        while (idx1 >= 0 && idx2 < s.length()) {
-            if (s.charAt(idx1) == s.charAt(idx2)) {
-                res += 2;
-                idx1 --;
-                idx2 ++;
-            }else {
-                break;
-            }
-        }
-        return res;
-    }
-
 
 
     static class ListNode {
@@ -79,7 +69,9 @@ public class Test {
 //        cur.next = null;
 
         Test test = new Test();
-        System.out.println(test.longestPalindrome("cbbd"));
+        char[] push = {'1', '2', '3'};
+        test.allPop(push, new Stack<Character>(), 0, "");
+//        System.out.println(res);
 
 
     }
