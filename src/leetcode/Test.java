@@ -13,31 +13,35 @@ import java.util.Stack;
  */
 public class Test {
 
-    private void allPop(char[] push, Stack<Character> stack, int begin,String out) {
-        if (stack.empty() && begin == push.length) {
-//            如果入栈完毕了，且也栈空了，就输出此出栈顺序，这个是递归的结束条件
-            System.out.println(out);
-        }else {
-            Stack<Character> s1 = (Stack<Character>) stack.clone();
-            Stack<Character> s2 = (Stack<Character>) stack.clone();
-
-            // 选择入栈
-            if (begin < push.length) {
-                // 元素未全部入栈
-                s1.push(push[begin]);
-                allPop(push, s1, begin+1, out + "");
-
+    public int findTheLongestSubstring(String s) {
+        int n = s.length();
+        // 第一位记录 a 的统计结果，第二位记录e的统计结果，依次类推。这个二进制最大就是五个1，转成十进制就是31，申请一个长度32的数组。
+        int[] pos = new int[1<<5];
+        Arrays.fill(pos, -1);
+        int ans = 0;
+        int status = 0;
+        pos[0] = 0;
+        for (int i = 0; i < n; i++) {
+            char ch = s.charAt(i);
+            if (ch == 'a') {
+                status ^= (1 << 0);
+            } else if (ch == 'e') {
+                status ^= (1 << 1);
+            } else if (ch == 'i') {
+                status ^= (1 << 2);
+            } else if (ch == 'o') {
+                status ^= (1 << 3);
+            } else if (ch == 'u') {
+                status ^= (1 << 4);
             }
-            // 选择出栈
-            if (!s2.empty()) {
-                //如果栈不空，并且，入栈元素不是最后一个
-                // 记录出栈元素
-                String tmp = out + s2.pop();
-//                s2.pop();
-                allPop(push, s2, begin, tmp);
-
+            // status是前i位，元音出现次数的一个统计结果
+            if (pos[status] >= 0) {
+                ans = Math.max(ans, i + 1 - pos[status]); // 此种奇偶统计状态第一次出现的位置
+            } else {
+                pos[status] = i + 1;
             }
         }
+        return ans;
     }
 
 
@@ -69,10 +73,6 @@ public class Test {
 //        cur.next = null;
 
         Test test = new Test();
-        char[] push = {'1', '2', '3'};
-        test.allPop(push, new Stack<Character>(), 0, "");
-//        System.out.println(res);
-
-
+        test.findTheLongestSubstring("eleetminicoworoep");
     }
 }
