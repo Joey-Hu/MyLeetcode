@@ -48,9 +48,11 @@ private void boundaryDFS(char[][] grid, int i, int j) {
 
 [岛屿类问题的通用解法、DFS 遍历框架](https://leetcode-cn.com/problems/number-of-islands/solution/dao-yu-lei-wen-ti-de-tong-yong-jie-fa-dfs-bian-li-/)
 
-- [L200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/) （Easy）
-- [463. 岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/) （Easy）
-- [695. 岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/) （Medium）
+##### [L200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/) （Easy）
+
+##### [463. 岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/) （Easy）
+
+##### [695. 岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/) （Medium）
 
 ```java
 public int maxAreaOfIsland(int[][] grid) {
@@ -2617,6 +2619,167 @@ public Node copyRandomList(Node head) {
 
 ### 树
 
+#### 二叉树路径问题汇总
+
+##### [112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
+
+思路：从根节点遍历每一个节点，如果是叶子结点，判断 remain 是否等于 root.val，如果相等，则表示存在这样一条路径；如果不是叶子结点，则继续遍历左右子树。
+
+```java
+public boolean hasPathSum(TreeNode root, int targetSum) {
+    return dfs(root, targetSum);
+}
+
+private boolean dfs(TreeNode root, int remain) {
+    if (root == null) {
+        return false;
+    }
+    if (root.left == null && root.right == null && remain == root.val) {
+        return true;
+    }
+
+    return dfs(root.left, remain-root.val) || dfs(root.right, remain-root.val);
+}
+```
+
+##### [lc113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
+
+思路：回溯法，思路和112题一样
+
+```java
+public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> tmp = new ArrayList<>();
+
+    dfs(root, res, tmp, targetSum);
+    return res;
+}
+
+private void dfs(TreeNode root, List<List<Integer>> res, List<Integer> tmp, int remain) {
+    if (root == null) {
+        return;
+    }
+    tmp.add(root.val);
+    // 当前节点是叶子结点时，并且remain值等于节点值，则路径符合条件；否则继续遍历
+    if (root.left == null && root.right == null && remain == root.val) {
+        res.add(new ArrayList(tmp));
+    }else {
+        dfs(root.left, res, tmp, remain-root.val);
+        dfs(root.right, res, tmp, remain-root.val);
+    }
+    tmp.remove(tmp.size()-1);        
+}
+```
+
+##### [lc437. 路径总和 III](https://leetcode-cn.com/problems/path-sum-iii/)
+
+
+
+##### [lc129. 求根节点到叶节点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
+
+思路：
+
+* dfs：从根节点遍历每一个节点，每遇到叶子结点，则将叶子节点对应的数字加到数字之和。如果当前节点不是叶子节点，则计算其子树对应的数字，然后对子树递归遍历。
+* BFS：使用两个队列，一个记录当前树节点，一个记录当前树节点对应的值
+
+```java
+public int sumNumbers(TreeNode root) {
+        return dfs(root, 0);
+    }
+
+    private int dfs(TreeNode root, int prevSum) {
+        // 结束条件
+        if (root == null) {
+            return 0;
+        }
+
+        if (root.left == null && root.right == null) {
+            // 到达一个叶子结点
+            return preSum * 10 + root.val;
+        }
+        // 计算左右子树
+        return dfs(root.left, preSum * 10 + root.val) + dfs(root.right, preSum * 10 + root.val);
+    }
+```
+
+```java
+public int sumNumbers(TreeNode root) {
+    // BFS 
+    if (root == null) {
+        return 0;
+    }
+    int res = 0;
+    // 使用两个队列，一个记录当前树节点，一个记录当前树节点对应的值
+    Queue<TreeNode> nodeQueue = new LinkedList<>();
+    Queue<Integer> numQueue = new LinkedList<>();
+    nodeQueue.offer(root);
+    numQueue.offer(root.val);
+    while (!nodeQueue.isEmpty()) {
+        int size = nodeQueue.size();
+        for (int i = 0; i < size; i ++) {
+            // 每次同时输出节点及numQueue中对应的结点值
+            TreeNode cur = nodeQueue.poll();
+            int curVal = numQueue.poll();
+            // 如果当前节点是叶子结点，将该数字加到结果中
+            if (cur.left == null && cur.right == null) {
+                res += curVal;
+            }
+            // 如果不是，则将该节点的左右子结点进行入栈，同时更新对应的numQueue中的值
+            if (cur.left != null) {
+                nodeQueue.offer(cur.left);
+                numQueue.offer(curVal * 10 + cur.left.val);
+            }
+            if (cur.right != null) {
+                nodeQueue.offer(cur.right);
+                numQueue.offer(curVal * 10 + cur.right.val);
+            }
+        }
+    }
+    return res;
+}
+```
+
+##### lc124 二叉树中的最大路径和
+
+递归找左子树的最大路径和，还有右子树的最大路径和，然后左右子树的最大路径和加上根节点的值，就是经过根节点的最大路径和，然后和一个临时变量比较，取最大的；这个临时变量记录每次递归时都产生的当前最大路径和，每次都更新
+
+```java
+int maxValue = Integer.MIN_VALUE;
+public int maxPathSum(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+
+    dfs(root);
+    return maxValue;
+}
+
+/**
+     * 计算过当前结点的最大路径和
+     * @param root
+     * @return
+     */
+private int dfs(TreeNode root) {
+    // 如果节点为空的话，返回0
+    if (root == null) {
+        return 0;
+    }
+
+    // 当前结点左子树的最大路径和
+    int left = Math.max(dfs(root.left), 0);
+    // 当前结点右子树的最大路径和
+    int right = Math.max(dfs(root.right), 0);
+
+    //更新最大值
+    maxValue = Math.max(maxValue, root.val + left + right);
+
+    //返回过当前结点的最大路径和，只能选择左右子树中的一条
+    return Math.max(left, right) + root.val;
+}
+```
+
+
+
 #### 牛客题霸-算法-实现二叉树先序，中序和后序遍历
 
 递归方法
@@ -2949,45 +3112,6 @@ public List<Integer> rightSideView(TreeNode root) {
 }
 ```
 
-#### lc124 二叉树中的最大路径和
-
-递归找左子树的最大路径和，还有右子树的最大路径和，然后左右子树的最大路径和加上根节点的值，就是经过根节点的最大路径和，然后和一个临时变量比较，取最大的；这个临时变量记录每次递归时都产生的当前最大路径和，每次都更新
-
-```java
-int maxValue = Integer.MIN_VALUE;
-public int maxPathSum(TreeNode root) {
-    if (root == null) {
-        return 0;
-    }
-
-    dfs(root);
-    return maxValue;
-}
-
-/**
-     * 计算过当前结点的最大路径和
-     * @param root
-     * @return
-     */
-private int dfs(TreeNode root) {
-    // 如果节点为空的话，返回0
-    if (root == null) {
-        return 0;
-    }
-
-    // 当前结点左子树的最大路径和
-    int left = Math.max(dfs(root.left), 0);
-    // 当前结点右子树的最大路径和
-    int right = Math.max(dfs(root.right), 0);
-
-    //更新最大值
-    maxValue = Math.max(maxValue, root.val + left + right);
-
-    //返回过当前结点的最大路径和，只能选择左右子树中的一条
-    return Math.max(left, right) + root.val;
-}
-```
-
 #### lc98 有效二叉搜索树
 
 思路：
@@ -3279,22 +3403,22 @@ private int height(TreeNode node) {
 ```
 
 ```java
-boolean res = true;
 public boolean isBalanced(TreeNode root) {
-    height(root);
-    return res;
+    return height(root) >= 0;
 }
 
-private int height(TreeNode node) {
-    if (node == null) {
+public int height(TreeNode root) {
+    if (root == null) {
         return 0;
     }
-    int left = height(node.left) + 1;
-    int right = height(node.right) + 1;
-    if (Math.abs(left-right) > 1) {
-        res = false;
+    int leftHeight = height(root.left);
+    int rightHeight = height(root.right);
+    // -1 表示以该子节点为根的树已经不是平衡二叉树了
+    if (leftHeight == -1 || rightHeight == -1 || Math.abs(leftHeight - rightHeight) > 1) {
+        return -1;
+    } else {
+        return Math.max(leftHeight, rightHeight) + 1;
     }
-    return Math.max(left, right);
 }
 ```
 
@@ -3316,33 +3440,6 @@ public void flatten(TreeNode root) {
     root.left = null;
     prev = root;
 }
-```
-
-#### lc129 求根节点到叶节点数字之和
-
-思路：dfs
-
-```java
-public int sumNumbers(TreeNode root) {
-        // dfs
-        return dfs(root, 0);
-    }
-
-    private int dfs(TreeNode root, int prevSum) {
-        // 结束条件
-        if (root == null) {
-            return 0;
-        }
-
-        int sum = prevSum * 10 + root.val;
-        if (root.left == null && root.right == null) {
-            // 到达一个叶子结点
-            return sum;
-        }else {
-            // 计算左右子树
-            return dfs(root.left, sum) + dfs(root.right, sum);
-        }
-    }
 ```
 
 #### [剑指 Offer 54. 二叉搜索树的第k大节点](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
@@ -3425,37 +3522,6 @@ private ListNode getMidNode(ListNode left, ListNode right) {
     return slow;
 }
 ```
-
-#### [lc113. 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
-
-思路：回溯法
-
-```java
-public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
-        List<List<Integer>> res = new ArrayList<>();
-        List<Integer> tmp = new ArrayList<>();
-
-        dfs(root, res, tmp, targetSum);
-        return res;
-    }
-
-    private void dfs(TreeNode root, List<List<Integer>> res, List<Integer> tmp, int remain) {
-        if (root == null) {
-            return;
-        }
-        tmp.add(root.val);
-        // 当前节点是叶子结点时，并且remain值等于节点值，则路径符合条件；否则继续遍历
-        if (root.left == null && root.right == null && remain == root.val) {
-            res.add(new ArrayList(tmp));
-        }else {
-            dfs(root.left, res, tmp, remain-root.val);
-            dfs(root.right, res, tmp, remain-root.val);
-        }
-        tmp.remove(tmp.size()-1);        
-    }
-```
-
-与lc112 路径总和题类似
 
 #### [lc226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
 
