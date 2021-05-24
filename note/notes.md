@@ -284,6 +284,43 @@ public int rob(int[] nums) {
 }
 ```
 
+#### [lc213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+
+思路：这里的 nums 是环形，所以可以将 nums 拆分成两个非环形数组，一个是从0~len-2的，一个是从1~len-1的，然后通过198题的解法求出两个非环形数组的最大收益，返回两者的较大值即可；
+
+```java
+public int rob(int[] nums) {
+
+    int n = nums.length;
+    // 边界条件
+    if (n == 1) {
+        return nums[0];
+    }
+    if (n == 2) {
+        return Math.max(nums[0], nums[1]);
+    }
+
+    int[] nums1 = Arrays.copyOfRange(nums, 0, n-1);
+    int[] nums2 = Arrays.copyOfRange(nums, 1, n);
+    int[] dp1 = new int[n-1];
+    int[] dp2 = new int[n-1];
+
+    dp1[0] = nums1[0];
+    dp1[1] = Math.max(nums1[0], nums1[1]);
+    dp2[0] = nums2[0];
+    dp2[1] = Math.max(nums2[0], nums2[1]);
+
+    for (int i = 2; i < nums.length-1; i ++) {
+        dp1[i] = Math.max(nums1[i] + dp1[i-2], dp1[i-1]);
+        dp2[i] = Math.max(nums2[i] + dp2[i-2], dp2[i-1]);
+    }
+
+    return Math.max(dp1[dp1.length-1], dp2[dp2.length-1]);
+}
+```
+
+
+
 #### lc322 零钱兑换 
 
 思路：类似于爬楼梯那道题目
@@ -1303,9 +1340,9 @@ private void backtrack(int[] nums, List<List<Integer>> track, ArrayList<Integer>
 
 ```java
 public List<List<Integer>> combinationSum(int[] candidates, int target) {
-
-    List<List<Integer>> track = new ArrayList<>();
+	// 先进行排序
     Arrays.sort(candidates);
+    List<List<Integer>> track = new ArrayList<>();
     backtrack(candidates, track, new ArrayList<Integer>(), target, 0);
     return track;
 }
@@ -1326,6 +1363,43 @@ private void backtrack(int[] candidates, List<List<Integer>> track, ArrayList<In
     }
 }
 ```
+
+#### [lc40. 组合总和 II](https://leetcode-cn.com/problems/combination-sum-ii/)
+
+思路：和上一题类似，主要注意的是重复元素的跳过和递归条件的变化
+
+```java
+public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+    Arrays.sort(candidates);
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> tmp = new ArrayList<>();
+
+    backtrack(candidates, target, res, tmp, 0);
+    return res;
+}
+
+private void backtrack(int[] candidates, int remain, List<List<Integer>> res, List<Integer> tmp, int start) {
+    // 跳过重复元素
+    if (remain == 0 && !res.contains(new ArrayList(tmp))) {
+        res.add(new ArrayList(tmp));
+    }
+
+    if (remain < 0) {
+        return;
+    }
+
+    for (int i = start; i < candidates.length; i ++) {
+        if (i > start && candidates[i] == candidates[i-1]) {
+            continue;
+        }
+        tmp.add(candidates[i]);
+        backtrack(candidates, remain-candidates[i], res, tmp, i+1);
+        tmp.remove(tmp.size()-1);
+    }
+}
+```
+
+
 
 #### lc79. 单词搜索
 
@@ -2615,7 +2689,7 @@ public Node copyRandomList(Node head) {
 }
 ```
 
-
+#### [lc61. 旋转链表](https://leetcode-cn.com/problems/rotate-list/)
 
 ### 树
 
@@ -4453,7 +4527,7 @@ public int maxSubArray(int[] nums) {
 }
 ```
 
-
+#### [lc189. 旋转数组](https://leetcode-cn.com/problems/rotate-array/)
 
 ### 双指针
 
