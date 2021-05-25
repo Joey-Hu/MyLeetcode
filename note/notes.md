@@ -1724,7 +1724,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
 }
 ```
 
-#### lc146 LRU 缓存机制
+#### lc146 LRU 缓存机制(常考)
 
 ![LRU_cache.png](./images/LRU_cache.png)
 
@@ -3646,7 +3646,7 @@ public TreeNode invertTree(TreeNode root) {
 
 #### [lc968. 监控二叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)(华为笔试题)
 
-
+#### [二叉树的下一个节点](https://mp.weixin.qq.com/s/ug9KoqbrVFMPBTqX-ZaKbA)
 
 ### 数组
 
@@ -4529,6 +4529,70 @@ public int maxSubArray(int[] nums) {
 
 #### [lc189. 旋转数组](https://leetcode-cn.com/problems/rotate-array/)
 
+思路：[解法](https://leetcode.com/problems/rotate-array/discuss/54250/Easy-to-read-Java-solution)很有意思
+
+```java
+public void rotate(int[] nums, int k) {
+    int len = nums.length;
+    int[] newNums = new int[len];
+    k = k % len;
+    reverse(nums, 0, len-1);
+    reverse(nums, 0, k-1);
+    reverse(nums, k, len-1);
+}
+
+private void reverse(int[] nums, int start, int end) {
+    while (start < end) {
+        int tmp = nums[start];
+        nums[start] = nums[end];
+        nums[end] = tmp;
+        start ++;
+        end --;
+    }
+}
+```
+
+#### [lc1314. 矩阵区域和](https://leetcode-cn.com/problems/matrix-block-sum/)
+
+思路：二维前缀和，preSum\[i][j] 表示以 [0,0] 为左上角，[i, j] 为右下角的矩阵中的元素之和
+
+```java
+public int[][] matrixBlockSum(int[][] mat, int k) {
+
+    int[][] areaSum = new int[mat.length][mat[0].length];
+    int[][] preSum = new int[mat.length][mat[0].length];
+
+    for (int i = 0; i < mat.length; i ++) {
+        for (int j = 0; j < mat[0].length; j ++) {
+            if (i == 0 && j == 0) {
+                preSum[i][j] = mat[i][j];
+            }else if (i == 0) {
+                preSum[i][j] = preSum[i][j-1] + mat[i][j];
+            }else if (j == 0) {
+                preSum[i][j] = preSum[i-1][j] + mat[i][j];
+            }else {
+                preSum[i][j] = preSum[i-1][j] + preSum[i][j-1] - preSum[i-1][j-1] + mat[i][j];
+            }
+        }
+    } 
+
+    for (int i = 0; i < mat.length; i ++) {
+        for (int j = 0; j < mat[0].length; j ++) {
+            int top = i-k;
+            int bottom = Math.min(mat.length-1, i+k);
+            int left = j-k;
+            int right = Math.min(mat[0].length-1, j+k);
+			
+            // 注意边界
+            areaSum[i][j] = preSum[bottom][right] - ((top > 0) ? preSum[top-1][right] : 0)  - ((left > 0) ? preSum[bottom][left-1] : 0) + ((top > 0 && left > 0) ? preSum[top-1][left-1] : 0);
+        }
+    }
+    return areaSum;
+}
+```
+
+
+
 ### 双指针
 
 #### lc3 无重复字符的最长子串
@@ -4796,6 +4860,43 @@ public int findDuplicate(int[] nums) {
         } 
     }
     throw new IllegalArgumentException("No solution");
+}
+```
+
+#### [lc4. 寻找两个正序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)
+
+思路：双指针
+
+```java
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    int idx1 = 0;
+    int idx2 = 0;
+    // med1记录上一个中位数，med2记录第二个中位数
+    int med1 = 0;
+    int med2 = 0;
+
+    // 只需要遍历 (len1 + len2) / 2 + 1 次 
+    for (int i = 0; i <= (nums1.length + nums2.length)/2; i ++) {
+        // 记录上一次遍历的med
+        med1 = med2;
+
+        // 记录nums1[idx1]、nums2[idx2]两者的较小值，注意其中一个数组遍历完的情况
+        if (idx1 == nums1.length) {
+            med2 = nums2[idx2++];
+        }else if (idx2 == nums2.length) {
+            med2 = nums1[idx1++];
+        }else if (nums1[idx1] < nums2[idx2]) {
+            med2 = nums1[idx1++];
+        }else {
+            med2 = nums2[idx2++];
+        }
+    }
+
+    // 注意len奇偶情况
+    if ((nums1.length + nums2.length) % 2 == 0) {
+        return (med1 + med2) * 1.0 / 2;
+    } 
+    return med2;
 }
 ```
 
@@ -5164,7 +5265,7 @@ public int longestValidParentheses(String s) {
 
 #### [剑指 Offer 31. 栈的压入、弹出序列](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/)
 
-思路：用一个stack来模拟出入栈的情况
+思路：[用一个stack来模拟出入栈的情况](https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/solution/mian-shi-ti-31-zhan-de-ya-ru-dan-chu-xu-lie-mo-n-2/)
 
 初始化： 辅助栈 stack ，弹出序列的索引 i ；
 
@@ -5174,7 +5275,7 @@ public int longestValidParentheses(String s) {
 
 返回值： 若 stackstack 为空，则此弹出序列合法。
 
-链接：https://leetcode-cn.com/problems/zhan-de-ya-ru-dan-chu-xu-lie-lcof/solution/mian-shi-ti-31-zhan-de-ya-ru-dan-chu-xu-lie-mo-n-2/
+注意：要先入栈，然后再判断栈顶元素和出栈序列的关系
 
 ```java
 public boolean validateStackSequences(int[] pushed, int[] popped) {
@@ -5191,12 +5292,13 @@ public boolean validateStackSequences(int[] pushed, int[] popped) {
 }
 ```
 
-#### 根据入栈顺序输出所有可能的出栈顺序
+#### 根据入栈顺序输出所有可能的出栈顺序（常考）
 
 ```java
 private void allPop(char[] push, Stack<Character> stack, int begin,String out) {
     if (stack.empty() && begin == push.length) {
-        //            如果入栈完毕了，且也栈空了，就输出此出栈顺序          这个是递归的结束条件
+        // 如果入栈完毕了，且也栈空了，就输出此出栈顺序
+        // 这个是递归的结束条件
         System.out.println(out);
     }else {
         Stack<Character> s1 = (Stack<Character>) stack.clone();
