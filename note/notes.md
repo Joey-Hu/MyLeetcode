@@ -5631,6 +5631,106 @@ public String removeDuplicates(String S) {
 
 <<<<<<< HEAD
 
+### 排序
+
+#### 数组排序
+
+##### 快排
+
+```java
+public int[] sortArray(int[] nums) {
+    quickSort(nums, 0, nums.length-1);
+    return nums;
+}
+
+private void quickSort(int[] nums, int start, int end) {
+    if (start >= end) {
+        return;
+    }
+
+    int left = start;
+    int right = end;
+    int key = nums[start];
+    while (left < right) {
+        while (left < right && nums[right] >= key) {
+            right --;
+        }
+        nums[left] = nums[right];
+        while (left < right && nums[left] <= key) {
+            left ++;
+        }
+        nums[right] = nums[left];
+    }
+    nums[left] = key;
+    quickSort(nums, start, left-1);
+    quickSort(nums, left+1, end);
+}
+```
+
+##### 归并排序
+
+```java
+int[] tmp;
+public int[] sortArray(int[] nums) {
+    tmp = new int[nums.length];
+    mergeSort(nums, 0, nums.length-1);
+    return nums;      
+}
+
+private void mergeSort(int[] nums, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+    int mid = left + (right - left) / 2;
+    mergeSort(nums, left, mid);
+    mergeSort(nums, mid+1, right);
+
+    // 合并
+    int i = left, j = mid + 1;
+    int cnt = 0;
+    while (i <= mid && j <= right) {
+        if (nums[i] <= nums[j]) {
+            tmp[cnt++] = nums[i++];
+        } else {
+            tmp[cnt++] = nums[j++];
+        }
+    }
+    while (i <= mid) {
+        tmp[cnt++] = nums[i++];
+    }
+    while (j <= right) {
+        tmp[cnt++] = nums[j++];
+    }
+    for (int k = 0; k < right - left + 1; ++k) {
+        nums[k + left] = tmp[k];
+    }
+}
+```
+
+##### 选择排序
+
+```java
+public int[] sortArray(int[] nums) {
+
+    for (int i = 0; i < nums.length-1; i++) {
+        // 初始最小值小标设为i
+        int min = i;
+        for (int j = i+1; j < nums.length; j++) {
+            // 在 i ~ nums.length-1之中寻找最小值
+            if (nums[j] < nums[min]) {
+                min = j;
+            }
+        }
+        // 交换最小值和nums[i]
+        swap(nums, i, min);
+    }
+    return nums;        
+}
+```
+
+
+
+##### 堆排序
 
 ### leetcode 周赛236
 
@@ -5839,81 +5939,5 @@ public int getMinDistance(int[] nums, int target, int start) {
 
 #### [5748. 包含每个查询的最小区间](https://leetcode-cn.com/problems/minimum-interval-to-include-each-query/)
 
-### 排序
-
-#### 数组排序
-
-##### 快排
-
-```java
-public int[] sortArray(int[] nums) {
-    quickSort(nums, 0, nums.length-1);
-    return nums;
-}
-
-private void quickSort(int[] nums, int start, int end) {
-    if (start >= end) {
-        return;
-    }
-
-    int left = start;
-    int right = end;
-    int key = nums[start];
-    while (left < right) {
-        while (left < right && nums[right] >= key) {
-            right --;
-        }
-        nums[left] = nums[right];
-        while (left < right && nums[left] <= key) {
-            left ++;
-        }
-        nums[right] = nums[left];
-    }
-    nums[left] = key;
-    quickSort(nums, start, left-1);
-    quickSort(nums, left+1, end);
-}
-```
-
-##### 归并排序
-
-```java
-int[] tmp;
-public int[] sortArray(int[] nums) {
-    tmp = new int[nums.length];
-    mergeSort(nums, 0, nums.length-1);
-    return nums;      
-}
-
-private void mergeSort(int[] nums, int left, int right) {
-    if (left >= right) {
-        return;
-    }
-    int mid = left + (right - left) / 2;
-    mergeSort(nums, left, mid);
-    mergeSort(nums, mid+1, right);
-
-    // 合并
-    int i = left, j = mid + 1;
-    int cnt = 0;
-    while (i <= mid && j <= right) {
-        if (nums[i] <= nums[j]) {
-            tmp[cnt++] = nums[i++];
-        } else {
-            tmp[cnt++] = nums[j++];
-        }
-    }
-    while (i <= mid) {
-        tmp[cnt++] = nums[i++];
-    }
-    while (j <= right) {
-        tmp[cnt++] = nums[j++];
-    }
-    for (int k = 0; k < right - left + 1; ++k) {
-        nums[k + left] = tmp[k];
-    }
-}
-```
-
-##### 堆排序
+##### 
 
