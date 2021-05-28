@@ -371,7 +371,7 @@ public int change(int amount, int[] coins) {
 }
 ```
 
-#### lc300 最长上升子序列
+#### lc300 最长上升子序列（）
 
 思路：
 
@@ -612,6 +612,38 @@ public int longestCommonSubsequence(String text1, String text2) {
 
 压缩成一维
 
+#### [lc1155. 掷骰子的N种方法](https://leetcode-cn.com/problems/number-of-dice-rolls-with-target-sum/)(ms)
+
+#### [lc91. 解码方法](https://leetcode-cn.com/problems/decode-ways/)
+
+思路：动态规划
+
+```java
+public int numDecodings(String s) {
+    if (s == null || s.length() == 0) {
+        return 0;
+    }
+
+    // dp[i] 表示到第i个字符为止（不包括第i个字符）的解码方式
+    int[] dp = new int[s.length()+1];
+    dp[0] = 1;
+    dp[1] = s.charAt(0) == '0' ? 0 : 1;
+
+    for (int i = 2; i <= s.length(); i ++) {
+        int oneDigit = Integer.parseInt(s.substring(i-1, i));
+        int twoDigit = Integer.parseInt(s.substring(i-2, i));
+
+        if (oneDigit >=1 && oneDigit <= 9) {
+            dp[i] += dp[i-1];
+        }
+        if (twoDigit >= 10 && twoDigit <= 26) {
+            dp[i] += dp[i-2];
+        }
+    }
+    return dp[dp.length-1];
+}
+```
+
 
 
 ### 队列
@@ -846,29 +878,28 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 #### lc69 sqrt(x)
 
-思路；二分查找（右边界），在 1-x 之间查找 sqrt(x)
+思路；二分查找（右边界），在 1-x 之间查找 sqrt(x)，注意边界
 
 ```java
 public int mySqrt(int x) {
-        if (x == 0) {
-            return 0;
-        }
-        int low = 1;
-        int high = x;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int sqrt = x / mid;
-            if (sqrt == mid) {
-                return mid;
-            }else if (sqrt > mid) {
-                low = mid + 1;
-            }else {
-                high = mid - 1;
-            }
-        }
-        return high;
+    if (x == 0) {
+        return 0;
     }
+    int low = 1;
+    int high = x;
+
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (x / mid == mid || ((x / mid > mid) && (x / (mid+1) < (mid+1)))) {
+            return mid;
+        }else if (x / mid > mid) {
+            low = mid + 1;
+        }else if (x / mid < mid){
+            high = mid;
+        }
+    }
+    return low;
+}
 ```
 
 #### lc33 搜索排序旋转数组
@@ -979,7 +1010,9 @@ public int findPeakElement(int[] nums) {
 }
 ```
 
+#### [lc1095. 山脉数组中查找目标值](https://leetcode-cn.com/problems/find-in-mountain-array/)
 
+思路：先找出峰值下标，然后两边进行二分查找
 
 ### 哈希
 
@@ -4875,7 +4908,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
     int med1 = 0;
     int med2 = 0;
 
-    // 只需要遍历 (len1 + len2) / 2 + 1 次 
+    // 只需要遍历 (len1 + len2) / 2 + 1 次 （需要获取到下标为(len1 + len2) / 2 + 1的元素）
     for (int i = 0; i <= (nums1.length + nums2.length)/2; i ++) {
         // 记录上一次遍历的med
         med1 = med2;
@@ -4900,7 +4933,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 }
 ```
 
-
+#### 
 
 ### 位运算
 
@@ -5625,6 +5658,30 @@ public String removeDuplicates(String S) {
 
 #### [lc1371. 每个元音包含偶数次的最长子字符串](https://leetcode-cn.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/)(招银网络笔试题)
 
+#### [lc165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+
+```java
+public int compareVersion(String version1, String version2) {
+    // 注意这里的转义操作
+    String[] version1Array = version1.split("\\.");
+    String[] version2Array = version2.split("\\.");
+
+    // 注意需要比较的长度是max(array1.len, array2.len)
+    int len = Math.max(version1Array.length, version2Array.length);
+    for (int i = 0; i < len;  i++) {
+        // 如果版本号没有指定某个下标处的修订号，则该修订号视为 0 
+        int v1 = i < version1Array.length ? Integer.parseInt(version1Array[i]) : 0;
+        int v2 = i < version2Array.length ? Integer.parseInt(version2Array[i]) : 0;
+        if (v1 != v2) {
+            return v1 > v2 ? 1 : -1;
+        }
+    }
+    return 0;
+}
+```
+
+
+
 ### Random
 
 #### lc470 用 rand7() 实现 rand10()
@@ -5730,7 +5787,55 @@ public int[] sortArray(int[] nums) {
 
 
 
-##### 堆排序
+##### [堆排序（注意堆的shiftUP（增加元素）和 shiftDown（删除元素））](https://blog.csdn.net/qq_19782019/article/details/78301832)
+
+```java
+public int[] sortArray(int[] nums) {
+    heapSort(nums);
+    return nums;
+}
+
+private void heapSort(int[] nums) {
+    // 1.构造大顶堆
+    for (int i = nums.length/2-1; i >= 0; i --) {
+        // 从第一个非叶子结点从下至上，从右至左调整结构
+        adjustHeap(nums, i, nums.length);
+    }
+
+    // 2.调整堆结构+交换堆顶元素与末尾元素
+    for(int j=nums.length-1;j>0;j--){
+        swap(nums,0,j);//将堆顶元素与末尾元素进行交换
+        adjustHeap(nums,0,j);//重新对堆进行调整
+    }
+}
+
+private void adjustHeap(int[] nums, int i, int length) {
+    int temp = nums[i];//先取出当前元素i
+    for(int k=i*2+1; k<length; k=k*2+1){
+        //从i结点的左子结点开始，也就是2i+1处开始
+        if(k+1<length && nums[k]<nums[k+1]){
+            //如果左子结点小于右子结点，k指向右子结点
+            k++;
+        }
+        if(nums[k] >temp){
+            //如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）
+            swap(nums, i, k);
+            i = k;
+        }else{
+            break;
+        }
+    }
+    // nums[i] = temp;//将temp值放到最终的位置
+}
+
+private void swap(int[] nums, int i, int j) {
+    int tmp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = tmp;
+}
+```
+
+
 
 ### leetcode 周赛236
 
