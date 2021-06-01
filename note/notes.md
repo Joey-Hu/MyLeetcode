@@ -74,7 +74,7 @@ private int dfs(int[][] grid, int i, int j) {
     if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] != 1) {
         return 0;
     }
-	// 
+	// 将遍历过的元素记录下来
     grid[i][j] = 9;
 
     return 1 + dfs(grid, i-1, j) + dfs(grid, i+1, j) + dfs(grid, i, j-1) + dfs(grid, i, j+1);
@@ -1013,6 +1013,64 @@ public int findPeakElement(int[] nums) {
 #### [lc1095. 山脉数组中查找目标值](https://leetcode-cn.com/problems/find-in-mountain-array/)
 
 思路：先找出峰值下标，然后两边进行二分查找
+
+
+
+#### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
+
+
+
+#### [lc209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+
+思路：
+
+1. 双指针，类似于lc76
+
+```java
+public int minSubArrayLen(int target, int[] nums) {
+    int minLen = Integer.MAX_VALUE;
+    int l = 0;
+    int r = 0;
+    int sum = 0;
+    // 右指针向右移动
+    while (r < nums.length) {
+        sum += nums[r++];
+        // 缩小边界
+        while (sum >= target) {
+            minLen = Math.min(minLen, r-l);
+            sum -= nums[l++];
+        }
+    }
+    return minLen == Integer.MAX_VALUE ? 0 : minLen;
+}
+```
+
+#### [lc560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+
+思路：前缀和 + hashMap
+
+```java
+public int subarraySum(int[] nums, int k) {
+    // 前缀和 + hashMap
+    int res = 0;
+    int preSum = 0;
+    Map<Integer, Integer> map = new HashMap<>();
+    // 注意添加一个前缀和为0的前缀和
+    map.put(0, 1);
+
+    for (int i = 0; i < nums.length; i ++) {
+        preSum += nums[i];
+
+        if (map.containsKey(preSum - k)) {
+            res += map.get(preSum - k);
+        }
+        map.put(preSum, map.getOrDefault(preSum, 0)+1);
+    }
+    return res;
+}
+```
+
+
 
 ### 哈希
 
@@ -2713,7 +2771,7 @@ public Node copyRandomList(Node head) {
         cur.next = copy;
         cur = cur.next;
 
-        // 存储原始节点
+        // 存储原始节点（注意这里，容易忘记）
         iter.next = next;
         iter = next;
     }
@@ -3679,7 +3737,11 @@ public TreeNode invertTree(TreeNode root) {
 
 #### [lc968. 监控二叉树](https://leetcode-cn.com/problems/binary-tree-cameras/)(华为笔试题)
 
-#### [二叉树的下一个节点](https://mp.weixin.qq.com/s/ug9KoqbrVFMPBTqX-ZaKbA)
+#### [二叉树的下一个节点](https://mp.weixin.qq.com/s?__biz=MzkxNDI1MTA1MA==&mid=2247484416&idx=1&sn=027876aa5ada092d1647e7cbe888708f&source=41#wechat_redirect)
+
+#### [440. 字典序的第K小数字](https://leetcode-cn.com/problems/k-th-smallest-in-lexicographical-order/)
+
+思路：字典序
 
 ### 数组
 
@@ -4872,8 +4934,6 @@ public String minWindow(String s, String t) {
 
 }
 ```
-
-#### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
 
 #### [lc287 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number)
 
