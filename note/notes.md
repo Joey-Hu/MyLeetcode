@@ -952,23 +952,24 @@ public int search(int[] nums, int target) {
 
 #### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 
-寻找旋转数组中最小值
+思路：二分，将中间指针指向的元素与最右边的元素比较，收缩左边界
 
 ```java
 public int findMin(int[] nums) {
-    int left = 0;
-    int right = nums.length - 1;
+        int low = 0;
+        int high = nums.length-1;
+        int right = nums.length-1;
 
-    while (left < right) {
-        int mid = left + (right-left) / 2;
-        if (nums[mid] > nums[right]) {
-            left = mid + 1;
-        }else {
-            right = mid;
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (nums[mid] > nums[right]) {
+                low = mid + 1;
+            }else {
+                high = mid;
+            }
         }
+        return nums[low];
     }
-    return nums[left];
-}
 ```
 
 
@@ -4686,7 +4687,7 @@ public int[][] matrixBlockSum(int[][] mat, int k) {
 }
 ```
 
-
+#### [lc670. 最大交换](https://leetcode-cn.com/problems/maximum-swap/)
 
 ### 双指针
 
@@ -4939,20 +4940,32 @@ public String minWindow(String s, String t) {
 
 思路：
 
-1. HashSet
-2. 快慢指针
+1. HashSet(不符合题目条件)
+2. 二分法： 将中指针指向n/2，那小于n/2的元素的个数就为n/2-1，如果小于n/2的元素个数大于n/2-1，说明有重复，范围缩小到[0,n/2-1]；否则说明没有重复，范围缩小到[n/2+1, n]
 
 ```java
 public int findDuplicate(int[] nums) {
-    // hashSet
-    Set<Integer> uniqNum = new HashSet<>();
+    
+    int low = 1;
+    int high = nums.length - 1;
+    int ans = -1;
 
-    for (int num : nums) {
-        if (!uniqNum.add(num)) {
-            return num;
-        } 
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        int count = 0;
+        for (int num : nums) {
+            if (num < mid) {
+                count ++;
+            }
+        }
+        if (count >= mid) {
+            high = mid - 1;
+        }else {
+            low = mid + 1;
+            ans = mid;
+        }
     }
-    throw new IllegalArgumentException("No solution");
+    return ans;
 }
 ```
 
