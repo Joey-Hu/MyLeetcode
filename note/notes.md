@@ -1075,43 +1075,6 @@ public int subarraySum(int[] nums, int k) {
 
 ### 哈希
 
-#### 牛客题霸-算法-找到字符串的最长无重复字符子串
-
-[url](https://www.nowcoder.com/practice/b56799ebfd684fb394bd315e89324fb4?tpId=190&&tqId=35220&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
-
-使用hashSet
-
-```java
-public class Solution {
-    /**
-     * 
-     * @param arr int整型一维数组 the array
-     * @return int整型
-     */
-    public int maxLength (int[] arr) {
-        // write code here
-        int maxLen = 0;
-        if (arr.length == 0) {
-            return 0;
-        }
-        int start = 0;
-        int end = 0;
-        Set<Integer> set = new HashSet<>();
-        while (end < arr.length) {
-            if (set.add(arr[end])) {
-                end ++;
-                maxLen = Math.max(maxLen, end-start);
-            }else {
-                // 存在相同字符，就把start向右移动，并删除 s[start]，直到不存在相同字符
-                set.remove(arr[start]);
-                start ++;
-            }
-        }
-        return maxLen;
-    }
-}
-```
-
 #### 牛客题霸-算法-出现次数的 TopK 问题
 
 使用桶排序
@@ -1661,9 +1624,7 @@ private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
 
 ### 链表
 
-#### lc25 K 个一组翻转链表（字节高频）
-
-[url](https://leetcode.com/problems/reverse-nodes-in-k-group/)
+#### [lc25 K 个一组翻转链表（字节高频）](https://leetcode.com/problems/reverse-nodes-in-k-group/)
 
 思路：
 
@@ -1701,14 +1662,13 @@ public ListNode reverseKGroup(ListNode head, int k) {
 ```java
 // 迭代
 public ListNode reverseKGroup(ListNode head, int k) {
-    ListNode begin;
     if (head == null || head.next == null || k == 1) {
         return head;
     }
 
     ListNode dmy = new ListNode(-1);
     dmy.next = head;
-    begin = dmy;
+    ListNode begin = dmy;
     int count = 0;
     while (head != null) {
         count ++;
@@ -4691,13 +4651,10 @@ public int[][] matrixBlockSum(int[][] mat, int k) {
 
 ### 双指针
 
-#### lc3 无重复字符的最长子串
-
-[url](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+#### [lc3 无重复字符的最长子串](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 
 ```java
 public int lengthOfLongestSubstring(String s) {
-
     if (s.length() == 0) {
         return 0;
     }
