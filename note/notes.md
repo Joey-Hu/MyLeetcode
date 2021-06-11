@@ -1,4 +1,4 @@
-### DFS & BFS
+### DFS&BFS
 
 #### lc200 岛屿数量
 
@@ -644,6 +644,31 @@ public int numDecodings(String s) {
 }
 ```
 
+#### [lc139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+思路：动态规划
+
+dp[i] 表示字符串 s 前 i 个字符组成的字符串 s[0..i-1] 是否能被空格拆分成若干个字典中出现的单词，然后通过遍历 0 到 i 的所有分割点进行判断，如果存在合理分割点（能够使 s[0..i-1] 有效拆分），则dp[i]置为true
+
+```java
+public boolean wordBreak(String s, List<String> wordDict) {
+    Set<String> wordSet = new HashSet<>(wordDict);
+    // dp[i]表示字符串 s 前 i 个字符组成的字符串 s[0..i-1] 是否能被空格拆分成若干个字典中出现的单词
+    boolean[] dp = new boolean[s.length()+1];
+    dp[0] = true;
+    // 枚举0 ~ i的所有分割点
+    for (int i = 1; i < dp.length; i ++) {
+        for (int j = 0; j < i; j ++) {
+            if (dp[j] && wordSet.contains(s.substring(j, i))) {
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[dp.length-1];
+}
+```
+
 
 
 ### 队列
@@ -958,18 +983,43 @@ public int search(int[] nums, int target) {
 public int findMin(int[] nums) {
         int low = 0;
         int high = nums.length-1;
-        int right = nums.length-1;
 
         while (low < high) {
             int mid = low + (high - low) / 2;
-            if (nums[mid] > nums[right]) {
+            if (nums[mid] > nums[high]) {
+                // mid 在最小值的左侧，忽略mid左侧的元素
                 low = mid + 1;
             }else {
+                // mid 在最小值右侧，忽略mid右侧的元素
                 high = mid;
             }
         }
         return nums[low];
     }
+```
+
+#### [lc154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+
+思路：有重复值的情况
+
+```java
+public int findMin(int[] nums) {
+    int low = 0;
+    int high = nums.length-1;
+
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] > nums[high]) {
+            low = mid + 1;
+        }else if (nums[mid] < nums[high]){
+            high = mid;
+        }else {
+            // 由于有重复值，由于重复元素的存在，我们并不能确定 mid 究竟在最小值的左侧还是右侧，因此我们不能莽撞地忽略某一部分的元素。我们唯一可以知道的是，由于它们的值相同，所以无论 nums[high] 是不是最小值，都有一个它的「替代品」，因此我们可以忽略二分查找区间的右端点。
+            high --;
+        }
+    }
+    return nums[low];
+}
 ```
 
 
@@ -1067,6 +1117,52 @@ public int subarraySum(int[] nums, int k) {
         }
         map.put(preSum, map.getOrDefault(preSum, 0)+1);
     }
+    return res;
+}
+```
+
+#### [lc34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
+
+思路：寻找左边界和右边界
+
+```java
+public int[] searchRange(int[] nums, int target) {
+    int[] res = new int[2];
+
+    int low = 0;
+    int high = nums.length - 1;
+
+    // 找左边界
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+
+        if (nums[mid] < target) {
+            low = mid + 1;
+        }else {
+            high = mid - 1;
+        }
+    }
+    if (low >= nums.length || nums[low] != target) {
+        res[0] = -1;
+        res[1] = -1;
+        return res;
+    }else {
+        res[0] = low;
+    }
+
+    high = nums.length - 1;
+
+    // 右边界
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+
+        if (nums[mid] > target) {
+            high = mid - 1;
+        }else {
+            low = mid + 1;
+        }
+    }
+    res[1] = high;
     return res;
 }
 ```
@@ -3721,6 +3817,7 @@ public TreeNode invertTree(TreeNode root) {
     Queue<TreeNode> queue = new LinkedList<>();
     queue.offer(root);
     while (!queue.isEmpty()) {
+        // 交换当前节点的左右子树
         TreeNode cur = queue.poll();
         TreeNode tmp = cur.left;
         cur.left = cur.right;
@@ -5447,7 +5544,7 @@ public static void main(String[] args) {
 
 ![Monotonous stack3.png](./images/Monotonous_stack3.png)
 
-#### lc739. [每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+#### [lc739每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
 
 思路：单调栈
 
@@ -5488,6 +5585,45 @@ public int[] nextGreaterElement(int[] nums1, int[] nums2) {
     return res;
 }
 ```
+
+#### [503. 下一个更大元素 II](https://leetcode-cn.com/problems/next-greater-element-ii/)
+
+#### [lc456. 132 模式](https://leetcode-cn.com/problems/132-pattern/)
+
+思路：
+
+```java
+public boolean find132pattern(int[] nums) {
+    int[] leftMin = new int[nums.length];
+    Arrays.fill(leftMin, Integer.MAX_VALUE);
+    // leftMin[i] 表示nums[i]之前的最小元素
+    for (int i = 1; i < nums.length; i ++) {
+        leftMin[i] = Math.min(leftMin[i-1], nums[i-1]);
+    }
+
+    Stack<Integer> stack = new Stack<>();
+    //从后往前遍历，stack 中的数字表示的是从位置 i 到 n 中，大于 min[i] 且小于 nums[i] 的数
+    for (int i = nums.length-1; i >= 0; i --) {
+        if (nums[i] > leftMin[i]) {
+            // 如果栈中元素小于或等于该位置之前的最小元素，不满足条件，弹出
+            while (!stack.empty() && stack.peek() <= leftMin[i]) {
+                stack.pop();
+            }
+            // 经过上面的遍历，栈顶元素大于该位置之前的最小值，如果满足小于nums[i]的条件，则输出true
+            if (!stack.empty() && stack.peek() < nums[i]) {
+                return true;
+            }
+            // 不管怎样都要push进来当前的数，因为当前的数满足了大于 min[i]
+            stack.push(nums[i]);
+        }
+    }
+    return false;
+}
+```
+
+#### [lc84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+
+
 
 ### 字符串
 
@@ -5750,6 +5886,92 @@ public int compareVersion(String version1, String version2) {
         }
     }
     return 0;
+}
+```
+
+#### [lc394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+
+```java
+public String decodeString(String s) {
+        
+    String res = "";
+    Stack<String> resStack = new Stack<>();
+    Stack<Integer> countStack = new Stack<>();
+    int idx = 0;
+
+    while(idx < s.length()) {
+        if (s.charAt(idx) < '9' && s.charAt(idx) > '0') {
+            // 当是数字时，获得重复次数，并加入countStack中
+            int repeatTimes = 0;
+            while (Character.isDigit(s.charAt(idx))) {
+                repeatTimes = repeatTimes * 10 + (s.charAt(idx) - '0');
+                idx ++;
+            }
+            countStack.push(repeatTimes);
+        } else if (s.charAt(idx) == '[') {
+            // 当是左括号时，先将原来的res入栈，记录括号中的字符串
+            resStack.push(res);
+            res = "";
+            idx ++;
+        } else if (s.charAt(idx) == ']') {
+            // 当是右括号时，累加res
+            StringBuilder temp = new StringBuilder (resStack.pop());
+            int repeatTimes = countStack.pop();
+            for (int i = 0; i < repeatTimes; i++) {
+                temp.append(res);
+            }
+            res = temp.toString();
+            idx++;
+        } else {
+            // 如果是普通字符，就累加到res中
+            res += s.charAt(idx++);
+        }
+    }
+    return res;
+
+}
+```
+
+#### [647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
+
+思路：
+
+1. 暴力方法：双重循环得到每一个子字符串，判断子字符串是否是回文字符串 O(N^3)
+2. 动态规划
+
+```java
+public int countSubstrings(String s) {
+    int res = 0;
+    boolean[][] dp = new boolean[s.length()][s.length()];
+
+    for (int j = 0; j <s.length(); j ++) {
+        for (int i = 0; i <= j; i ++) {
+            if (s.charAt(i) == s.charAt(j) && (j-i<2 || dp[i+1][j-1])) {
+                dp[i][j] = true;
+                res ++;
+            }
+        }
+    }
+    return res;
+}
+```
+
+#### [71. 简化路径](https://leetcode-cn.com/problems/simplify-path/)
+
+思路：
+
+```java
+public String simplifyPath(String path) {
+    Stack<String> stack = new Stack();
+    for(String cur: path.split("/")){
+        // 如果是".."，并且stack非空，向上父路径
+        if(cur.equals("..")) {
+            if(!stack.empty()) stack.pop();
+        }
+        else if(cur.length()>0 && !cur.equals(".")) stack.push(cur);
+    }
+    // 如果stack为空，说明已经到了根路径
+    return "/"+String.join("/",stack);
 }
 ```
 
