@@ -371,37 +371,20 @@ public int change(int amount, int[] coins) {
 }
 ```
 
-#### lc300 最长上升子序列（）
+#### [lc300. 最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)（高频）
 
-思路：
+[思路](https://blog.csdn.net/lxt_Lucia/article/details/81206439)：
 
 使用动态规划思想，dp[i]表示到nums[i]为止的最长上升子序列长度，转移方程是 dp[i] = max(dp[i], dp[j]+1) if (dp[j] > dp[i] and i>j)
 
 上面转移方程的意思是：要在nums[i]之前找到小于 nums[i]的元素，如果有，即存在元素nums[j]<nums[i]并且j<i的时候，说明nums[i]可以添加在nums[j]之后增加子序列长度；如果没有，那以nums[i]结尾的最长子序列就是nums[i]本身。
-
-举个例子：
-
-> 将数组（7， 9， 6， 10， 7， 1， 3）的元素分别记为 （a1, a2, a3, a4, a5, a6, a7）
->
-> 最开始a1 = 7,  令dp[ 1 ] = 1；
->
-> 然后看下一个元素 a2 = 9, 令dp[ 2 ] = 1, 那么需要检查 i 前面是否有比他小的 因为 a1 < a2 而且 dp[ 1 ] + 1 > dp[ 2 ], 所以dp[ 2 ] = dp[ 1 ] + 1 == 2;
->
-> 然后再看下一个元素 a3 = 6, 令 dp[ 3 ] = 1, 那么需要检查前面的元素 a1  与 a2 是否有比他小的， 一看没有，辣么 到目前为止，子序列就是他自己。
->
-> 然后再看一下下一个元素 a4 = 10; 令 dp[ 4 ] = 1;  那么需要依次检查前面的元素 a1  与 a2 与 a3 是否有比他小的 , 一看a1比它小，而且呢，dp[ 1 ] + 1 > dp[ 4 ] 所以呢 dp[ 4 ] = dp[ 1 ] + 1 == 2, 说明此时 a1 与 a4 可以构成一个长度为 2 的上升子序列，再来看看还可不可以构成更长的子序列呢，所以咱们再来看看 a2 , a2 < a4 而且呢 dp[ 2 ] + 1 == 3 > dp[ 4 ] == 2  所以呢dp[ 4 ] = dp[ 2 ] + 1 == 3,  即将a4承接在a2后面比承接在a1后更好，承接在a2后面的序列为：a1 a2 a4 ，构成一个长度为 3 的上升子序列; 然后再来看 a3 , a3 < a4 但是可惜的是 d[ 3 ] + 1 == 2  < dp[ 4 ] == 3 ,  所以呢就不能把a4加在a3的后面 。
->
-> 然后就是重复上述过程，找到最大的dp [ i ] 那么这个数就是最长上升子序列长度
-> ————————————————
-> 版权声明：本文为CSDN博主「ltrbless」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
-> 原文链接：https://blog.csdn.net/ltrbless/article/details/81318935
 
 时间复杂度：O(N^2)
 
 ```java
 // 动态规划 O(N^2)
 // dp[i]：到nums[i]为止的最长上升子序列
-// dp[i] = max(dp[i], dp[j]+1) if dp[j] > dp[i](j<i)
+// dp[i] = max(dp[i], dp[j]+1) if dp[j] > dp[i](j<i) 在前面找到一个小于nums[i]的数nums[j]，则最长上升子序列更新为max(dp[j]+1, dp[i])
 public int lengthOfLIS(int[] nums) {
     int[] dp = new int[nums.length];
     int res = 1;
@@ -412,9 +395,6 @@ public int lengthOfLIS(int[] nums) {
             if (nums[i] > nums[j]){
                 dp[i] = Math.max(dp[i], dp[j]+1);                    
             }
-            else if (nums[i] == nums[j]) {
-                break;
-            }
         }
         res = Math.max(res, dp[i]);
     }
@@ -422,34 +402,47 @@ public int lengthOfLIS(int[] nums) {
 }
 ```
 
-[二分查找](https://leetcode-cn.com/problems/longest-increasing-subsequence/solution/zui-chang-shang-sheng-zi-xu-lie-by-leetcode-soluti/)：O(NlogN)
+二分查找：O(NlogN)
 
 ```java
 public int lengthOfLIS(int[] nums) {
-    int len = 1, n = nums.length;
-    if (n == 0) {
+    if (nums == null || nums.length == 0) {
         return 0;
     }
-    int[] d = new int[n + 1];
-    d[len] = nums[0];
-    for (int i = 1; i < n; ++i) {
-        if (nums[i] > d[len]) {
-            d[++len] = nums[i];
-        } else {
-            int l = 1, r = len, pos = 0; // 如果找不到说明所有的数都比 nums[i] 大，此时要更新 d[1]，所以这里将 pos 设为 0
-            while (l <= r) {
-                int mid = (l + r) >> 1;
-                if (d[mid] < nums[i]) {
-                    pos = mid;
-                    l = mid + 1;
-                } else {
-                    r = mid - 1;
-                }
-            }
-            d[pos + 1] = nums[i];
+
+    int len = 0;
+    int[] increasingSequence = new int[nums.length];
+    increasingSequence[len++] = nums[0];
+
+    for (int i = 1; i < nums.length; i ++) {
+        // 如果nums[i]大于上升子序列的末尾，将nums[i]加到上升序列末尾
+        if (nums[i] > increasingSequence[len-1]) {
+            increasingSequence[len++] = nums[i];
+        }else {
+            // 找到上升子序列中第一个不小于nums[i]的元素来替换
+            int pos = binarySearchPos(increasingSequence, len, nums[i]);
+            increasingSequence[pos] = nums[i];
         }
     }
     return len;
+}
+
+private int binarySearchPos(int[] increasingSequence, int len, int x) {
+    int low = 0;
+    int high = len - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+
+        if (increasingSequence[mid] == x) {
+            return mid;
+        }else if (increasingSequence[mid] > x) {
+            high = mid - 1;
+        }else {
+            low = mid + 1;
+        }
+    }
+    return low;
 }
 ```
 
@@ -1478,6 +1471,44 @@ private void backtrack(int[] nums, List<List<Integer>> track, ArrayList<Integer>
 ```
 
 [A general approach to backtracking questions in Java (Subsets, Permutations, Combination Sum, Palindrome Partioning)](https://leetcode.com/problems/permutations/discuss/18239/A-general-approach-to-backtracking-questions-in-Java-(Subsets-Permutations-Combination-Sum-Palindrome-Partioning))
+
+#### [47. 全排列 II](https://leetcode-cn.com/problems/permutations-ii/)
+
+思路：遇上一题类似，**注意不合法选项**
+
+```java
+public List<List<Integer>> permuteUnique(int[] nums) {
+        Arrays.sort(nums);
+
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> temp = new ArrayList<>();
+
+        backtrack(res, temp, nums, new boolean[nums.length]);
+        return res;
+    }
+
+    private void backtrack(List<List<Integer>> res, List<Integer> temp, int[] nums, boolean[] used) {
+        if (temp.size() == nums.length) {
+            res.add(new ArrayList(temp));
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            // 不合法选项 nums[i]已使用或nums[i]是重复元素
+            if (used[i] || i > 0 && nums[i] == nums[i-1] && !used[i - 1]) {
+                continue;
+            }
+            temp.add(nums[i]);
+            used[i] = true;
+            // 递归
+            backtrack(res, temp, nums, used);
+            // 回溯
+            used[i] = false;
+            temp.remove(temp.size()-1);
+        }
+    }
+```
+
+
 
 #### lc39 组合总和
 
@@ -2737,18 +2768,17 @@ public ListNode deleteDuplicates(ListNode head) {
 
 ```java
 public ListNode getKthFromEnd(ListNode head, int k) {
-    ListNode dmy = new ListNode(-1);
-    dmy.next = head;
-    ListNode fast = dmy;
-    ListNode slow = dmy;
+    ListNode fast = head;
+    ListNode slow = head;
 
-    for (int i = 0; i < k; i++) {
+    while (k > 0) {
         fast = fast.next;
+        k--;
     }
 
     while (fast != null) {
-        slow = slow.next;
         fast = fast.next;
+        slow = slow.next;
     }
     return slow;
 }
@@ -5214,6 +5244,7 @@ class MyQueue {
     
     /** Removes the element from in front of queue and returns that element. */
     public int pop() {
+        // 注意此处，当popStack为空时，将pushStack 中的所有元素加到popStack 中，再进行输出
         if (popStack.empty()) {
             while (!pushStack.empty()) {
                 popStack.push(pushStack.pop());
@@ -5224,6 +5255,7 @@ class MyQueue {
     
     /** Get the front element. */
     public int peek() {
+        // 同理pop()方法
         if (popStack.empty()) {
             while (!pushStack.empty()) {
                 popStack.push(pushStack.pop());
@@ -5234,8 +5266,46 @@ class MyQueue {
     
     /** Returns whether the queue is empty. */
     public boolean empty() {
-        
         return pushStack.empty() && popStack.empty();
+    }
+}
+```
+
+#### [lc225. 用队列实现栈](https://leetcode-cn.com/problems/implement-stack-using-queues/)
+
+思路：每次入队元素x之后，将队列中除了x之外的所有元素进行出队入队操作，这样x就变成了最先出栈的元素了
+
+```java
+class MyStack {
+    Queue<Integer> queue;
+
+    /** Initialize your data structure here. */
+    public MyStack() {
+        queue = new LinkedList<>();
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        queue.offer(x);
+        // 重新排序，将队列中除了新添加的x之外的所有元素重新出队入队一次，这样x就变成了最先出去的元素了
+        for (int i = 0; i < queue.size()-1; i ++) {
+            queue.offer(queue.poll());
+        }
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        return queue.poll();
+    }
+    
+    /** Get the top element. */
+    public int top() {
+        return queue.peek();
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return queue.isEmpty();
     }
 }
 ```
@@ -5661,9 +5731,9 @@ public int calculate(String s) {
 }
 ```
 
-#### lc8. 字符串转换整数 (atoi)
+#### [lc8. 字符串转换整数 (atoi)（高频）](https://leetcode-cn.com/problems/string-to-integer-atoi/)
 
-思路：注意判断条件
+思路：注意判断条件 1. 去空格  2. 判断sign  3. 计算res
 
 ```java
 public int myAtoi(String s) {
@@ -5942,6 +6012,8 @@ public String simplifyPath(String path) {
 
 ### 排序
 
+![arraySortingAlgos.png](./images/arraySortingAlgos.png)
+
 #### 数组排序
 
 ##### 快排
@@ -6036,8 +6108,6 @@ public int[] sortArray(int[] nums) {
     return nums;        
 }
 ```
-
-
 
 ##### [堆排序（注意堆的shiftUP（增加元素）和 shiftDown（删除元素））](https://blog.csdn.net/qq_19782019/article/details/78301832)
 
