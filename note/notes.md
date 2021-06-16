@@ -1789,42 +1789,25 @@ public ListNode reverseKGroup(ListNode head, int k) {
 ```java
 // 迭代
 public ListNode reverseKGroup(ListNode head, int k) {
-    if (head == null || head.next == null || k == 1) {
-        return head;
-    }
 
-    ListNode dmy = new ListNode(-1);
+    int n = 0;
+    // 求链表长度
+    for (ListNode i = head; i != null; n++, i = i.next);
+
+    ListNode dmy = new ListNode(0);
     dmy.next = head;
-    ListNode begin = dmy;
-    int count = 0;
-    while (head != null) {
-        count ++;
-        // 找到k个节点
-        if (count % k == 0) {
-            // 翻转从begin开始的k个节点，注意end
-            begin = reverse(begin, head.next);
-            head = begin.next;
-        }else {
-            head = head.next;
+    for(ListNode prev = dmy, tail = head; n >= k; n -= k) {
+        for (int i = 1; i < k; i++) {
+            ListNode next = tail.next.next;
+            tail.next.next = prev.next;
+            prev.next = tail.next;
+            tail.next = next;
         }
+
+        prev = tail;
+        tail = tail.next;
     }
     return dmy.next;
-}
-
-private ListNode reverse(ListNode begin, ListNode end) {
-    ListNode cur = begin.next;
-    ListNode first = cur;
-    ListNode prev = begin;
-    while(cur != end) {
-        ListNode next = cur.next;
-        cur.next = prev;
-        prev = cur;
-        cur = next;
-    }
-    // 调节begin节点和first节点与翻转后的链表的关系
-    begin.next = prev;
-    first.next = cur;
-    return first;
 }
 ```
 
