@@ -1,3 +1,45 @@
+### 贪心算法
+
+#### [lc605. 种花问题](https://leetcode-cn.com/problems/can-place-flowers/)
+
+思路：贪心算法：从左向右遍历花坛，在可以种花的位置就种一朵，能种就种（因为在任一种花时候，不种都不会得到更优解），是一种贪心的思想。
+
+```java
+public boolean canPlaceFlowers(int[] flowerbed, int n) {
+        int count = 0;
+        for (int i = 0; i < flowerbed.length; i ++) {
+            // 满足能种花的条件
+            if (flowerbed[i] == 0 && (i == 0 || flowerbed[i-1] == 0) && (i == flowerbed.length-1 || flowerbed[i+1] == 0)) {
+                count ++;
+                flowerbed[i] = 1;
+            }
+        }
+        return count >= n;
+    }
+```
+
+#### [1029. 两地调度](https://leetcode-cn.com/problems/two-city-scheduling/)
+
+思路：首先假设将所有人派往B市，在选出N个人让他们飞往A市，如何选呢？将costs 按照 cost[A] - cost[B] 升序排序，然后将前N个人派往A市。
+
+```java
+public int twoCitySchedCost(int[][] costs) {
+    // 按照 price_A - price_B 从小到大排序；
+    // 将前 N 个人飞往 A 市，其余人飞往 B 市，并计算出总费用。
+    Arrays.sort(costs, (a, b) -> ((a[0]-a[1])-(b[0]-b[1])));
+
+    int n = costs.length / 2;
+    int res = 0;
+
+    for (int i = 0; i < n; i ++) {
+        res += costs[i][0] + costs[i+n][1];
+    }
+    return res;
+}
+```
+
+
+
 ### DFS&BFS
 
 #### lc200 岛屿数量
@@ -82,6 +124,75 @@ private int dfs(int[][] grid, int i, int j) {
 ```
 
 - [827. 最大人工岛](https://leetcode-cn.com/problems/making-a-large-island/) （Hard）
+
+
+
+### 拓扑排序
+
+>  拓扑排序问题
+>
+> 1. 根据依赖关系，构建邻接表、入度字典。
+> 2. 选取入度为 0 的数据，根据邻接表，减小依赖它的数据的入度，如果减小入度之后的依赖数据的入度为0，也将其加入到队列之中。
+> 3. 找出入度变为 0 的数据，重复第 2 步。
+> 4. 直至所有数据的入度为 0，得到排序，如果还有数据的入度不为 0，说明图中存在环。
+
+#### [lc207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+```java
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+    // 课号和对应的入度
+    Map<Integer, Integer> inDegree = new HashMap<>();
+    // 这里要事先加入课程，不能在后面使用getOrDefault，因为后面要将入度为0的节点入队
+    for (int i = 0; i < numCourses; i ++) {
+        inDegree.put(i, 0);
+    }
+    // 依赖关系，当前课程和依赖当前课程的后续课程
+    Map<Integer, List<Integer>> coursesAdj = new HashMap<>();
+
+    for (int[] relate : prerequisites) {
+        int cur = relate[1];
+        int next = relate[0];
+
+        // 更新入度
+        inDegree.put(next, inDegree.get(next)+1);
+        // 更新邻接表
+        if (!coursesAdj.containsKey(cur)) {
+            coursesAdj.put(cur, new ArrayList<>());
+        }
+        coursesAdj.get(cur).add(next);
+    }
+
+    // 将所有入度为0的节点放到队列中去
+    Queue<Integer> queue = new LinkedList<>();
+    for (int key : inDegree.keySet()) {
+        if (inDegree.get(key) == 0) {
+            queue.offer(key);
+        }
+    }
+
+    // 取出一个入度为0的节点，更新其下一个节点的入度表，直到没有入度为0的节点
+    while (!queue.isEmpty()) {
+        int cur = queue.poll();
+        if (coursesAdj.get(cur) != null) {
+            for (int next : coursesAdj.get(cur)) {
+                inDegree.put(next, inDegree.get(next)-1);
+                // 注意这里的处理，如果减去入度之后为0的话，将该节点也加入到队列中，以便于后面处理
+                if (inDegree.get(next) == 0) {
+                    queue.offer(next);
+                }
+            }
+        }
+    }
+
+    // 遍历入度字典，如果还有节点的入度不为0，说明存在环
+    for (int cur : inDegree.keySet()) {
+        if (inDegree.get(cur) != 0) {
+            return false;
+        }
+    } 
+    return true;
+}
+```
 
 
 
@@ -662,7 +773,7 @@ public boolean wordBreak(String s, List<String> wordDict) {
 }
 ```
 
-
+#### [lc887. 鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)(经典面试题)
 
 ### 队列
 
@@ -2062,9 +2173,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 }
 ```
 
-#### lc23 合并 k 个已排序的链表
-
-[url](https://www.nowcoder.com/practice/65cfde9e5b9b4cf2b6bafa5f3ef33fa6?tpId=190&&tqId=35193&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
+#### [lc23 合并 k 个已排序的链表](https://www.nowcoder.com/practice/65cfde9e5b9b4cf2b6bafa5f3ef33fa6?tpId=190&&tqId=35193&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
 
 1. 归并排序 O(KN * logK)
 
@@ -2974,7 +3083,7 @@ public int sumNumbers(TreeNode root) {
 }
 ```
 
-##### lc124 二叉树中的最大路径和
+##### [lc124 二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
 
 递归找左子树的最大路径和，还有右子树的最大路径和，然后左右子树的最大路径和加上根节点的值，就是经过根节点的最大路径和，然后和一个临时变量比较，取最大的；这个临时变量记录每次递归时都产生的当前最大路径和，每次都更新
 
@@ -3173,7 +3282,7 @@ private TreeNode buildTree(int[] preorder, int preStart, int preEnd, int[] inord
 
 
 
-#### lc102 层级遍历
+#### [lc102. 二叉树的层序遍历](https://leetcode-cn.com/problems/binary-tree-level-order-traversal/)
 
 思路：队列 + bfs
 
@@ -3214,6 +3323,24 @@ public class Solution {
     }
 }
 ```
+
+#### [lc429. N 叉树的层序遍历](https://leetcode-cn.com/problems/n-ary-tree-level-order-traversal/)
+
+思路：将上题中内部遍历子节点的代码改成for循环遍历children节点
+
+```java
+// 前后代码省略
+List<Node> children = cur.children;
+if (children != null) {
+    for (int j = 0; j < children.size(); j ++) {
+        if (children.get(j) != null) {
+            queue.offer(children.get(j));
+        }
+    }
+}
+```
+
+
 
 #### lc103 二叉树之字形层级遍历
 
@@ -3516,9 +3643,8 @@ private boolean helper(TreeNode root, int idx, int total) {
    * 两子树的根节点值相等
    * 其中一个子树的左子树要和另一子树的右子树镜像对称，其右子树要和另一子树的左子树对称
 
-2. 迭代：栈
+2. 迭代：栈z
 
-    
 
 ```java
 // 递归
