@@ -1924,9 +1924,7 @@ public ListNode reverseKGroup(ListNode head, int k) {
 
 
 
-#### lc206 翻转链表
-
-[url](https://leetcode.com/problems/reverse-linked-list/)
+#### [lc206 翻转链表](https://leetcode.com/problems/reverse-linked-list/)
 
 ```java
 // 迭代
@@ -1986,6 +1984,7 @@ public ListNode reverseBetween(ListNode head, int m, int n) {
     ListNode then = start.next;
 
     for (int i = 0; i < n - m; i++) {
+        // 这部分代码需要记忆
         start.next = then.next;
         then.next = prev.next;
         prev.next = then;
@@ -4923,9 +4922,7 @@ Follow-up：如果允许重复一次字符呢——微软-苏州-Lead面（2020.
 
 
 
-#### lc15 三数之和
-
-[url](https://leetcode.com/problems/3sum/)
+#### [lc15 三数之和](https://leetcode.com/problems/3sum/)
 
 ```java
 // 注意先进行排序，首先确定一个元素，再在后面的元素中找到另外两个符合要求的元素
@@ -6268,7 +6265,7 @@ private void swap(int[] nums, int i, int j) {
 
 
 
-### leetcode 周赛236
+### leetcode 周赛
 
 #### [5726. 数组元素积的符号](https://leetcode-cn.com/problems/sign-of-the-product-of-an-array/)
 
@@ -6360,8 +6357,6 @@ public int minSideJumps(int[] obstacles) {
 ```
 
 #### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
-### leetcode 周赛 238
-
 #### [5738. K 进制表示下的各位数字总和](https://leetcode-cn.com/problems/sum-of-digits-in-base-k/)
 
 ```java
@@ -6407,8 +6402,6 @@ public int maxFrequency(int[] nums, int k) {
 }
 ```
 
-
-
 #### [5740. 所有元音按顺序排布的最长子字符串](https://leetcode-cn.com/problems/longest-substring-of-all-vowels-in-order/)
 
 思路：判断字符种类和大小
@@ -6445,8 +6438,6 @@ public int longestBeautifulSubstring(String word) {
 
 #### [5741. 最高建筑高度](https://leetcode-cn.com/problems/maximum-building-height/)
 
-### leetcode 周赛 239
-
 #### [5746. 到目标元素的最小距离](https://leetcode-cn.com/problems/minimum-distance-to-the-target-element/)
 
 思路：从 start 两侧开始逐个遍历，找到等于 target 且离 start 最近的元素
@@ -6475,5 +6466,105 @@ public int getMinDistance(int[] nums, int target, int start) {
 
 #### [5748. 包含每个查询的最小区间](https://leetcode-cn.com/problems/minimum-interval-to-include-each-query/)
 
-##### 
+#### [LCS 01. 下载插件](https://leetcode-cn.com/problems/Ju9Xwi/)
+
+```java
+public int leastMinutes(int n) {
+    // 优先扩大带宽，最后一下是进行下载
+    int time = (int)Math.ceil(Math.log(n) / Math.log(2));
+    return time + 1;
+}
+```
+
+#### [LCS 02. 完成一半题目](https://leetcode-cn.com/problems/WqXACV/)
+
+思路：
+
+```java
+public int halfQuestions(int[] questions) {
+    Map<Integer, Integer> freq = new HashMap<>();
+
+    for (int i = 0; i < questions.length; i ++) {
+        freq.put(questions[i], freq.getOrDefault(questions[i], 0) + 1);
+    }
+
+    // List<Map.Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer, Integer>>(freq.entrySet());
+
+    // Collections.sort(list, new Comparator<Map.Entry<Integer, Integer>>() {
+    //     //升序排序
+    //     public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
+    //         return o2.getValue().compareTo(o1.getValue());
+    //     }
+    // });
+    // 这里只需要排序一下values即可
+    Integer[] freqs = freq.values().toArray(new Integer[freq.size()]);
+    Arrays.sort(freqs);
+    int sum = 0;
+    int count = 0;
+    for (int i = freqs.length-1; i >= 0; i--) {
+        sum += freqs[i];
+        count ++;
+        if (sum >= questions.length / 2) {
+            break;
+        }
+    }
+    return count;
+}
+```
+
+#### [LCS 03. 主题空间](https://leetcode-cn.com/problems/YesdPw/)
+
+```java
+class Solution {
+    boolean[][] vis;
+    // 主题空间是否与走廊相邻
+    boolean hasZeroNeighbor;
+    int m;
+    int n;
+    // 主题空间的面积
+    int cnt;
+
+    public int largestArea(String[] grid) {
+        m = grid.length;
+        n = grid[0].length();
+        vis = new boolean[m][n];
+
+        int res = 0;
+        for (int i = 0; i < m; i ++) {
+            for (int j = 0; j < n; j ++) {
+                hasZeroNeighbor = false;
+                if (!vis[i][j]) {
+                    cnt = 0;
+                    dfs(grid, i, j, grid[i].charAt(j));
+                    if (!hasZeroNeighbor) {
+                        res = res > cnt ?res : cnt;
+                    }
+                }
+            }
+        }
+        return res;        
+    }
+
+    private void dfs(String[] grid, int x, int y, char ch) {
+        // 边界条件
+        if (x < 0 || y < 0 || x >= m || y >= n) {
+            hasZeroNeighbor = true;
+            return;
+        }
+        char cur = grid[x].charAt(y);
+        if (cur != ch || vis[x][y]) {
+            if (cur == '0') {
+                hasZeroNeighbor = true;
+            }
+            return;
+        }
+        cnt ++;
+        vis[x][y] = true;
+        dfs(grid, x+1, y, ch);
+        dfs(grid, x-1, y, ch);
+        dfs(grid, x, y+1, ch);
+        dfs(grid, x, y-1, ch);
+    }
+}
+```
 
