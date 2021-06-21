@@ -6546,13 +6546,15 @@ class Solution {
     }
 
     private void dfs(String[] grid, int x, int y, char ch) {
-        // 边界条件
+        // 边界条件，因为grid四周默认都是0邻居，所以需要将hasZeroNeighbor置为true
         if (x < 0 || y < 0 || x >= m || y >= n) {
             hasZeroNeighbor = true;
             return;
         }
         char cur = grid[x].charAt(y);
+        // 当前区域不等于上一个区域 或者 当前区域访问过
         if (cur != ch || vis[x][y]) {
+            // 如果当前区域是'0'，说明上一层区域存在0邻居
             if (cur == '0') {
                 hasZeroNeighbor = true;
             }
@@ -6567,4 +6569,94 @@ class Solution {
     }
 }
 ```
+
+#### [1903. 字符串中的最大奇数](https://leetcode-cn.com/problems/largest-odd-number-in-string/)
+
+思路：只要判断最后一位是不是奇数即可
+
+```java
+public String largestOddNumber(String num) {
+    // char[] numArray = num.toCharArray();
+    int idx = num.length() - 1;
+
+    while (idx >= 0) {
+        char ch = num.charAt(idx);
+        if ((ch - '0') % 2 == 1) {
+            return num.substring(0, idx+1);
+        }
+        idx --;
+    }  
+    return "";
+}
+```
+
+#### [1904. 你完成的完整对局数](https://leetcode-cn.com/problems/the-number-of-full-rounds-you-have-played/)
+
+思路：直接转换成分钟比较，这样直接省去了小时大小的比较
+
+```java
+public int numberOfRounds(String startTime, String finishTime) {
+    int startMin = toMinutes(startTime);
+    int finishMin = toMinutes(finishTime);
+
+    // 通宵
+    if (startMin > finishMin) {
+        finishMin += 1440;
+    }
+    // 结束必须向下取整，因为只有到15的倍数时才算参加完一局，开始必须向上取整，因为只有到15的倍数时才算开始参加一局
+    return (int)Math.floor(finishMin * 1.0 / 15) - (int)Math.ceil(startMin * 1.0 / 15);
+
+}
+
+private int toMinutes(String time) {
+    int hour = Integer.parseInt(time.split(":")[0]);
+    int min = Integer.parseInt(time.split(":")[1]);
+
+    return hour * 60 + min;
+}
+```
+
+#### [1905. 统计子岛屿](https://leetcode-cn.com/problems/count-sub-islands/)
+
+思路：首先将grid2中的非子岛屿的区域置为0，在grid 2 中搜索某一个岛屿的过程中，我们需要判断岛屿包含的每一个格子是否都在 grid1中出现了。如果全部出现，那么将答案增加 1。
+
+```java
+public int countSubIslands(int[][] grid1, int[][] grid2) {
+    int res = 0;
+    for (int i = 0; i < grid2.length; i ++) {
+        for (int j = 0; j < grid2[0].length; j ++) {
+            // 先将所有非子岛屿置为0
+            if (grid2[i][j]==1 && grid1[i][j] == 0) {
+                dfs(grid1, grid2, i, j);
+            }
+        }
+    }
+
+    for (int i = 0; i < grid2.length; i ++) {
+        for (int j = 0; j < grid2[0].length; j ++) {
+            // 遍历获得子岛屿个数
+            if (grid2[i][j]==1 && grid1[i][j] == 1) {
+                dfs(grid1, grid2, i, j);
+                res++;
+            }
+        }
+    }
+    return res;
+}
+
+private void dfs(int[][] grid1, int[][] grid2, int x, int y) {
+    if (x < 0 || x >= grid2.length || y < 0 || y >= grid2[1].length || grid2[x][y] == 0) {
+        return;
+    }
+    grid2[x][y] = 0;
+    dfs(grid1, grid2, x-1, y);
+    dfs(grid1, grid2, x+1, y);
+    dfs(grid1, grid2, x, y-1);
+    dfs(grid1, grid2, x, y+1);  
+}
+```
+
+#### [1906. 查询差绝对值的最小值](https://leetcode-cn.com/problems/minimum-absolute-difference-queries/)（TLE）
+
+思路：
 
