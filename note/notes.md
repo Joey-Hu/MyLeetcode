@@ -868,11 +868,14 @@ public int findKthLargest(int[] nums, int k) {
 
     while (left < right) {
         int pos = partion(nums, left, right);
+        // 每次排序完后都能保证pos之前的元素都小于nums[pos]
         if (pos == len - k) {
             break;
         }else if (pos > len - k) {
+            // 如果pos>len-k，那说明比pos小的元素个数大于len-k，缩小右边界
             right = pos - 1;
         }else {
+            // 同上
             left = pos + 1;
         }
     }
@@ -1551,7 +1554,7 @@ private void backtrack(List<List<Integer>> track, ArrayList<Integer> tempList, i
 }
 ```
 
-#### lc46 全排列
+#### lc[46. 全排列](https://leetcode-cn.com/problems/permutations/)
 
 ```java
 public List<List<Integer>> permute(int[] nums) {
@@ -1900,31 +1903,62 @@ public ListNode reverseKGroup(ListNode head, int k) {
 ```java
 // 迭代
 public ListNode reverseKGroup(ListNode head, int k) {
-
-    int n = 0;
-    // 求链表长度
-    for (ListNode i = head; i != null; n++, i = i.next);
-
-    ListNode dmy = new ListNode(0);
-    dmy.next = head;
-    for(ListNode prev = dmy, tail = head; n >= k; n -= k) {
-        for (int i = 1; i < k; i++) {
-            ListNode next = tail.next.next;
-            tail.next.next = prev.next;
-            prev.next = tail.next;
-            tail.next = next;
-        }
-
-        prev = tail;
-        tail = tail.next;
+    if (head == null || head.next == null){
+        return head;
     }
-    return dmy.next;
+    ListNode dummy=new ListNode(0);
+    dummy.next=head;
+    //初始化pre和end都指向dummy。pre指每次要翻转的链表的头结点的上一个节点。end指每次要翻转的链表的尾节点
+    ListNode pre=dummy;
+    ListNode end=dummy;
+
+    while(end.next!=null){
+        //循环k次，找到需要翻转的链表的结尾,这里每次循环要判断end是否等于空,因为如果为空，end.next会报空指针异常。
+        //dummy->1->2->3->4->5 若k为2，循环2次，end指向2
+        for(int i=0;i<k&&end != null;i++){
+            end=end.next;
+        }
+        //如果end==null，即需要翻转的链表的节点数小于k，不执行翻转。
+        if(end==null){
+            break;
+        }
+        //先记录下end.next,方便后面链接链表
+        ListNode next=end.next;
+        //然后断开链表，以便调用翻转链表方法
+        end.next=null;
+        ListNode start=pre.next;
+        //翻转链表,pre.next指向翻转后的链表。1->2 变成2->1。 dummy->2->1
+        pre.next=reverse(start);
+        //翻转后头节点变到最后。通过.next把断开的链表重新链接。
+        start.next=next;
+        //将pre换成下次要翻转的链表的头结点的上一个节点。即start
+        pre=start;
+        //翻转结束，将end置为下次要翻转的链表的头结点的上一个节点。即start
+        end=start;
+    }
+    return dummy.next;
+
+
+}
+//链表翻转
+// 例子：   head： 1->2->3->4
+public ListNode reverse(ListNode head) {
+    ListNode prev = null;
+        while (node != null) {
+            ListNode next = node.next;
+            node.next = prev;
+            prev = node;
+            node = next; 
+        }
+        return prev;
 }
 ```
 
 
 
-#### [lc206 翻转链表](https://leetcode.com/problems/reverse-linked-list/)
+#### [lc206 翻转链表](https://leetcode.com/problems/reverse-linked-list/)（高频）
+
+思路：迭代方法简单，递归方法还需记忆
 
 ```java
 // 迭代
@@ -1964,37 +1998,49 @@ public ListNode reverseList(ListNode head) {
 
 #### lc92 翻转链表II
 
-思路：首先找到待翻转链表的前一个节点，然后进行翻转，注意翻转代码顺序
+思路：找到待翻转链表的前一个节点prev，开始节点start，结束节点end，结束节点的后续节点next，然后进行翻转，代码很类似 lc25的迭代方法代码
 
 ```java
-public ListNode reverseBetween(ListNode head, int m, int n) {
-    if (head == null || m >= n) {
-        return head;
+public ListNode reverseBetween(ListNode head, int left, int right) {
+    ListNode dmy = new ListNode(-1);
+    dmy.next = head;
+    ListNode cur = dmy;
+    ListNode prev = null;
+    ListNode start = null;
+    ListNode end = null;
+    ListNode next = null;
+    int count = 0;
+    while (cur != null) {
+        if (count == left - 1) {
+            prev = cur;
+            start = cur.next;
+        }
+        if (count == right) {
+            end = cur;
+            next = cur.next;
+        }
+        cur = cur.next;
+        count ++;
     }
+    end.next = null;
+    prev.next = reverse(start);
+    start.next = next;
+    return dmy.next;
+}
 
-    ListNode dummy = new ListNode(-1);
-    dummy.next = head;
-    ListNode prev = dummy;
-    // prev指向第m-1个节点
-    for (int i = 0; i < m - 1; i++) {
-        prev = prev.next;
+private ListNode reverse(ListNode start) {
+    ListNode prev = null;
+    while (start != null) {
+        ListNode next = start.next;
+        start.next = prev;
+        prev = start;
+        start = next;
     }
-
-    ListNode start = prev.next;
-    ListNode then = start.next;
-
-    for (int i = 0; i < n - m; i++) {
-        // 这部分代码需要记忆
-        start.next = then.next;
-        then.next = prev.next;
-        prev.next = then;
-        then = start.next;
-    }
-
-    return dummy.next;
-
+    return prev;
 }
 ```
+
+
 
 #### lc146 LRU 缓存机制(常考)
 
@@ -2144,31 +2190,28 @@ public class M146_LRUCache {
     }
 ```
 
-#### lc21 合并两有序链表
+#### [lc21 合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/submissions/)
 
 思路：使用两个指针分别遍历两个链表，当两个指针都不为空时，比较两个指针指向的元素，选择一个较小元素添加到结果链表中并移动该指针，接下去继续比较两个指针指向的元素直到一个指针为空，结果链表连接剩余元素。
 
 ```java
 public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-    ListNode res = new ListNode(-1);
-    ListNode cur = res;
+    ListNode dmy = new ListNode(-1);
+    ListNode cur = dmy;
 
-    ListNode cur1 = l1;
-    ListNode cur2 = l2;
-
-    while (cur1 != null && cur2 != null) {
-        if (cur1.val < cur2.val) {
-            cur.next = cur1;
-            cur1 = cur1.next;
+    while (l1 != null && l2 != null) {
+        if (l1.val < l2.val) {
+            cur.next = new ListNode(l1.val);
+            l1 = l1.next;
         }else {
-            cur.next = cur2;
-            cur2 = cur2.next;
+            cur.next = new ListNode(l2.val);
+            l2 = l2.next;
         }
         cur = cur.next;
     }
 
-    cur.next = cur1 == null ? cur2 : cur1;
-    return res.next;
+    cur.next = l1 == null ? l2 : l1;
+    return dmy.next;
 }
 ```
 
@@ -4886,14 +4929,10 @@ public int[][] matrixBlockSum(int[][] mat, int k) {
 
 ### 双指针
 
-#### [lc3 无重复字符的最长子串](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+#### [lc3 无重复字符的最长子串](https://leetcode.com/problems/longest-substring-without-repeating-characters/)（高频）
 
 ```java
 public int lengthOfLongestSubstring(String s) {
-    if (s.length() == 0) {
-        return 0;
-    }
-
     Set<Character> set = new HashSet<>();
     int ans = 0;
     int start = 0;
@@ -4921,8 +4960,9 @@ Follow-up：如果允许重复一次字符呢——微软-苏州-Lead面（2020.
 
 
 
-
 #### [lc15 三数之和](https://leetcode.com/problems/3sum/)
+
+思路：首先先确定第一个三个元素中的第一个元素，然后利用双指针遍历后面的元素得到剩余的两个元素，**注意去重条件**
 
 ```java
 // 注意先进行排序，首先确定一个元素，再在后面的元素中找到另外两个符合要求的元素
