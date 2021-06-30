@@ -6092,8 +6092,6 @@ public String reverseWords(String s) {
 
 思路：先找到每个单词翻转，在整个翻转
 
-
-
 #### [lc1047. 删除字符串中的所有相邻重复项](https://leetcode-cn.com/problems/remove-all-adjacent-duplicates-in-string/)
 
 思路：利用栈的思想，与栈头相同，则弹出栈头，否则入栈
