@@ -38,6 +38,52 @@ public int twoCitySchedCost(int[][] costs) {
 }
 ```
 
+#### 跳跃问题
+
+##### [lc45. 跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii/)
+
+思路：每次在上次能跳到的范围（end）内选择一个能跳的最远的位置（也就是能跳到max_far位置的点）作为下次的起跳点 （即增加跳跃步数）
+
+```java
+public int jump(int[] nums) {
+    int i = 0;
+    int longest = 0;
+    int end = 0;
+    int step = 0;
+    while (i < nums.length-1) {
+        longest = Math.max(longest, nums[i] + i);
+        // 每次在上次能跳到的范围（end）内选择一个能跳的最远的位置（也就是能跳到max_far位置的点）作为下次的起跳点 
+        if (i == end) {
+            end = longest;
+            step ++;
+        }
+        i ++;
+    }
+    return step;
+}
+```
+
+##### [lc55. 跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+
+思路：当 i > longest时，直接返回false，说明到不了 i 作为起跳点
+
+```java
+public boolean canJump(int[] nums) {
+    int longest = 0;
+    int end = 0;
+    for (int i = 0; i < nums.length; i ++) {
+        if (longest < i) {
+            return false;
+        }
+        longest = Math.max(longest, i + nums[i]);
+        if (longest >= nums.length-1) {
+            return true;
+        }
+    }
+    return false;
+}
+```
+
 
 
 ### DFS&BFS
@@ -775,6 +821,37 @@ public boolean wordBreak(String s, List<String> wordDict) {
 
 #### [lc887. 鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)(经典面试题)
 
+#### [lc718. 最长重复子数组](https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/)
+
+思路：动态规划
+
+A 、B数组各抽出一个子数组，单看它们的末尾项，如果它们俩不一样，则公共子数组肯定不包括它们俩。
+
+如果它们俩一样，则要考虑它们俩前面的子数组「能为它们俩提供多大的公共长度」。
+
+* 如果它们俩的前缀数组的「末尾项」不相同，由于子数组的连续性，前缀数组不能为它们俩提供公共长度
+* 如果它们俩的前缀数组的「末尾项」相同，则可以为它们俩提供公共长度：
+  * 至于提供多长的公共长度？这又取决于前缀数组的末尾项是否相同……
+
+```java
+public int findLength(int[] nums1, int[] nums2) {
+    int[][] dp = new int[nums1.length+1][nums2.length+1];
+    int max = 0;
+
+    for (int i = 1; i < dp.length; i ++) {
+        for (int j = 1; j < dp[0].length; j ++) {
+            if (nums1[i-1] == nums2[j-1]) {
+                dp[i][j] = dp[i-1][j-1] + 1;
+                max = Math.max(max, dp[i][j]);
+            }
+        }
+    }
+    return max;
+}
+```
+
+
+
 ### 队列
 
 #### 用队列实现栈
@@ -1177,31 +1254,6 @@ public int findPeakElement(int[] nums) {
 #### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
 
 
-
-#### [lc209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
-
-思路：
-
-1. 双指针，类似于lc76
-
-```java
-public int minSubArrayLen(int target, int[] nums) {
-    int minLen = Integer.MAX_VALUE;
-    int l = 0;
-    int r = 0;
-    int sum = 0;
-    // 右指针向右移动
-    while (r < nums.length) {
-        sum += nums[r++];
-        // 缩小边界
-        while (sum >= target) {
-            minLen = Math.min(minLen, r-l);
-            sum -= nums[l++];
-        }
-    }
-    return minLen == Integer.MAX_VALUE ? 0 : minLen;
-}
-```
 
 #### [lc560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
@@ -1675,8 +1727,8 @@ public List<List<Integer>> combinationSum2(int[] candidates, int target) {
 }
 
 private void backtrack(int[] candidates, int remain, List<List<Integer>> res, List<Integer> tmp, int start) {
-    // 跳过重复元素
-    if (remain == 0 && !res.contains(new ArrayList(tmp))) {
+    
+    if (remain == 0) {
         res.add(new ArrayList(tmp));
     }
 
@@ -1685,6 +1737,7 @@ private void backtrack(int[] candidates, int remain, List<List<Integer>> res, Li
     }
 
     for (int i = start; i < candidates.length; i ++) {
+        // 跳过重复元素
         if (i > start && candidates[i] == candidates[i-1]) {
             continue;
         }
@@ -3127,7 +3180,7 @@ public int sumNumbers(TreeNode root) {
 
 ##### [lc124 二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
 
-递归找左子树的最大路径和，还有右子树的最大路径和，然后左右子树的最大路径和加上根节点的值，就是经过根节点的最大路径和，然后和一个临时变量比较，取最大的；这个临时变量记录每次递归时都产生的当前最大路径和，每次都更新
+思路：递归找左子树的最大路径和，还有右子树的最大路径和，然后左右子树的最大路径和加上根节点的值，就是经过根节点的最大路径和，然后和一个临时变量比较，取最大的；这个临时变量记录每次递归时都产生的当前最大路径和，每次都更新
 
 ```java
 int maxValue = Integer.MIN_VALUE;
@@ -3166,7 +3219,7 @@ private int dfs(TreeNode root) {
 
 
 
-#### 牛客题霸-算法-实现二叉树先序，中序和后序遍历
+#### 实现二叉树先序，中序和后序遍历
 
 递归方法
 
@@ -3584,7 +3637,8 @@ private void inorderTraverse(TreeNode root, List<Integer> inorder) {
 
 ```java
 /**
- * 对于每个结点，最长路径 = 左子树的最大深度 + 右子树的最大深度
+ * 对于每个结点，最长路径 = 左子树的最大深度 + 右子树的最大深度 - 1
+ * 一条路径的长度为该路径经过的节点数减一，所以求直径（即求路径长度的最大值）等效于求路径经过节点数的最大值减一。
  * @param root
  * @return
 */
@@ -3592,7 +3646,7 @@ int maxLen = 0;
 
 public int diameterOfBinaryTree(TreeNode root) {
     maxDepth(root);
-    return maxLen;
+    return maxLen - 1;
 }
 
 private int maxDepth(TreeNode root) {
@@ -3602,7 +3656,7 @@ private int maxDepth(TreeNode root) {
     int left = maxDepth(root.left);
     int right = maxDepth(root.right);
 
-    maxLen = Math.max(maxLen, left + right);
+    maxLen = Math.max(maxLen, left + right + 1);
 
     return Math.max(left, right) + 1;
 }
@@ -4599,7 +4653,7 @@ private void swap(int[] nums, int i, int j) {
 }
 ```
 
-#### lc56 合并区间
+#### [lc56 合并区间](https://leetcode-cn.com/problems/merge-intervals/)
 
 * 先按首位进行排序
 * 接下来,如何判断两个区间是否重叠呢?比如 a = [1,4],b = [2,3]
@@ -5163,6 +5217,31 @@ public String minWindow(String s, String t) {
     }
     return minLen == Integer.MAX_VALUE ? "" : s.substring(start, start + minLen);
 
+}
+```
+
+#### [lc209. 长度最小的子数组](https://leetcode-cn.com/problems/minimum-size-subarray-sum/)
+
+思路：
+
+1. 双指针，类似于lc76
+
+```java
+public int minSubArrayLen(int target, int[] nums) {
+    int minLen = Integer.MAX_VALUE;
+    int l = 0;
+    int r = 0;
+    int sum = 0;
+    // 右指针向右移动
+    while (r < nums.length) {
+        sum += nums[r++];
+        // 缩小边界
+        while (sum >= target) {
+            minLen = Math.min(minLen, r-l);
+            sum -= nums[l++];
+        }
+    }
+    return minLen == Integer.MAX_VALUE ? 0 : minLen;
 }
 ```
 
@@ -6300,6 +6379,74 @@ private void swap(int[] nums, int i, int j) {
     int tmp = nums[i];
     nums[i] = nums[j];
     nums[j] = tmp;
+}
+```
+
+### 笔试真题
+
+#### [华为-4.14-翻转括号内的字符串](https://blog.csdn.net/wjinjie/article/details/115979659)
+
+思路：利用栈记录下'('的起始位置，每次遇到 ‘)’ 就弹出栈，进行一次reverse
+
+```java
+public String reverseStringInStack(String s) {
+    Stack<Integer> stack = new Stack<>();
+    // string 类型不好直接逆转，转换成数组格式容易逆转
+    char[] chArray = s.toCharArray();
+
+    for (int i = 0; i < chArray.length; i ++) {
+        char ch = chArray[i];
+        if (ch == '(') {
+            // 将起始位置入栈
+            stack.push(i);
+        }else if (ch == ')') {
+            // 起始位置出栈，完成reverse
+            int start = stack.pop();
+            reverse(chArray, start+1, i-1);
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < chArray.length; i ++) {
+        if (chArray[i] == '(' || chArray[i] == ')') {
+            continue;
+        }
+        sb.append(chArray[i]);
+    }
+    return sb.toString();
+}
+
+private void reverse(char[] charArray, int left, int right) {
+
+    while (left < right) {
+        char tmp = charArray[left];
+        charArray[left] = charArray[right];
+        charArray[right] = tmp;
+        left ++;
+        right --;
+    }
+}
+```
+
+#### [华为-4.14-无线设备传输](https://blog.csdn.net/wjinjie/article/details/115979659)
+
+思路：lc45原题
+
+```java
+public int jump(int[] nums) {
+    int i = 0;
+    int longest = 0;
+    int end = 0;
+    int step = 0;
+    while (i < nums.length-1) {
+        longest = Math.max(longest, nums[i] + i);
+        // 每次在上次能跳到的范围（end）内选择一个能跳的最远的位置（也就是能跳到max_far位置的点）作为下次的起跳点 
+        if (i == end) {
+            end = longest;
+            step ++;
+        }
+        i ++;
+    }
+    return step;
 }
 ```
 
