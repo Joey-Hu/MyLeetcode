@@ -3346,7 +3346,7 @@ public List<Integer> postorderTraversal(TreeNode root) {
 
 思路：确定前序遍历的起始节点是根节点，根据根节点值找到其在中序遍历的下标idx（需要建立inMap），idx 左边的节点组成左子树，右边的节点祖组成右子树，剩下的递归进行
 
-后序和中序遍历序列类似 lc106
+类似 [106. 从中序与后序遍历序列构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)只要把根节点换成postorder[postEnd]，numsLeft 换成 numsRight 即可。
 
 ```java
 public TreeNode buildTree(int[] preorder, int[] inorder) {
@@ -5838,7 +5838,7 @@ public int[] nextGreaterElement(int[] nums1, int[] nums2) {
 }
 ```
 
-#### [503. 下一个更大元素 II](https://leetcode-cn.com/problems/next-greater-element-ii/)
+#### [lc503. 下一个更大元素 II](https://leetcode-cn.com/problems/next-greater-element-ii/)
 
 #### [lc456. 132 模式](https://leetcode-cn.com/problems/132-pattern/)
 
@@ -6178,6 +6178,73 @@ public String decodeString(String s) {
         }
     }
     return res;
+
+}
+```
+
+#### [lc726. 原子的数量](https://leetcode-cn.com/problems/number-of-atoms/)
+
+思路：遇上一题类似
+
+```java
+public String countOfAtoms(String formula) {
+    Map<String, Integer> map = new HashMap<>();
+    Stack<Map<String, Integer>> stack = new Stack<>();
+    int idx = 0;
+
+    while (idx < formula.length()) {
+        char ch = formula.charAt(idx);
+        // 注意
+        idx ++;
+
+        if (ch == '(') {
+            stack.push(map);
+            map = new HashMap<>();
+        }else if (ch == ')') {
+            int val = 0;
+            while (idx < formula.length() && Character.isDigit(formula.charAt(idx))) {
+                val = val * 10 + formula.charAt(idx) - '0';
+                idx ++;
+            }
+            if (val == 0) {
+                val = 1;
+            }
+            if (!stack.empty()) {
+                // 将目前的map 赋给一个临时变量
+                Map<String, Integer> tmp = map;
+                // 弹出结果map
+                map = stack.pop();
+                for (String key : tmp.keySet()) {
+                    map.put(key, map.getOrDefault(key, 0) + tmp.get(key) * val);
+                }
+            }
+        }else {
+            int start = idx - 1;
+            while (idx < formula.length() && Character.isLowerCase(formula.charAt(idx))) {
+                idx ++;
+            }
+            String atom = formula.substring(start, idx);
+            int val = 0;
+            while (idx < formula.length() && Character.isDigit(formula.charAt(idx))) {
+                val = val * 10 + formula.charAt(idx) - '0';
+                idx ++;
+            }
+            if (val == 0) {
+                val = 1;
+            }
+            map.put(atom, map.getOrDefault(atom, 0) + val);
+        }
+    }
+    StringBuilder sb = new StringBuilder();
+    List<String> list = new ArrayList(map.keySet());
+    Collections.sort(list);
+    for (String atom : list) {
+        sb.append(atom);
+        if (map.get(atom) > 1) {
+            sb.append(map.get(atom));
+        }
+    }
+    return sb.toString();
 
 }
 ```
