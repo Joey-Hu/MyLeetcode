@@ -29,33 +29,37 @@ public class Main {
         }
     }
 
-    public TreeNode buildTree(int[] inorder, int[] postorder) {
-        Map<Integer, Integer> inMap = new HashMap<>();
-        for (int i = 0; i < inorder.length; i ++) {
-            inMap.put(inorder[i], i);
-        }
+    public int minDepth(TreeNode root) {
 
-        TreeNode root = buildTree(inorder, 0, inorder.length-1, postorder, 0, postorder.length-1, inMap);
-        return root;
-    }
-
-    private TreeNode buildTree(int[] inorder, int inStart, int inEnd, int[] postorder, int postStart, int postEnd, Map<Integer, Integer> inMap) {
-        if (inStart > inEnd || postStart > postEnd) {
-            return null;
+        if (root == null) {
+            return 0;
         }
-        int rootVal = postorder[postEnd];
-        int rootIdx = inMap.get(rootVal);
-        int right = inEnd - rootIdx;
-        TreeNode root = new TreeNode(rootVal);
-        root.left = buildTree(inorder, inStart, rootIdx-1, postorder, postStart, postEnd-right - 1, inMap);
-        root.right = buildTree(inorder, rootIdx+1, inEnd, postorder, postEnd-right, postEnd-1, inMap);
-        return root;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        int height = 0;
+        while (!queue.isEmpty()) {
+            int size = 0;
+            height ++;
+            for (int i = 0; i < size; i ++) {
+                TreeNode cur = queue.poll();
+                if (cur.left == null && cur.right == null) {
+                    return height;
+                }
+                if (cur.left != null) {
+                    queue.offer(cur.left);
+                }
+                if (cur.right != null) {
+                    queue.offer(cur.right);
+                }
+            }
+        }
+        return 0;
     }
 
     public static void main(String[] args) {
-        int[] inorder = {9,3,15,20,7};
-        int[] postorder = {9,15,7,20,3};
-        new Main().buildTree(inorder, postorder);
+        int[][] matrix = {{9,9,4}, {6,6,8}, {2,1,1}};
+
+        new Main().longestIncreasingPath(matrix);
     }
 
 

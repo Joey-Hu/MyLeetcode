@@ -171,6 +171,88 @@ private int dfs(int[][] grid, int i, int j) {
 
 - [827. 最大人工岛](https://leetcode-cn.com/problems/making-a-large-island/) （Hard）
 
+#### [lc329. 矩阵中的最长递增路径](https://leetcode-cn.com/problems/longest-increasing-path-in-a-matrix/)
+
+思路：==记忆化的DFS==，减少了时间复杂度
+
+```java
+public int longestIncreasingPath(int[][] matrix) {
+    int longestPath = 0;
+    // 记忆化的dfs
+    int[][] cache = new int[matrix.length][matrix[0].length];
+    for (int i = 0; i < matrix.length; i ++) {
+        for (int j = 0; j < matrix[0].length; j ++) {
+            // 因为每次访问的都是更大的元素，不可能会访问之前访问过的某个元素，所以不用vis数组
+            // boolean[][] vis = new boolean[matrix.length][matrix[0].length];
+            longestPath = Math.max(longestPath, dfs(matrix, i, j, cache, null));
+        }
+    }
+    return longestPath;
+}
+
+private int dfs(int[][] matrix, int i, int j, int[][] cache, Integer pre) {
+    if (i < 0 || i >= matrix.length || j < 0 || j >= matrix[0].length) {
+        return 0;
+    }
+
+    if (pre != null && matrix[i][j] <= pre) {
+        return 0;
+    }
+
+    if (cache[i][j] > 0) {
+        return cache[i][j];
+    }else {
+        int cur = matrix[i][j];
+        int left = 0;
+        int right = 0;
+        int up = 0;
+        int down = 0;
+        left = dfs(matrix, i, j-1, cache, cur);
+        right = dfs(matrix, i, j+1, cache, cur);
+        up = dfs(matrix, i-1, j, cache, cur);
+        down = dfs(matrix, i+1, j, cache, cur);
+
+        cache[i][j] = 1 + Math.max(Math.max(Math.max(left, right), up), down);
+        return cache[i][j]; 
+    }
+}
+```
+
+#### [lc547. 省份数量](https://leetcode-cn.com/problems/number-of-provinces/)
+
+思路：本题属于一类题，属于在无向图中计算连通域数量的题目
+
+```java
+public int findCircleNum(int[][] isConnected) {
+    // int[][] isConnected 是无向图的邻接矩阵，n 为无向图的顶点数量
+    int n = isConnected.length;
+    // 定义 boolean 数组标识顶点是否被访问
+    boolean[] visited = new boolean[n];
+    // 定义 cnt 来累计遍历过的连通域的数量
+    int cnt = 0;
+    for (int i = 0; i < n; i++) {
+        // 若当前顶点 i 未被访问，说明又是一个新的连通域，则遍历新的连通域且cnt+=1.
+        if (!visited[i]) { 
+            cnt++;
+            dfs(i, isConnected, visited);
+        }
+    }
+    return cnt;
+}
+
+private void dfs(int i, int[][] isConnected, boolean[] visited) {
+    // 对当前顶点 i 进行访问标记
+    visited[i] = true;
+
+    // 继续遍历与顶点 i 相邻的顶点（使用 visited 数组防止重复访问）
+    for (int j = 0; j < isConnected.length; j++) {
+        if (isConnected[i][j] == 1 && !visited[j]) {
+            dfs(j, isConnected, visited);
+        }
+    }
+}
+```
+
 
 
 ### 拓扑排序
@@ -183,6 +265,8 @@ private int dfs(int[][] grid, int i, int j) {
 > 4. 直至所有数据的入度为 0，得到排序，如果还有数据的入度不为 0，说明图中存在环。
 
 #### [lc207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+思路：拓扑排序 + BFS
 
 ```java
 public boolean canFinish(int numCourses, int[][] prerequisites) {
@@ -219,6 +303,7 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
     // 取出一个入度为0的节点，更新其下一个节点的入度表，直到没有入度为0的节点
     while (!queue.isEmpty()) {
         int cur = queue.poll();
+        // 注意这里还要判断非空
         if (coursesAdj.get(cur) != null) {
             for (int next : coursesAdj.get(cur)) {
                 inDegree.put(next, inDegree.get(next)-1);
@@ -240,7 +325,9 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 }
 ```
 
+#### [lc210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
+思路：和上一题类似，不过本题返回的是学完所有课程所安排的学习顺序（返回一种即可），只需要在将入度为0的课程弹出队列时，加入结果数组即可。
 
 ### 动态规划
 
