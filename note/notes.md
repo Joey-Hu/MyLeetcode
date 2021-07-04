@@ -1669,7 +1669,7 @@ public int longestConsecutive(int[] nums) {
 
 ### 回溯法
 
-#### lc78 集合的所有子集
+#### [lc78. 子集](https://leetcode-cn.com/problems/subsets/)
 
 [url](https://www.nowcoder.com/practice/c333d551eb6243e0b4d92e37a06fbfc9?tpId=117&&tqId=34948&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
 
@@ -2946,7 +2946,7 @@ private ListNode mergeLists(ListNode left, ListNode right) {
 
 
 
-#### lc83 删除有序链表中的重复元素
+#### lc[83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
 
 思路：遍历结点，判断cur.val ?= next.val，如果相等，cur连接到next的下一个节点，否则，cur向前移动
 
@@ -2962,6 +2962,7 @@ public ListNode deleteDuplicates(ListNode head) {
         if (next.val == cur.val) {
             cur.next = next.next;
         }else {
+            // 注意这里不是每次判断完之后都进行移动
             cur = cur.next;
         }
     }
@@ -3918,7 +3919,7 @@ public int widthOfBinaryTree(TreeNode root) {
 }
 ```
 
-#### lc110 平衡二叉树
+#### lc[110. 平衡二叉树](https://leetcode-cn.com/problems/balanced-binary-tree/) 
 
 思路：
 
@@ -6377,6 +6378,37 @@ public String simplifyPath(String path) {
     // 如果stack为空，说明已经到了根路径
     return "/"+String.join("/",stack);
 }
+```
+
+#### [lc28. 实现 strStr()](https://leetcode-cn.com/problems/implement-strstr/)（字符串匹配）
+
+思路：1. 朴素算法（TLE） 2. KMP
+
+```java
+// 朴素算法
+public int strStr(String haystack, String needle) {
+    if (needle.length() == 0) {
+        return 0;
+    }
+
+    int idx = 0;
+    while (idx < haystack.length()) {
+        int idx1 = idx;
+        int idx2 = 0;
+        while (idx1 < haystack.length() && idx2 < needle.length() && haystack.charAt(idx1) == needle.charAt(idx2)) { 
+            idx1++;
+            idx2 ++;
+        }
+        if (idx2 == needle.length()) {
+            return idx;
+        }
+        idx ++;
+    }
+    return -1;
+}
+
+// KMP
+
 ```
 
 
