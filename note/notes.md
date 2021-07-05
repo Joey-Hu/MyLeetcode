@@ -6382,7 +6382,7 @@ public String simplifyPath(String path) {
 
 #### [lc28. 实现 strStr()](https://leetcode-cn.com/problems/implement-strstr/)（字符串匹配）
 
-思路：1. 朴素算法（TLE） 2. KMP
+思路：1. 朴素算法（TLE） 2. 年轻人不讲码德系列 3. KMP
 
 ```java
 // 朴素算法
@@ -6407,7 +6407,38 @@ public int strStr(String haystack, String needle) {
     return -1;
 }
 
+// 年轻人不讲码德系列: return haystack.indexOf(needle)
 // KMP
+public int strStr(String haystack, String needle) {
+    int n = haystack.length(), m = needle.length();
+    if (m == 0) {
+        return 0;
+    }
+    // next 前缀表，next[i]表示的是到字符i为止的子串的最长相等前后缀的长度
+    int[] next = new int[m];
+    // i指向后缀末尾位置，j指向前缀末尾位置
+    for (int i = 1, j = 0; i < m; i++) {
+        while (j > 0 && needle.charAt(i) != needle.charAt(j)) {
+            j = next[j - 1];
+        }
+        if (needle.charAt(i) == needle.charAt(j)) {
+            j++;
+        }
+        next[i] = j;
+    }
+    for (int i = 0, j = 0; i < n; i++) {
+        while (j > 0 && haystack.charAt(i) != needle.charAt(j)) {
+            j = next[j - 1];
+        }
+        if (haystack.charAt(i) == needle.charAt(j)) {
+            j++;
+        }
+        if (j == m) {
+            return i - m + 1;
+        }
+    }
+    return -1;
+}
 
 ```
 
@@ -6633,6 +6664,59 @@ public int jump(int[] nums) {
     return step;
 }
 ```
+
+#### [虾皮-4.21- 爬楼梯](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
+
+leetcode 70
+
+#### [虾皮-4.21- 子串包含关系](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
+
+KMP算法，lc28
+
+#### [虾皮-4.21- 不重复数组子集](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
+
+lc 原题
+
+#### [虾皮 - 黑白方格画](https://leetcode-cn.com/problems/ccw6C7/)
+
+```java
+public int paintingPlan(int n, int k) {
+    if (k > n * n) {
+        return 0;
+    }
+    if (k == 0 || k == n * n) {
+        return 1;
+    }
+
+    int ans = 0;
+    for (int i = 0; i <= n; i ++) {
+        for (int j = 0; j <= n; j ++) {
+            if (i * n + j * n - i * j == k) {
+                ans += cnt(i, n) * cnt(j, n);
+            }
+        }
+    }
+    return ans;
+}
+
+private int cnt(int num, int n) {
+    // 计算从n中获取num个元素的方法数 C_n^num
+    int ans = 1;
+    for (int i = n; i >= n-num+1; i--) {
+        ans *= i;
+    }
+    for (int i = num; i >= 1; i--) {
+        ans /= i;
+    }
+    return ans;
+}
+```
+
+虾皮 - 20.8.19 - [有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
+
+思路：[lc原题](https://leetcode.com/problems/valid-parenthesis-string/discuss/543521/Java-Count-Open-Parenthesis-O(n)-time-O(1)-space-Picture-Explain)
+
+
 
 
 
@@ -7030,4 +7114,49 @@ private void dfs(int[][] grid1, int[][] grid2, int x, int y) {
 #### [1906. 查询差绝对值的最小值](https://leetcode-cn.com/problems/minimum-absolute-difference-queries/)（TLE）
 
 思路：
+
+#### [5801. 消灭怪物的最大数量](https://leetcode-cn.com/problems/eliminate-maximum-number-of-monsters/)
+
+思路：贪心思想，分别计算出每个怪物到达的时间并排序，每次都击杀最早到达城市的怪物。使用round代表当前轮数，如果怪物到达的步数 > 当前round，说明还未到达城市，可以击杀。否则返回。
+
+```java
+public int eliminateMaximum(int[] dist, int[] speed) {
+    int[] div = new int[dist.length];
+
+    for (int i = 0; i < div.length; i ++) {
+        div[i] = (int)Math.ceil(dist[i] * 1.0 / speed[i]);
+    }
+
+    Arrays.sort(div);
+    int idx = 0;
+    int count = 0;
+    int round = 1;
+    while (idx < div.length) {
+        // 当到达城市的步数小于等于当前轮数，表示可击杀
+        if (round <= div[idx]) {
+            count ++;
+            round ++;
+            idx ++;
+        }else {
+            return count;
+        }
+    }
+    return count;
+}
+```
+
+#### [5802. 统计好数字的数目](https://leetcode-cn.com/problems/count-good-numbers/)
+
+```java
+long modPow(long x, long y)
+{
+    if (y == 0)
+        return 1;
+    long p = modPow(x, y / 2);
+    return p * p * (y % 2 > 0 ? x : 1) % 1000000007;
+}
+public int countGoodNumbers(long n) {
+    return (int)(modPow(5, (n + 1) / 2) * modPow(4, n / 2) % 1000000007);    
+}
+```
 
