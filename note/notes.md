@@ -86,7 +86,7 @@ public boolean canJump(int[] nums) {
 
 #### [lc179. 最大数](https://leetcode-cn.com/problems/largest-number/)
 
-思路：将int数组转为string数组，这里的处理十分巧妙，使用“” + int直接转为string类型，然后按字典序降序排序，最后注意处理前缀0
+思路：将int数组转为string数组，这里的处理十分巧妙，使用“” + int直接转为string类型，然后按字典序降序排序，最后注意处理前缀零
 
 ```java
 public String largestNumber(int[] nums) {
