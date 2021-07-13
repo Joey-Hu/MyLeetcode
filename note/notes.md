@@ -116,8 +116,6 @@ public String largestNumber(int[] nums) {
 }
 ```
 
-
-
 ### DFS&BFS
 
 #### lc200 岛屿数量
@@ -969,7 +967,7 @@ public int findLength(int[] nums1, int[] nums2) {
 }
 ```
 
-
+#### [lc72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
 
 ### 队列
 
@@ -4156,6 +4154,104 @@ public TreeNode invertTree(TreeNode root) {
 
 思路：字典序
 
+#### [lc116. 填充每个节点的下一个右侧节点指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+
+思路：
+
+1. 层级遍历，当i=size-1时，加右空指针，当小于size-1时，加右指针
+2. 优化：利用已有的next指针：当我们为第 N 层节点建立 next 指针时，处于第 N−1 层。当第 N 层节点的 next 指针全部建立完成后，移至第 N 层，建立第 N+1 层节点的 next 指针。
+   * 第一种情况两个子节点属于同一个父节点，因此直接通过父节点建立两个子节点的 next 指针即可。`node.left.next = node.right`
+   * 第二种情况是连接不同父节点之间子节点的情况。更具体地说，连接的是第一个父节点的右孩子和第二父节点的左孩子。由于已经在父节点这一层建立了 next 指针，因此可以直接通过第一个父节点的 next 指针找到第二个父节点，然后在它们的孩子之间建立连接。`node.right.next = node.next.left`
+   * 完成当前层的连接后，进入下一层重复操作，直到所有的节点全部连接。进入下一层后需要更新最左节点，然后从新的最左节点开始遍历该层所有节点。**因为是完美二叉树，因此最左节点一定是当前层最左节点的左孩子**。如果当前最左节点的左孩子不存在，说明已经到达该树的最后一层，完成了所有节点的连接。
+
+
+```java
+// 利用上一层指针
+public Node connect(Node root) {
+    if (root == null) {
+        return root;
+    }
+    Node leftMost = root;
+    while (leftMost.left != null) {
+        Node head = leftMost;
+
+        while (head != null) {
+            head.left.next = head.right;
+
+            if (head.next != null) {
+                head.right.next = head.next.left;
+            }
+            head = head.next;
+        }
+        leftMost = leftMost.left;            
+    }
+    return root;
+}
+
+// 层序遍历
+public Node connect(Node root) {
+    Queue<Node> queue = new LinkedList<>();
+    if (root == null) {
+        return root;
+    }
+
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+        int size = queue.size();
+        for (int i = 0; i < size; i ++) {
+            Node cur = queue.poll();
+            if (i < size - 1) {
+                cur.next = queue.peek();
+            }else {
+                cur.next = null;
+            }
+            if (cur.left != null) {
+                queue.offer(cur.left);
+            }
+            if (cur.right != null) {
+                queue.offer(cur.right);
+            }
+        }
+    }
+    return root;
+}
+```
+
+#### [lc117. 填充每个节点的下一个右侧节点指针 II](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node-ii/)
+
+思路：
+
+1. 层序遍历
+2. 
+
+```java
+public Node connect(Node root) {
+    if(root==null)
+        return root;
+    Node cur=root;
+    while(cur!=null){           //控制cur到下一层的循环
+        Node dumm=new Node();   //创建一个虚拟头结点(每一层都会创建)
+        Node tail=dumm;         //维护一个尾节点指针（初始化是虚拟节点）
+
+        while(cur!=null){        //控制cur同一层的循环
+            if(cur.left!=null){  //判断cur的左节点是否为空，不为空时就是cur的下一层的第一个节点了
+                tail.next=cur.left;
+                tail=tail.next;
+            }
+            if(cur.right!=null){  //判断cur的右节点是否为空，此时不为空时就是cur的下一层的第一个节点了
+                tail.next=cur.right;
+                tail=tail.next;
+            }
+            cur=cur.next;         //cur同层移动到下一位置
+        }
+        cur=dumm.next;            //内循环结束，开始cur的下一层
+    }
+    return root;
+}
+```
+
+
+
 ### 数组
 
 #### 牛客题霸-算法篇-两数之和
@@ -6480,7 +6576,10 @@ public int strStr(String haystack, String needle) {
 
 #### lc470 用 rand7() 实现 rand10()
 
-<<<<<<< HEAD
+```java
+```
+
+
 
 ### 排序
 
