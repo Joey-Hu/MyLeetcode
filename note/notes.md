@@ -820,43 +820,11 @@ public int minPathSum(int[][] grid) {
 }
 ```
 
-#### lc5 最长回文子串
-
-思路：中心扩散
-
-由中心向外扩散，起始情况有两种：一种是中心是一个字符，另一种是中心是两个字符
-
-```java
-public String longestPalindrome(String s) {
-        
-    int start = 0;
-    int end = 0;
-    for (int i = 0; i < s.length(); i++) {
-        int len1 = expandingFromCenter(s, i, i);
-        int len2 = expandingFromCenter(s, i, i+1);
-        int maxLen = Math.max(len1, len2);
-        if (maxLen > end - start) {
-            // 注意此处的strat和end的更新
-            start = i - (maxLen-1)/2;
-            end = i + (maxLen)/2; 
-        }
-    }
-    return s.substring(start, end+1);
-}
-
-private int expandingFromCenter(String s, int left, int right) {
-    while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
-        left --;
-        right ++;
-    }
-    // 上面 while 循环结束时，left和right都往外扩了一个, 所以长度应为 right - left - 1
-    return right - left - 1;
-}
-```
-
 #### lc1143 最长公共子序列
 
-思路：二维动态规划
+思路：二维动态规划,dp\[i][j]表示word1[i-1]和word2[j-1]之间的最长公共子序列，比如下图中的dp\[5][3] 表示abcde和ace之间的最长子序列是ace。
+
+![lc1143.png](./images/lc1143.png)
 
 ```java
 public int longestCommonSubsequence(String text1, String text2) {
@@ -864,9 +832,11 @@ public int longestCommonSubsequence(String text1, String text2) {
 
     for (int i = 1; i < dp.length; i++) {
         for (int j = 1; j < dp[0].length; j++) {
+            // 如果两个字符相等，就从两者各减一位的子串的最长子序列长度加一
             if (text1.charAt(i-1) == text2.charAt(j-1)) {
                 dp[i][j] = dp[i-1][j-1] + 1;
             }else {
+                // 如果两个字符不相等，选择最大值：比如对于 ace 和 bc 而言，他们的最长公共子序列的长度等于 ① ace 和 b 的最长公共子序列长度0 与 ② ac 和 bc 的最长公共子序列长度1 的最大值，即 1。
                 dp[i][j] = Math.max(dp[i][j-1], dp[i-1][j]);
             }
         }
@@ -875,9 +845,33 @@ public int longestCommonSubsequence(String text1, String text2) {
 }
 ```
 
-#### lc62 不同路径
+#### [lc62 不同路径](https://leetcode-cn.com/problems/unique-paths/)
 
-压缩成一维
+```java
+public int uniquePaths(int m, int n) {
+    int[][] dp = new int[m][n];
+
+    dp[0][0] = 1;
+    // 第一行
+    for (int j = 1; j < dp[0].length; j ++) {
+        dp[0][j] = 1;
+    }
+
+    // 第一列
+    for (int i = 1; i < dp.length; i ++) {
+        dp[i][0] = 1;
+    }
+
+    for (int i = 1; i < dp.length; i ++) {
+        for (int j = 1; j < dp[0].length; j ++) {
+            dp[i][j] = dp[i-1][j] + dp[i][j-1];
+        }
+    }
+    return dp[dp.length-1][dp[0].length-1];
+}
+```
+
+
 
 #### [lc1155. 掷骰子的N种方法](https://leetcode-cn.com/problems/number-of-dice-rolls-with-target-sum/)(ms)
 
@@ -968,6 +962,70 @@ public int findLength(int[] nums1, int[] nums2) {
 ```
 
 #### [lc72. 编辑距离](https://leetcode-cn.com/problems/edit-distance/)
+
+思路：`dp[i][j]` 代表 `word1` 到 `i` 位置转换成 `word2` 到 `j` 位置需要最少步数
+
+以 word1 为 "horse"，word2 为 "ros"，且 dp\[5][3] 为例，即要将 word1的前 5 个字符转换为 word2的前 3 个字符，也就是将 horse 转换为 ros，因此有：
+
+(1) dp\[i-1][j-1]，即先将 word1 的前 4 个字符 hors 转换为 word2 的前 2 个字符 ro，然后将第五个字符 word1[4]（因为下标基数以 0 开始） 由 e 替换为 s（即替换为 word2 的第三个字符，word2[2]）
+
+(2) dp\[i][j-1]，即先将 word1 的前 5 个字符 horse 转换为 word2 的前 2 个字符 ro，然后在末尾补充一个 s，即插入操作
+
+(3) dp\[i-1][j]，即先将 word1 的前 4 个字符 hors 转换为 word2 的前 3 个字符 ros，然后删除 word1 的第 5 个字符
+
+```java
+public int minDistance(String word1, String word2) {
+    int m = word1.length();
+    int n = word2.length();
+    int dp[][] = new int[m+1][n+1];
+
+    for (int j = 1; j < dp[0].length; j ++) {
+        dp[0][j] = dp[0][j-1] + 1;
+    }
+
+    for (int i = 1; i < dp.length; i ++) {
+        dp[i][0] = dp[i-1][0] + 1;
+    }
+
+    for (int i = 1; i < dp.length; i ++) {
+        for (int j = 1; j < dp[0].length; j ++) {
+            if (word1.charAt(i-1) == word2.charAt(j-1)) {
+                dp[i][j] = dp[i-1][j-1];
+            }else{
+                dp[i][j] = Math.min(dp[i-1][j-1], Math.min(dp[i-1][j], dp[i][j-1])) + 1;
+            }
+        }
+    }
+
+    return dp[m][n];
+}
+```
+
+[**NC35** **最小编辑代价**](https://www.nowcoder.com/practice/05fed41805ae4394ab6607d0d745c8e4?tpId=117)
+
+思路：和上一题类似
+
+```JAVA
+public int minEditCost (String str1, String str2, int ic, int dc, int rc) {
+    int n1 = str1.length();
+    int n2 = str2.length();
+    int[][] dp = new int[n1 + 1][n2 + 1];
+    // 第一行
+    for (int j = 1; j <= n2; j++) dp[0][j] = dp[0][j - 1] + ic;
+    // 第一列
+    for (int i = 1; i <= n1; i++) dp[i][0] = dp[i - 1][0] + dc;
+
+    for (int i = 1; i <= n1; i++) {
+        for (int j = 1; j <= n2; j++) {
+            if (str1.charAt(i - 1) == str2.charAt(j - 1)) dp[i][j] = dp[i - 1][j - 1];
+            else dp[i][j] = Math.min(Math.min(dp[i - 1][j - 1]+rc, dp[i][j - 1]+ic), dp[i - 1][j]+dc);
+        }
+    }
+    return dp[n1][n2];  
+}
+```
+
+
 
 ### 队列
 
@@ -5531,7 +5589,39 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
 }
 ```
 
-#### 
+#### lc5 最长回文子串
+
+思路：中心扩散
+
+由中心向外扩散，起始情况有两种：一种是中心是一个字符，另一种是中心是两个字符
+
+```java
+public String longestPalindrome(String s) {
+        
+    int start = 0;
+    int end = 0;
+    for (int i = 0; i < s.length(); i++) {
+        int len1 = expandingFromCenter(s, i, i);
+        int len2 = expandingFromCenter(s, i, i+1);
+        int maxLen = Math.max(len1, len2);
+        if (maxLen > end - start) {
+            // 注意此处的strat和end的更新
+            start = i - (maxLen-1)/2;
+            end = i + (maxLen)/2; 
+        }
+    }
+    return s.substring(start, end+1);
+}
+
+private int expandingFromCenter(String s, int left, int right) {
+    while (left >= 0 && right < s.length() && s.charAt(left) == s.charAt(right)) {
+        left --;
+        right ++;
+    }
+    // 上面 while 循环结束时，left和right都往外扩了一个, 所以长度应为 right - left - 1
+    return right - left - 1;
+}
+```
 
 ### 位运算
 
