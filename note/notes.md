@@ -1819,37 +1819,35 @@ private void backtrack(int[] nums, List<List<Integer>> track, ArrayList<Integer>
 
 ```java
 public List<List<Integer>> permuteUnique(int[] nums) {
-        Arrays.sort(nums);
+    Arrays.sort(nums);
 
-        List<List<Integer>> res = new ArrayList<>();
-        List<Integer> temp = new ArrayList<>();
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> temp = new ArrayList<>();
 
-        backtrack(res, temp, nums, new boolean[nums.length]);
-        return res;
+    backtrack(res, temp, nums, new boolean[nums.length]);
+    return res;
+}
+
+private void backtrack(List<List<Integer>> res, List<Integer> temp, int[] nums, boolean[] used) {
+    if (temp.size() == nums.length) {
+        res.add(new ArrayList(temp));
     }
 
-    private void backtrack(List<List<Integer>> res, List<Integer> temp, int[] nums, boolean[] used) {
-        if (temp.size() == nums.length) {
-            res.add(new ArrayList(temp));
+    for (int i = 0; i < nums.length; i++) {
+        // 不合法选项 nums[i]已使用或nums[i]是重复元素
+        if (used[i] || i > 0 && nums[i] == nums[i-1] && !used[i - 1]) {
+            continue;
         }
-
-        for (int i = 0; i < nums.length; i++) {
-            // 不合法选项 nums[i]已使用或nums[i]是重复元素
-            if (used[i] || i > 0 && nums[i] == nums[i-1] && !used[i - 1]) {
-                continue;
-            }
-            temp.add(nums[i]);
-            used[i] = true;
-            // 递归
-            backtrack(res, temp, nums, used);
-            // 回溯
-            used[i] = false;
-            temp.remove(temp.size()-1);
-        }
+        temp.add(nums[i]);
+        used[i] = true;
+        // 递归
+        backtrack(res, temp, nums, used);
+        // 回溯
+        used[i] = false;
+        temp.remove(temp.size()-1);
     }
+}
 ```
-
-
 
 #### lc39 组合总和
 
@@ -5345,9 +5343,43 @@ public List<List<Integer>> threeSum(int[] nums) {
 
 #### lc42 接雨水
 
-对撞指针
+[思路：](https://leetcode-cn.com/problems/trapping-rain-water/solution/xiang-xi-tong-su-de-si-lu-fen-xi-duo-jie-fa-by-w-8/)
+
+1. 暴力解法：遍历除了两边的每一列，然后分别求出这一列两边最高的墙。找出较矮的一端，和当前列的高度比较，如果两端最高的墙的高度大于当前列高度，则表示可以积水（minHeight - height[i]），否则不能积水。时间复杂度：O(N^2)
+2. 动态规划：上面的解法中，每次寻找该列两边最高的墙还需要重新遍历，，我们可以建立两个数组，max_left，max_right，max_left[i]表示第 i 列左边最高的墙的高度，max_right[i]表示第 i 列右边最高的墙的高度，然后再利用上面的解法。
+3. 双指针：上面的解法可以对空间复杂度做进一步优化，可以看到，max_left [ i ] 和 max_right [ i ] 数组中的元素我们其实只用一次，然后就再也不会用到了。所以我们可以不用数组，只用一个元素就行了。
+4. 单调栈
 
 ```java
+// 动态规划
+public int trap(int[] height) {
+    int res = 0;
+    int len = height.length;
+    int[] maxLeft = new int[len];
+    int[] maxRight = new int[len];
+
+    // maxLeft[i]记录从1开始第i列的左边最高的墙的高度
+    for (int i = 1; i < len; i ++) {
+        maxLeft[i] = Math.max(maxLeft[i-1], height[i-1]);
+    }
+
+    // maxRight[i]记录从len-2开始第i列的右边最高的墙的高度
+    for (int i = len - 2; i >= 0; i --) {
+        maxRight[i] = Math.max(maxRight[i+1], height[i+1]);
+    }
+
+    for (int i = 1; i < len - 1; i ++) {
+        // 找出两端较小的
+        int minHeight = Math.min(maxLeft[i], maxRight[i]);
+        //只有较小的一端大于当前列的高度才会有水，其他情况不会有水
+        if (minHeight > height[i]) {
+            res += minHeight - height[i];
+        }
+    }
+    return res;
+}
+
+// 双指针
 public int trap(int[] height) {
     // 左右指针
     int left = 0;
@@ -5357,30 +5389,25 @@ public int trap(int[] height) {
     int maxRight = 0;
     int res = 0;
 
-    while (left < right) {
-        // 用于移动指针，if成立，移动左指针，否则，移动右指针
-        if (height[left] <  height[right]) {
-            // 更新最大值
-            maxLeft = Math.max(height[left], maxLeft);
-            // 获取雨水
-            res += maxLeft - height[left];
+    for (int i = 1; i < height.length-1; i ++) {
+        if (height[left-1] < height[right+1]) {
+            maxLeft = Math.max(maxLeft, height[left-1]) ;
+            int min = maxLeft;
+            if (min > height[left]) {
+                res += min - height[left];
+            }
             left ++;
         }else {
-            maxRight = Math.max(height[right], maxRight);
-            res += maxRight - height[right];
-            right --;
+            maxRight = Math.max(maxRight, height[right+1]) ;
+            int min = maxRight;
+            if (min > height[right]) {
+                res += min - height[right];
+            }
+           right --;
         }
     }
     return res;
 }
-```
-
-单调栈
-
-建立一个单调递减的栈，如果出现一个元素比栈顶元素大的话，必然可以形成凹槽，此时我们只需要计算凹槽长度和边界的高度差那么必然可以计算出接水的面积。
-
-```java
-
 ```
 
 #### lc11 盛最多水的容器
@@ -6679,6 +6706,10 @@ public int strStr(String haystack, String needle) {
 
 ##### 快排
 
+时间复杂度：O(NlogN)
+
+空间复杂度：O(logN)
+
 ```java
 public int[] sortArray(int[] nums) {
     quickSort(nums, 0, nums.length-1);
@@ -6710,6 +6741,10 @@ private void quickSort(int[] nums, int start, int end) {
 ```
 
 ##### 归并排序
+
+时间复杂度：O(NlogN)
+
+空间复杂度：O(N)
 
 ```java
 int[] tmp;
@@ -6772,6 +6807,10 @@ public int[] sortArray(int[] nums) {
 
 ##### [堆排序（注意堆的shiftUP（增加元素）和 shiftDown（删除元素））](https://blog.csdn.net/qq_19782019/article/details/78301832)
 
+时间复杂度：O(NlogN)
+
+空间复杂度：O(1)
+
 ```java
 public int[] sortArray(int[] nums) {
     heapSort(nums);
@@ -6779,20 +6818,20 @@ public int[] sortArray(int[] nums) {
 }
 
 private void heapSort(int[] nums) {
-    // 1.构造大顶堆
+    // 1.构造大顶堆 O(N)
     for (int i = nums.length/2-1; i >= 0; i --) {
         // 从第一个非叶子结点从下至上，从右至左调整结构
         adjustHeap(nums, i, nums.length);
     }
 
-    // 2.调整堆结构+交换堆顶元素与末尾元素
+    // 2.调整堆结构+交换堆顶元素与末尾元素 // O(logN)
     for(int j=nums.length-1;j>0;j--){
         swap(nums,0,j);//将堆顶元素与末尾元素进行交换
         adjustHeap(nums,0,j);//重新对堆进行调整
     }
 }
 
-private void adjustHeap(int[] nums, int i, int length) {
+private void adjustHeap(int[] nums, int i, int length) { 
     int temp = nums[i];//先取出当前元素i
     for(int k=i*2+1; k<length; k=k*2+1){
         //从i结点的左子结点开始，也就是2i+1处开始
