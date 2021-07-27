@@ -661,11 +661,12 @@ public int change(int amount, int[] coins) {
 // dp[i] = max(dp[i], dp[j]+1) if dp[j] > dp[i](j<i) 在前面找到一个小于nums[i]的数nums[j]，则最长上升子序列更新为max(dp[j]+1, dp[i])
 public int lengthOfLIS(int[] nums) {
     int[] dp = new int[nums.length];
+    dp[0] = 1;
     int res = 1;
 
-    for (int i = 0; i < dp.length; i++) {
+    for (int i = 1; i < dp.length; i++) {
         dp[i] = 1;
-        for (int j = i-1; j >= 0; j--) {
+        for (int j = 0; j < i; j++) {
             if (nums[i] > nums[j]){
                 dp[i] = Math.max(dp[i], dp[j]+1);                    
             }
@@ -1001,7 +1002,7 @@ public int minDistance(String word1, String word2) {
 }
 ```
 
-[**NC35** **最小编辑代价**](https://www.nowcoder.com/practice/05fed41805ae4394ab6607d0d745c8e4?tpId=117)
+#### [**NC35** **最小编辑代价**](https://www.nowcoder.com/practice/05fed41805ae4394ab6607d0d745c8e4?tpId=117)
 
 思路：和上一题类似
 
@@ -1022,6 +1023,34 @@ public int minEditCost (String str1, String str2, int ic, int dc, int rc) {
         }
     }
     return dp[n1][n2];  
+}
+```
+
+#### [lc221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
+
+思路：`dp[i + 1][j + 1]` 表示 「以第 `i` 行、第 `j` 列为右下角的正方形的最大边长」
+
+若某格子值为 1，则以此为右下角的正方形的、最大边长为：上面的正方形、左面的正方形或左上的正方形中，最小的那个，再加上此格。
+
+```java
+public int maximalSquare(char[][] matrix) {
+    if (matrix == null || matrix.length < 1 || matrix[0].length < 1) {
+        return 0;
+    }
+
+    int rows = matrix.length;
+    int cols = matrix[0].length;
+    int maxWidth = 0;
+    int[][] dp = new int[rows+1][cols+1];
+    for (int i = 0; i < rows; i ++) {
+        for (int j = 0; j < cols; j ++) {
+            if (matrix[i][j] == '1') {
+                dp[i+1][j+1] = Math.min(dp[i][j], Math.min(dp[i+1][j], dp[i][j+1])) + 1;
+                maxWidth = Math.max(maxWidth, dp[i+1][j+1]);
+            } 
+        }
+    }
+    return maxWidth * maxWidth;
 }
 ```
 
@@ -1780,6 +1809,32 @@ private void backtrack(List<List<Integer>> track, ArrayList<Integer> tempList, i
     }
 }
 ```
+
+#### [lc90 子集II](https://leetcode-cn.com/problems/subsets-ii/)
+
+```java
+public List<List<Integer>> subsetsWithDup(int[] nums) {
+    List<List<Integer>> track = new LinkedList<>();
+    Arrays.sort(nums);
+    backtrack(track, new ArrayList<Integer>(), nums, 0);
+    return track;
+
+}
+
+private void backtrack(List<List<Integer>> track, ArrayList<Integer> tempList, int[] nums, int start) {
+    track.add(new ArrayList<>(tempList));
+    for(int i = start; i < nums.length; i++){
+        if (i > start && nums[i] == nums[i-1]) {
+            continue;
+        }
+        tempList.add(nums[i]);
+        backtrack(track, tempList, nums, i + 1);
+        tempList.remove(tempList.size()-1);
+    }
+}
+```
+
+
 
 #### lc[46. 全排列](https://leetcode-cn.com/problems/permutations/)
 
@@ -5649,6 +5704,43 @@ private int expandingFromCenter(String s, int left, int right) {
     return right - left - 1;
 }
 ```
+
+#### [lc567. 字符串的排列](https://leetcode-cn.com/problems/permutation-in-string/)
+
+思路：初始时，仅统计 s_1中的字符，则  cnt 的值均不为正，且元素值之和为 -n。
+
+然后用两个指针left 和 right 表示考察的区间[left,right]。right 每向右移动一次，就统计一次进入区间的字符 x。为保证cnt 的值不为正，若此时 cnt[x]>0，则向右移动左指针，减少离开区间的字符的 cnt 值直到 cnt[x]≤0。
+
+注意到[left,right] 的长度每增加 1，cnt 的元素值之和就增加 1。当\[left,right] 的长度恰好为 n 时，就意味着 cnt 的元素值之和为 0。由于 cnt 的值不为正，元素值之和为 0 就意味着所有元素均为 0，这样我们就找到了一个目标子串。
+
+```java
+public boolean checkInclusion(String s1, String s2) {
+    int n = s1.length(), m = s2.length();
+    if (n > m) {
+        return false;
+    }
+    int[] cnt = new int[26];
+    for (int i = 0; i < n; i ++) {
+        cnt[s1.charAt(i)-'a'] --;
+    }
+    int left = 0;
+    for (int right = 0; right < m; right ++) {
+        int x = s2.charAt(right) - 'a';
+        cnt[x] ++;
+        // 该字符不存在与s1中，向右移动左指针直到cnt[x]≤0
+        while (cnt[x] > 0) {
+            cnt[s2.charAt(left++) - 'a'] --;
+        }
+        // 如果此时左右指针区间长度等于n，又因为cnt元素都小于或等于0，所以表示cnt中所有元素都为0
+        if (right - left + 1 == n) {
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+
 
 ### 位运算
 
