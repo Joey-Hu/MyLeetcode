@@ -1799,8 +1799,6 @@ public int longestConsecutive(int[] nums) {
 
 #### [lc78. 子集](https://leetcode-cn.com/problems/subsets/)
 
-[url](https://www.nowcoder.com/practice/c333d551eb6243e0b4d92e37a06fbfc9?tpId=117&&tqId=34948&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
-
 ```java
 public List<List<Integer>> subsets(int[] nums) {
     List<List<Integer>> track = new LinkedList<>();
@@ -2013,13 +2011,9 @@ private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row
     if (row < 0 || row >= board.length || col < 0 || col >= board[0].length || board[row][col] != wordCharArray[idx]) {
         return false;
     }
-    if (board[row][col] != wordCharArray[idx]) {
-        return false;
-    }
 
     board[row][col] = '*';
-    boolean exist = backtrack(board, wordCharArray, idx+1, row-1, col) || backtrack(board, wordCharArray,
-                                                                                    idx+1, row+1, col) || backtrack(board, wordCharArray, idx+1, row, col-1) || backtrack(board, wordCharArray, idx+1, row, col+1);
+    boolean exist = backtrack(board, wordCharArray, idx+1, row-1, col) || backtrack(board, wordCharArray, idx+1, row+1, col) || backtrack(board, wordCharArray, idx+1, row, col-1) || backtrack(board, wordCharArray, idx+1, row, col+1);
     // 递归退出时需要将字符还原
     board[row][col] = wordCharArray[idx];
     return exist;
@@ -3966,7 +3960,7 @@ private boolean helper(TreeNode root, int idx, int total) {
 }
 ```
 
-#### lc101 对称二叉树
+#### [lc101 对称二叉树](https://leetcode-cn.com/problems/symmetric-tree/)
 
 思路：
 
@@ -4945,7 +4939,7 @@ public class Solution {
 }
 ```
 
-#### lc31 下一个排列
+#### [lc31 下一个排列](https://leetcode-cn.com/problems/next-permutation/)
 
 思路：
 
