@@ -1459,31 +1459,6 @@ public int findPeakElement(int[] nums) {
 
 
 
-#### [lc560. 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
-
-思路：前缀和 + hashMap
-
-```java
-public int subarraySum(int[] nums, int k) {
-    // 前缀和 + hashMap
-    int res = 0;
-    int preSum = 0;
-    Map<Integer, Integer> map = new HashMap<>();
-    // 注意添加一个前缀和为0的前缀和
-    map.put(0, 1);
-
-    for (int i = 0; i < nums.length; i ++) {
-        preSum += nums[i];
-
-        if (map.containsKey(preSum - k)) {
-            res += map.get(preSum - k);
-        }
-        map.put(preSum, map.getOrDefault(preSum, 0)+1);
-    }
-    return res;
-}
-```
-
 #### [lc34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
 思路：寻找左边界和右边界
@@ -1527,6 +1502,42 @@ public int[] searchRange(int[] nums, int target) {
     }
     res[1] = high;
     return res;
+}
+```
+
+#### [lc378. 有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/)
+
+```java
+public int kthSmallest(int[][] matrix, int k) {
+    int n = matrix.length;
+    int left = matrix[0][0];
+    int right = matrix[n - 1][n - 1];
+    while (left < right) {
+        int mid = left + ((right - left) >> 1);
+        if (check(matrix, mid, k, n)) {
+            right = mid;
+        } else {
+            // 收缩左边界
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+// 检查小于mid的元素个数是否大于等于k
+public boolean check(int[][] matrix, int mid, int k, int n) {
+    int i = n - 1;
+    int j = 0;
+    int num = 0;
+    while (i >= 0 && j < n) {
+        if (matrix[i][j] <= mid) {
+            // 表示j所在列的所有元素都小于等于mid
+            num += i + 1;
+            j++;
+        } else {
+            i--;
+        }
+    }
+    return num >= k;
 }
 ```
 
@@ -1700,7 +1711,7 @@ public int[] twoSum(int[] nums, int target) {
 }
 ```
 
-#### lc560 和为K的子数组
+#### [lc560 和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
 
 思路：
 
@@ -2057,7 +2068,7 @@ private void pathSum(TreeNode root, int sum, List<Integer> temp, List<List<Integ
 
 
 
-#### lc22 括号生成
+#### [lc22 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
 
 ```java
 /**
@@ -3423,10 +3434,10 @@ public int maxPathSum(TreeNode root) {
 }
 
 /**
-     * 计算过当前结点的最大路径和
-     * @param root
-     * @return
-     */
+ * 计算过当前结点的最大路径和
+ * @param root
+ * @return
+*/
 private int dfs(TreeNode root) {
     // 如果节点为空的话，返回0
     if (root == null) {
@@ -3860,7 +3871,7 @@ private void inorderTraverse(TreeNode root, List<Integer> inorder) {
 }
 ```
 
-#### lc543 二叉树直径
+#### [lc543 二叉树直径](https://leetcode-cn.com/problems/diameter-of-binary-tree/)
 
 本题有点类似lc124 二叉树中的最大路径和
 
@@ -5636,7 +5647,7 @@ public int findDuplicate(int[] nums) {
 
 #### [lc4. 寻找两个正序数组的中位数](https://leetcode-cn.com/problems/median-of-two-sorted-arrays/)
 
-思路：双指针
+思路：1. 双指针 O(m+n)，O(1) 2. 二分查找
 
 ```java
 public double findMedianSortedArrays(int[] nums1, int[] nums2) {
@@ -5652,11 +5663,7 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         med1 = med2;
 
         // 记录nums1[idx1]、nums2[idx2]两者的较小值，注意其中一个数组遍历完的情况
-        if (idx1 == nums1.length) {
-            med2 = nums2[idx2++];
-        }else if (idx2 == nums2.length) {
-            med2 = nums1[idx1++];
-        }else if (nums1[idx1] < nums2[idx2]) {
+        if (idx1 < nums1.length &&(idx2 >= nums2.length || nums1[idx1] < nums2[idx2])) {
             med2 = nums1[idx1++];
         }else {
             med2 = nums2[idx2++];
@@ -5668,6 +5675,60 @@ public double findMedianSortedArrays(int[] nums1, int[] nums2) {
         return (med1 + med2) * 1.0 / 2;
     } 
     return med2;
+}
+
+// 二分
+public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    int n = nums1.length;
+    int m = nums2.length;
+    int left = (n + m + 1) / 2;
+    int right = (n + m + 2) / 2;
+    //将偶数和奇数的情况合并，如果是奇数，会求两次同样的 k 。
+    return (getKth(nums1, 0, n - 1, nums2, 0, m - 1, left) + getKth(nums1, 0, n - 1, nums2, 0, m - 1, right)) * 0.5;  
+}
+    
+private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, int end2, int k) {
+    int len1 = end1 - start1 + 1;
+    int len2 = end2 - start2 + 1;
+    //让 len1 的长度小于 len2，这样就能保证如果有数组空了，一定是 len1 
+    if (len1 > len2) return getKth(nums2, start2, end2, nums1, start1, end1, k);
+    if (len1 == 0) return nums2[start2 + k - 1];
+
+    if (k == 1) return Math.min(nums1[start1], nums2[start2]);
+
+    int i = start1 + Math.min(len1, k / 2) - 1;
+    int j = start2 + Math.min(len2, k / 2) - 1;
+
+    if (nums1[i] > nums2[j]) {
+        return getKth(nums1, start1, end1, nums2, j + 1, end2, k - (j - start2 + 1));
+    }
+    else {
+        return getKth(nums1, i + 1, end1, nums2, start2, end2, k - (i - start1 + 1));
+    }
+}
+```
+
+#### 找到两个有序数组中第k小的元素（上一题变种）
+
+```java
+private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, int end2, int k) {
+    int len1 = end1 - start1 + 1;
+    int len2 = end2 - start2 + 1;
+    //让 len1 的长度小于 len2，这样就能保证如果有数组空了，一定是 len1 
+    if (len1 > len2) return getKth(nums2, start2, end2, nums1, start1, end1, k);
+    if (len1 == 0) return nums2[start2 + k - 1];
+
+    if (k == 1) return Math.min(nums1[start1], nums2[start2]);
+
+    int i = start1 + Math.min(len1, k / 2) - 1;
+    int j = start2 + Math.min(len2, k / 2) - 1;
+
+    if (nums1[i] > nums2[j]) {
+        return getKth(nums1, start1, end1, nums2, j + 1, end2, k - (j - start2 + 1));
+    }
+    else {
+        return getKth(nums1, i + 1, end1, nums2, start2, end2, k - (i - start1 + 1));
+    }
 }
 ```
 
@@ -6779,7 +6840,30 @@ public int strStr(String haystack, String needle) {
 
 ```
 
+#### [lc1790. 仅执行一次字符串交换能否使两个字符串相等](https://leetcode-cn.com/problems/check-if-one-string-swap-can-make-strings-equal/)
 
+```java
+public boolean areAlmostEqual(String s1, String s2) {
+    int c = 0;
+    int[] arr = new int[3];
+    if(s1.equals(s2)){
+        return true;
+    }
+    int index = 0;
+    //找到不同的两个下标并记录
+    for(int i = 0;i < s1.length();i++){          
+        if(s1.charAt(i) != s2.charAt(i)){
+            c++;
+            arr[index++] = i;
+
+            if(c > 2){
+                return false;
+            }
+        }
+    }
+    return s1.charAt(arr[0]) == s2.charAt(arr[1]) && s2.charAt(arr[0]) == s1.charAt(arr[1]);
+}
+```
 
 ### Random
 
