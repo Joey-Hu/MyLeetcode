@@ -361,9 +361,7 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 
 ### 动态规划
 
-#### lc121 买卖股票最佳时机
-
-[url](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+#### [lc121 买卖股票最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)（只交易一次）
 
 思路：dp[i]：表示到第 i 天为止能获得的最大利润，所以 dp[i] 等于max\{今天的价格prices[i] - 从第 1 到第 i-1天之中股票最低价格minPrice，dp\[i-1]}，所以需要一个变量 minPrice 记录到第 i-1 天为止的股票最低价格。
 
@@ -392,7 +390,7 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### lc122 买卖股票最佳时机II
+#### [lc122 买卖股票最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)（多次交易）
 
 思路：dp[i] 表示到第 i 天为止能获得的最大利润，dp[i] = 前一天的最大利润dp[i-1] + Math.max(prices[i]-prices[i-1], 0)， Math.max(prices[i]-prices[i-1], 0)表示当天卖出收益是否大于0，如果大于0，则卖出，如果小于0，则不卖出。
 
@@ -416,7 +414,44 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### [lc123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)
+#### [lc714. 买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+思路：dp\[i][0] 表示第 i 天交易完后手里没有股票的最大利润，dp\[i][1] 表示第 i 天交易完后手里持有一支股票的最大利润（i 从 0 开始）
+
+![stock.png](./images/stock.png)
+
+```java
+public int maxProfit(int[] prices, int fee) {
+    int n = prices.length;
+    int[][] dp = new int[n][2];
+    dp[0][0] = 0;
+    dp[0][1] = -prices[0];
+    for (int i = 1; i < n; i ++) {
+        dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]-fee);
+        dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0]-prices[i]);
+    }
+    return dp[n-1][0];
+}
+
+// 优化
+public int maxProfit(int[] prices, int fee) {
+    if (prices.length == 0) {
+        return 0;
+    }
+    int[] dp0 = new int[prices.length];
+    int[] dp1 = new int[prices.length];
+
+    dp1[0] = -prices[0];
+
+    for (int i = 1; i < prices.length; i++) {
+        dp0[i] = Math.max(dp0[i-1], dp1[i-1] + prices[i] - fee);
+        dp1[i] = Math.max(dp1[i-1], dp0[i-1] - prices[i]);
+    }
+    return dp0[prices.length-1];    
+}
+```
+
+#### [lc123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)(最多完成两笔交易)
 
 思路：
 
@@ -483,7 +518,7 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### [lc188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)
+#### [lc188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)（最多可以完成 **k** 笔交易）
 
 与上一题类似	
 
@@ -2771,7 +2806,7 @@ public String addStrings(String num1, String num2) {
 }
 ```
 
-#### lc143 重排列表
+#### [lc143 重排链表](https://leetcode-cn.com/problems/reorder-list/)
 
 思路：获取中间节点，将链表分成两半 l1 和 l2 ，然后逆转 l2，然后将 l2 插入到 l1 中
 
@@ -6861,9 +6896,18 @@ public boolean areAlmostEqual(String s1, String s2) {
 
 ### Random
 
-#### lc470 用 rand7() 实现 rand10()
+#### [lc470 用 rand7() 实现 rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/solution/yong-rand7-shi-xian-rand10-by-leetcode/)
 
 ```java
+public int rand10() {
+    int row, col, idx;
+    do {
+        row = rand7();
+        col = rand7();
+        idx = col + (row - 1) * 7;
+    } while (idx > 40);
+    return 1 + (idx - 1) % 10;
+}
 ```
 
 
