@@ -1089,7 +1089,40 @@ public int maximalSquare(char[][] matrix) {
 }
 ```
 
+#### [lc1312. 让字符串成为回文串的最少插入次数](https://leetcode-cn.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
 
+思路：相向双指针，如果头尾的两个指针指向的字符相等，那我们就同时相向移动两个指针，**但是如果头尾的两个指针指向的字符不相等，我们就需要插入字符了**。这里有两个选择，在头指针的前方插入尾指针指向的字符，移动尾指针；还有就是在尾指针的后方插入头指针指向的字符，移动头指针。
+
+每当头尾指针指向的字符不相同的时候，我们都有这两种选择，最终，我们要求使得区间 [0, n] 是回文的最小插入次数，我们可以定义，dp[i][j] 表示的是使得区间 [i, j] 是回文的最小插入次数
+
+```java
+public int minInsertions(String s) {
+    int[][] memo = new int[s.length()][s.length()];
+    for (int i = 0; i < s.length(); ++i) {
+        Arrays.fill(memo[i], Integer.MAX_VALUE);
+    }
+
+    return helper(s.toCharArray(), 0, s.length() - 1, memo);
+}
+
+private int helper(char[] sArr, int left, int right, int[][] memo) {
+    if (left >= right) {
+        return 0;
+    }
+
+    if (memo[left][right] != Integer.MAX_VALUE) {
+        return memo[left][right];
+    }
+
+    if (sArr[left] == sArr[right]) {
+        return memo[left][right] = helper(sArr, left + 1, right - 1, memo);
+    }
+
+    return memo[left][right] = Math.min(helper(sArr, left + 1, right, memo),
+                                        helper(sArr, left, right - 1, memo)) + 1;
+
+}
+```
 
 ### 队列
 
@@ -1138,81 +1171,6 @@ public class Solution {
         }
         return res;
     }
-}
-```
-
-#### [lc215 数组中的第K个大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
-
-1. Arrays.sort() 快排，直接取前k个元素，时间复杂度：O(NlogN)
-
-2. 堆排序，时间复杂度：O(nlogk)
-
-   最大堆，用最大堆保存 N-k+1 个数，每次只和堆顶比，如果比堆顶小，删除堆顶，新数入堆。
-
-   面试的时候会让你手动实现堆
-
-```java
-public class Solution {
-    public int findKth(int[] a, int n, int K) {
-        // write code here
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(n-K+1, new Comparator<Integer>(){
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o2.compareTo(o1);
-            }
-        });
-        for (int i = 0; i < n; i++) {
-            if (maxHeap.size() < n-K+1) {
-                maxHeap.offer(a[i]);
-            }else if (maxHeap.peek() > a[i]) {
-                maxHeap.poll();
-                maxHeap.offer(a[i]);
-            }
-        }
-        return maxHeap.peek();
-    }
-}
-```
-
-3. 快排思想，时间复杂度：O(N)
-
-```java
-public int findKthLargest(int[] nums, int k) {
-    int left = 0;
-    int right = nums.length - 1;
-    int len = nums.length;
-
-    while (left < right) {
-        int pos = partion(nums, left, right);
-        // 每次排序完后都能保证pos之前的元素都小于nums[pos]
-        if (pos == len - k) {
-            break;
-        }else if (pos > len - k) {
-            // 如果pos>len-k，那说明比pos小的元素个数大于len-k，缩小右边界
-            right = pos - 1;
-        }else {
-            // 同上
-            left = pos + 1;
-        }
-    }
-    return nums[len - k];
-}
-
-private int partion(int[] nums, int left, int right) {
-    int base = nums[left];
-
-    while (left < right) {
-        while (left < right && nums[right] >= base) {
-            right --;
-        }
-        nums[left] = nums[right];
-        while (left < right && nums[left] <= base) {
-            left ++;
-        } 
-        nums[right] = nums[left];
-    }
-    nums[left] = base;
-    return left;
 }
 ```
 
@@ -1492,7 +1450,56 @@ public int findPeakElement(int[] nums) {
 
 #### [补充题7. 木头切割问题](https://mp.weixin.qq.com/s/o-1VJO2TQZjC5ROmV7CReA)
 
+#### [lc35. 搜索插入位置](https://leetcode-cn.com/problems/search-insert-position/)
 
+思路：对于无重复元素的数组，就是一道搜索左边界的问题
+
+```java
+public int searchInsert(int[] nums, int target) {
+    int low = 0;
+    int high = nums.length-1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        }else if (nums[mid] > target) {
+            high = mid - 1;
+        }else {
+            low = mid + 1;
+        }
+    }
+    return low;
+}
+```
+
+[扩展](https://blog.csdn.net/fsjwin/article/details/109267398)：二分查找 请实现有重复数字的有序数组的二分查找，输出在数组中第一个大于等于查找值的位置，如果数组中不存在这样的数，则输出数组长度加一
+
+```java
+public static int findIt(int n, int v, int[] a) {
+    //数组为空时返回值
+    if(n==0)
+        return 1;
+    //定义区间左值、中值和右值
+    int left=0;
+    int right=n-1;
+    int index;
+    //当left和right重合时进行最后一次比较
+    while(left<=right){
+        index=(left+right)/2;
+        if(a[index]>=v){//查找值小于等于中值时
+            if(index==0||a[index-1]<v)//考虑到第一个值就是所求值的情况，防止index-1数组越界（短路运算）
+                return index+1;
+            else
+                right=index-1;
+        }else{//查找值大于中值时
+            left=index+1;
+        }
+    }
+    //未查找到在此处返回数组长度加1
+    return n+1;
+}
+```
 
 #### [lc34. 在排序数组中查找元素的第一个和最后一个位置](https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/)
 
@@ -2317,7 +2324,7 @@ public ListNode reverseList(ListNode head) {
 }
 ```
 
-#### lc92 翻转链表II
+#### [lc92 翻转链表II](https://leetcode-cn.com/problems/reverse-linked-list-ii/)
 
 思路：找到待翻转链表的前一个节点prev，开始节点start，结束节点end，结束节点的后续节点next，然后进行翻转，代码很类似 lc25的迭代方法代码
 
@@ -2511,7 +2518,7 @@ public class M146_LRUCache {
     }
 ```
 
-#### [lc21 合并两有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/submissions/)
+#### [lc21 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/submissions/)
 
 思路：使用两个指针分别遍历两个链表，当两个指针都不为空时，比较两个指针指向的元素，选择一个较小元素添加到结果链表中并移动该指针，接下去继续比较两个指针指向的元素直到一个指针为空，结果链表连接剩余元素。
 
@@ -2522,10 +2529,10 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
     while (l1 != null && l2 != null) {
         if (l1.val < l2.val) {
-            cur.next = new ListNode(l1.val);
+            cur.next = l1;
             l1 = l1.next;
         }else {
-            cur.next = new ListNode(l2.val);
+            cur.next = l2;
             l2 = l2.next;
         }
         cur = cur.next;
@@ -2572,10 +2579,10 @@ private ListNode mergeTwoLists(ListNode list1, ListNode list2) {
 
     while (cur1 != null && cur2 != null) {
         if (cur1.val < cur2.val) {
-            cur.next = new ListNode(cur1.val);
+            cur.next = cur1;
             cur1 = cur1.next;
         }else {
-            cur.next = new ListNode(cur2.val);
+            cur.next = cur2;
             cur2 = cur2.next;
         }
 
@@ -5092,11 +5099,11 @@ public int[][] insert(int[][] intervals, int[] newInterval) {
 
 [秒懂力扣区间题目：重叠区间、合并区间、插入区间](https://mp.weixin.qq.com/s/ioUlNa4ZToCrun3qb4y4Ow)
 
-#### lc41 缺失的第一个正数
+#### [lc41 缺失的第一个正数](https://leetcode-cn.com/problems/first-missing-positive/solution/que-shi-de-di-yi-ge-zheng-shu-by-leetcode-solution/)（记住吧、、、）
 
 思路：
 
-1. 所有1....n之外的数都可以忽略，因为确实的第一个正整数一定是在1... n+1之间
+1. 所有1....n之外的数都可以忽略，因为缺失的第一个正整数一定是在1... n+1之间
 
 2. 如何表示1... n之间的某个元素出现过：将 nums[idx-1] 变成负数用来表示该索引 idx 代表的数出现过
 3. 找到第一个为正数的元素，该元素的下标代表的数就是缺失的第一个正数，如果没有找到，表示1... n的元素是满的
@@ -5379,7 +5386,80 @@ Follow-up：如果允许重复一次字符呢——微软-苏州-Lead面（2020.
 
 [159. Longest Substring with At Most Two Distinct Characters 最多有2个不同字符的最长子串](https://www.cnblogs.com/grandyang/p/5185561.html)
 
+#### [lc215 数组中的第K个大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
 
+1. Arrays.sort() 快排，直接取前k个元素，时间复杂度：O(NlogN)
+
+2. 堆排序，时间复杂度：O(nlogk)
+
+   最大堆，用最大堆保存 N-k+1 个数，每次只和堆顶比，如果比堆顶小，删除堆顶，新数入堆。
+
+   面试的时候会让你手动实现堆
+
+```java
+public class Solution {
+    public int findKth(int[] a, int n, int K) {
+        // write code here
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>(n-K+1, new Comparator<Integer>(){
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2.compareTo(o1);
+            }
+        });
+        for (int i = 0; i < n; i++) {
+            if (maxHeap.size() < n-K+1) {
+                maxHeap.offer(a[i]);
+            }else if (maxHeap.peek() > a[i]) {
+                maxHeap.poll();
+                maxHeap.offer(a[i]);
+            }
+        }
+        return maxHeap.peek();
+    }
+}
+```
+
+3. 快排思想，时间复杂度：O(N)
+
+```java
+public int findKthLargest(int[] nums, int k) {
+    int left = 0;
+    int right = nums.length - 1;
+    int len = nums.length;
+
+    while (left < right) {
+        int pos = partion(nums, left, right);
+        // 每次排序完后都能保证pos之前的元素都小于nums[pos]
+        if (pos == len - k) {
+            break;
+        }else if (pos > len - k) {
+            // 如果pos>len-k，那说明比pos小的元素个数大于len-k，缩小右边界
+            right = pos - 1;
+        }else {
+            // 同上
+            left = pos + 1;
+        }
+    }
+    return nums[len - k];
+}
+
+private int partion(int[] nums, int left, int right) {
+    int base = nums[left];
+
+    while (left < right) {
+        while (left < right && nums[right] >= base) {
+            right --;
+        }
+        nums[left] = nums[right];
+        while (left < right && nums[left] <= base) {
+            left ++;
+        } 
+        nums[right] = nums[left];
+    }
+    nums[left] = base;
+    return left;
+}
+```
 
 #### [lc15 三数之和](https://leetcode.com/problems/3sum/)
 
