@@ -50,14 +50,13 @@ public int jump(int[] nums) {
     int longest = 0;
     int end = 0;
     int step = 0;
-    while (i < nums.length-1) {
+    for (i = 0; i < nums.length-1; i ++) {
         longest = Math.max(longest, nums[i] + i);
         // 每次在上次能跳到的范围（end）内选择一个能跳的最远的位置（也就是能跳到max_far位置的点）作为下次的起跳点 
         if (i == end) {
             end = longest;
             step ++;
         }
-        i ++;
     }
     return step;
 }
@@ -95,7 +94,7 @@ public String largestNumber(int[] nums) {
         str[i] = "" + nums[i];
     }
 
-    // 按字典序排序
+    // 按字典序降序排序
     Arrays.sort(str, (a, b) -> {
         String sa = a + b;
         String sb = b + a;
@@ -116,9 +115,11 @@ public String largestNumber(int[] nums) {
 }
 ```
 
+#### [lc678. 有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
+
 ### DFS&BFS
 
-#### lc200 岛屿数量
+#### [lc200 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 
 思路：深度优先遍历，当遍历到某个位置grid\[i][j] 时，判断结果为1时，res ++，并标记该元素已访问过，然后进行深度优先遍历其周围的元素
 
@@ -170,6 +171,23 @@ private void boundaryDFS(char[][] grid, int i, int j) {
 
 ##### [463. 岛屿的周长](https://leetcode-cn.com/problems/island-perimeter/) （Easy）
 
+```java
+public int islandPerimeter(int[][] grid) {
+    int res = 0;
+    for (int i = 0; i < grid.length; i++) {
+        for (int j = 0; j < grid[0].length; j++) {
+            if (grid[i][j] == 1) {
+                if (i == 0 || grid[i - 1][j] == 0) res++; // UP
+                if (j == 0 || grid[i][j - 1] == 0) res++; // LEFT
+                if (i == grid.length -1 || grid[i + 1][j] == 0) res++; // DOWN
+                if (j == grid[0].length -1 || grid[i][j + 1] == 0) res++; // RIGHT
+            }
+        }
+    }
+    return res;
+}
+```
+
 ##### [695. 岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/) （Medium）
 
 ```java
@@ -203,7 +221,7 @@ private int dfs(int[][] grid, int i, int j) {
 
 #### [lc329. 矩阵中的最长递增路径](https://leetcode-cn.com/problems/longest-increasing-path-in-a-matrix/)
 
-思路：==记忆化的DFS==，减少了时间复杂度
+思路：给定一个 `m x n` 整数矩阵 `matrix` ，找出其中 **最长递增路径** 的长度。==记忆化的DFS==，减少了时间复杂度
 
 ```java
 public int longestIncreasingPath(int[][] matrix) {
@@ -358,6 +376,31 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 #### [lc210. 课程表 II](https://leetcode-cn.com/problems/course-schedule-ii/)
 
 思路：和上一题类似，不过本题返回的是学完所有课程所安排的学习顺序（返回一种即可），只需要在将入度为0的课程弹出队列时，加入结果数组即可。
+
+```java
+while (!queue.isEmpty()) {
+    int course = queue.poll();
+    res.add(course);
+    if (courseAdj.get(course) != null) {
+        for (int next : courseAdj.get(course)) {
+            indegree.put(next, indegree.get(next)-1);
+            if (indegree.get(next) == 0) {
+                queue.offer(next);
+            }
+        }
+    }
+}
+if (res.size() == numCourses) {
+    int[] ans = new int[res.size()];
+    for (int i = 0; i < res.size(); i ++) {
+        ans[i] = res.get(i);
+    }
+    return ans;
+}
+return new int[0];
+```
+
+
 
 ### 动态规划
 
@@ -560,9 +603,7 @@ public int maxProfit(int k, int[] prices) {
 }
 ```
 
-
-
-#### lc198 打家劫舍
+#### [lc198 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
 思路：动态规划，这道题的本质相当于在一列数组中取出一个或多个不相邻数，使其和最大
 
@@ -628,9 +669,7 @@ public int rob(int[] nums) {
 }
 ```
 
-
-
-#### lc322 零钱兑换 
+#### [lc322 零钱兑换](https://leetcode-cn.com/problems/coin-change/) 
 
 思路：类似于爬楼梯那道题目
 
@@ -658,9 +697,9 @@ public int coinChange(int[] coins, int amount) {
 }
 ```
 
-#### LC518 零钱兑换II
+#### [LC518 零钱兑换II](https://leetcode-cn.com/problems/coin-change-2/)
 
-思路：
+思路：每一种面额的硬币有无限个。返回可以凑成总金额的硬币组合数
 
 1. 类似于组合总和那道题的解法 -- 空间复杂度过大
 2. 动态规划：完全背包问题
@@ -693,7 +732,7 @@ public int change(int amount, int[] coins) {
 ```java
 // 动态规划 O(N^2)
 // dp[i]：到nums[i]为止的最长上升子序列
-// dp[i] = max(dp[i], dp[j]+1) if dp[j] > dp[i](j<i) 在前面找到一个小于nums[i]的数nums[j]，则最长上升子序列更新为max(dp[j]+1, dp[i])
+// dp[i] = max(dp[i], dp[j]+1) if dp[j] < dp[i](j<i) 在前面找到一个小于nums[i]的数nums[j]，则最长上升子序列更新为max(dp[j]+1, dp[i])
 public int lengthOfLIS(int[] nums) {
     int[] dp = new int[nums.length];
     dp[0] = 1;
@@ -756,7 +795,7 @@ private int binarySearchPos(int[] increasingSequence, int len, int x) {
 }
 ```
 
-#### lc70 爬楼梯
+#### [lc70 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 
 思路：动态规划；
 
@@ -781,6 +820,11 @@ public int climbStairs(int n) {
     dp[2] = 2;
     for (int i = 3; i < dp.length; i++) {
         dp[i] = dp[i-1] + dp[i-2];
+        // 不能爬到7及7的倍数
+        // if (i % 7 == 0) {dp[i] = 0;}
+        // if (i - 1 % 7 == 0) {dp[i] == dp[i-2];}
+        // if (i - 2 % 7 == 0) {dp[i] == dp[i-1];} 
+
     }
     return dp[n];
 }
@@ -822,7 +866,7 @@ public int backToOrigin(int length, int n) {
 }
 ```
 
-#### lc64 最小路径和
+#### [lc64 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
 
 思路：
 
@@ -856,7 +900,9 @@ public int minPathSum(int[][] grid) {
 }
 ```
 
-#### lc1143 最长公共子序列
+#### [lc174. 地下城游戏](https://leetcode-cn.com/problems/dungeon-game/)
+
+#### [lc1143 最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence/)
 
 思路：二维动态规划,dp\[i][j]表示word1[i-1]和word2[j-1]之间的最长公共子序列，比如下图中的dp\[5][3] 表示abcde和ace之间的最长子序列是ace。
 
@@ -907,9 +953,45 @@ public int uniquePaths(int m, int n) {
 }
 ```
 
+#### [lc1155. 掷骰子的N种方法](https://leetcode-cn.com/problems/number-of-dice-rolls-with-target-sum/)(MicroSoft)
 
+```java
+public int numRollsToTarget(int d, int f, int target) {
+    return dp(d, f, target);
+}
 
-#### [lc1155. 掷骰子的N种方法](https://leetcode-cn.com/problems/number-of-dice-rolls-with-target-sum/)(ms)
+public int dp(int d, int f, int target) {
+    if (d == 0 || f == 0 || target == 0) {
+        return 0;
+    }
+
+    // dp[i][j]表示用i个骰子掷出j的组合个数
+    int[][] dp = new int[d+1][target+1];
+    // 表示骰子当前骰子0个且目标值target=0的情况
+    dp[0][0] = 1;
+    // 填充第一行和第一列
+    for (int i = 1; i <= target; i ++) {
+        dp[0][i] = 0;
+    }
+    for (int j = 1; j <= d; j ++) {
+        dp[j][0] = 0;
+    }
+
+    for (int i = 1; i <= d; i ++) {
+        for (int j = 1; j <= target; j ++) {
+            int sum = 0;
+            for (int k = 1; k <= f; k ++) {
+                if (j-k >= 0) {
+                    sum += dp[i-1][j-k];
+                    sum = sum % 1000000007;
+                }
+            }
+            dp[i][j] = sum;
+        }
+    }
+    return dp[d][target];
+}
+```
 
 #### [lc91. 解码方法](https://leetcode-cn.com/problems/decode-ways/)
 
@@ -975,6 +1057,8 @@ public boolean wordBreak(String s, List<String> wordDict) {
 A 、B数组各抽出一个子数组，单看它们的末尾项，如果它们俩不一样，则公共子数组肯定不包括它们俩。
 
 如果它们俩一样，则要考虑它们俩前面的子数组「能为它们俩提供多大的公共长度」。
+
+**dp\[i][j]：表示第一个数组 A 前 i 个元素和数组 B 前 j 个元素组成的最长公共子数组(相当于子串)的长度。**
 
 * 如果它们俩的前缀数组的「末尾项」不相同，由于子数组的连续性，前缀数组不能为它们俩提供公共长度
 * 如果它们俩的前缀数组的「末尾项」相同，则可以为它们俩提供公共长度：
@@ -1089,6 +1173,62 @@ public int maximalSquare(char[][] matrix) {
 }
 ```
 
+#### [lc85. 最大矩形](https://leetcode-cn.com/problems/maximal-rectangle/)
+
+```java
+public int maximalRectangle(char[][] matrix) {
+    if (matrix.length == 0) {
+        return 0;
+    }
+    int[] heights = new int[matrix[0].length];
+    int maxArea = 0;
+    for (int row = 0; row < matrix.length; row++) {
+        //遍历每一列，更新高度
+        for (int col = 0; col < matrix[0].length; col++) {
+            if (matrix[row][col] == '1') {
+                heights[col] += 1;
+            } else {
+                heights[col] = 0;
+            }
+        }
+        //调用上一题的解法，更新函数
+        maxArea = Math.max(maxArea, largestRectangleArea(heights));
+    }
+    return maxArea;
+}
+
+public int largestRectangleArea(int[] heights) {
+    if (heights.length == 0) {
+        return 0;
+    }
+    int[] leftLessMin = new int[heights.length];
+    leftLessMin[0] = -1;
+    for (int i = 1; i < heights.length; i++) {
+        int l = i - 1;
+        while (l >= 0 && heights[l] >= heights[i]) {
+            l = leftLessMin[l];
+        }
+        leftLessMin[i] = l;
+    }
+
+    int[] rightLessMin = new int[heights.length];
+    rightLessMin[heights.length - 1] = heights.length;
+    for (int i = heights.length - 2; i >= 0; i--) {
+        int r = i + 1;
+        while (r <= heights.length - 1 && heights[r] >= heights[i]) {
+            r = rightLessMin[r];
+        }
+        rightLessMin[i] = r;
+    }
+    int maxArea = 0;
+    for (int i = 0; i < heights.length; i++) {
+        int area = (rightLessMin[i] - leftLessMin[i] - 1) * heights[i];
+        maxArea = Math.max(area, maxArea);
+    }
+    return maxArea;
+}
+```
+
 #### [lc1312. 让字符串成为回文串的最少插入次数](https://leetcode-cn.com/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
 
 思路：相向双指针，如果头尾的两个指针指向的字符相等，那我们就同时相向移动两个指针，**但是如果头尾的两个指针指向的字符不相等，我们就需要插入字符了**。这里有两个选择，在头指针的前方插入尾指针指向的字符，移动尾指针；还有就是在尾指针的后方插入头指针指向的字符，移动头指针。
@@ -1174,73 +1314,6 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法-滑动窗口最大值
-
-[url](https://www.nowcoder.com/practice/1624bc35a45c42c0bc17d17fa0cba788?tpId=190&&tqId=35991&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
-
-1. 单调队列
-
-```java
-public int[] maxSlidingWindow(int[] nums, int k) {
-    if (nums == null || k <= 0) {
-        return new int[0];
-    }
-
-    int len = nums.length;
-    int[] res = new int[len-k+1];
-    int idx = 0;
-    Deque<Integer> queue = new ArrayDeque<>();
-
-    for (int i = 0; i < nums.length; i++) {
-        // 如果队首元素是i-k的话，表示窗口向右移了一步，则移除队首元素
-        if (!queue.isEmpty() && queue.peek() < i - k + 1) {
-            queue.poll();
-        }
-        // 比较队尾元素和将要进来的值，如果小的话就都移除
-        while (!queue.isEmpty() && nums[queue.peekLast()] <= nums[i]) {
-            queue.pollLast();
-        }
-
-        queue.offer(i);
-        // 若 i >= k-1，说明窗口大小正好是k，就需要将最大值(队尾元素)加入结果 res 中
-        if (i >= k-1) {
-            res[idx++] = nums[queue.peek()];
-        }
-    }
-    return res;
-}
-```
-
-2. 最大堆
-
-```java
-public class Solution {
-    public ArrayList<Integer> maxInWindows(int [] num, int size)
-    {
-        PriorityQueue<Integer> maxHeap = new PriorityQueue<Integer>((o1, o2) -> o2 - o1);
-        ArrayList<Integer> res = new ArrayList<>();
-        
-        if (size == 0 || num.length == 0 || size > num.length) {
-            return res;
-        }
-        
-        int count = 0;
-        for (; count < size; count ++) {
-            maxHeap.offer(num[count]);
-        }
-        
-        while (count < num.length) {
-            res.add(maxHeap.peek());
-            maxHeap.remove(num[count-size]);
-            maxHeap.offer(num[count]);
-            count ++;
-        }
-        res.add(maxHeap.peek());
-        return res;
-    }
-}
-```
-
 #### 牛客题霸-算法-随时找到数据流的中位数
 
 [同leetcode](https://leetcode.com/submissions/detail/441062711/)
@@ -1308,54 +1381,6 @@ public int mySqrt(int x) {
 }
 ```
 
-#### lc33 搜索排序旋转数组
-
-思路：二分查找
-
- * 先找到最小值的下标，然后根据最后一个元素与target的大小
- * 确定是在左半边找(target > nums[len-1])还是在右半边(target <= nums[len-1])找
- * 然后在有序的那一半利用二分查找找到 target
-
-```java
-/** 
- * O(logN)
- */
-public int search(int[] nums, int target) {
-    // 找到最小值的索引
-    int left = 0;
-    int right = nums.length - 1;
-    while (left < right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] > nums[right]) {
-            left = mid + 1;
-        }else {
-            right = mid;                                
-        }
-    }
-
-    int minValIndex = left;
-    if (nums[minValIndex] == target) {
-        return minValIndex;
-    }
-
-    left = target > nums[nums.length-1] ? 0 : minValIndex;
-    right = target > nums[nums.length-1] ? minValIndex-1: nums.length-1;
-
-    // 普通二分查找target
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        if (nums[mid] == target) {
-            return mid;
-        }else if (nums[mid] > target) {
-            right = mid - 1;
-        }else {
-            left = mid + 1;                
-        }
-    }
-    return -1;
-}
-```
-
 #### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 
 思路：二分，将中间指针指向的元素与最右边的元素比较，收缩左边界
@@ -1403,7 +1428,53 @@ public int findMin(int[] nums) {
 }
 ```
 
+#### lc33 搜索排序旋转数组
 
+思路：二分查找
+
+ * 先找到最小值的下标，然后根据最后一个元素与target的大小
+ * 确定是在左半边找(target > nums[len-1])还是在右半边(target <= nums[len-1])找
+ * 然后在有序的那一半利用二分查找找到 target
+
+```java
+/** 
+ * O(logN)
+ */
+public int search(int[] nums, int target) {
+    // 找到最小值的索引
+    int left = 0;
+    int right = nums.length - 1;
+    while (left < right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] > nums[right]) {
+            left = mid + 1;
+        }else {
+            right = mid;                                
+        }
+    }
+
+    int minValIndex = left;
+    if (nums[minValIndex] == target) {
+        return minValIndex;
+    }
+
+    left = target > nums[nums.length-1] ? 0 : minValIndex;
+    right = target > nums[nums.length-1] ? minValIndex-1: nums.length-1;
+
+    // 普通二分查找target
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        }else if (nums[mid] > target) {
+            right = mid - 1;
+        }else {
+            left = mid + 1;                
+        }
+    }
+    return -1;
+}
+```
 
 #### lc162 寻找峰值
 
@@ -6469,6 +6540,26 @@ public boolean find132pattern(int[] nums) {
 ```
 
 #### [lc84. 柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+
+```java
+public int largestRectangleArea(int[] heights) {
+    if (heights == null || heights.length == 0) {
+        return 0;
+    }
+    Stack<Integer> stack = new Stack<Integer>();
+    int ans = 0;
+    for (int i = 0; i <= heights.length; i++) {
+        int cur = (i == heights.length) ? -1 : heights[i];
+        while (!stack.isEmpty() && heights[stack.peek()] >= cur) {
+            int h = heights[stack.pop()];
+            int w = stack.isEmpty() ? i : i - stack.peek() - 1;
+            ans = Math.max(ans, h * w);
+        } 
+        stack.push(i);
+    }
+    return ans;
+}
+```
 
 
 
