@@ -117,6 +117,28 @@ public String largestNumber(int[] nums) {
 
 #### [lc678. 有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
 
+#### [134. 加油站](https://leetcode-cn.com/problems/gas-station/)
+
+```java
+public int canCompleteCircuit(int[] gas, int[] cost) {
+    int n = gas.length;
+    int sumTank = 0;//总油量
+    int curTank = 0;//当前油箱内的油量
+    int startStation = 0;
+    for(int i = 0; i < n;i++){
+        sumTank += gas[i] - cost[i];
+        curTank += gas[i] - cost[i];
+        if(curTank < 0){
+            startStation = i + 1;
+            curTank = 0;
+        }
+    }
+    return sumTank >= 0 ? startStation : -1;
+}
+```
+
+
+
 ### DFS&BFS
 
 #### [lc200 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
@@ -298,6 +320,26 @@ private void dfs(int i, int[][] isConnected, boolean[] visited) {
             dfs(j, isConnected, visited);
         }
     }
+}
+```
+
+#### [剑指 Offer 62. 圆圈中最后剩下的数字](https://leetcode-cn.com/problems/yuan-quan-zhong-zui-hou-sheng-xia-de-shu-zi-lcof/)
+
+思路：约瑟夫环问题，模拟链表
+
+```java
+public int lastRemaining(int n, int m) {
+    ArrayList<Integer> list = new ArrayList<>(n);
+    for (int i = 0; i < n; i++) {
+        list.add(i);
+    }
+    int idx = 0;
+    while (n > 1) {
+        idx = (idx + m - 1) % n;
+        list.remove(idx);
+        n--;
+    }
+    return list.get(0);
 }
 ```
 
@@ -1381,6 +1423,34 @@ public int mySqrt(int x) {
 }
 ```
 
+#### 求平方根，有精度的
+
+写一个函数，[求平方根](https://www.nowcoder.com/jump/super-jump/word?word=求平方根)，函数参数为目标数字和精度，测试案例 fn(4.1,0.001), fn(501.1,0.001), fn(0.045,0.001)
+
+```java
+public static float fn(float n, float e){
+    float x = 0;
+    if (n > 0 && e > 0){
+        float low = 0;
+        float high = n;
+        while (low < high){
+            float mid = (low + high)/2;
+            if (mid * mid < n - e){
+                low = mid;
+            }else if(mid * mid > n + e){
+                high = mid;
+            }else {
+                x = mid;
+                break;
+            }
+        }
+    }
+    return x;
+}
+```
+
+
+
 #### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 
 思路：二分，将中间指针指向的元素与最右边的元素比较，收缩左边界
@@ -1643,7 +1713,6 @@ public boolean check(int[][] matrix, int mid, int k, int n) {
     int num = 0;
     while (i >= 0 && j < n) {
         if (matrix[i][j] <= mid) {
-            // 表示j所在列的所有元素都小于等于mid
             num += i + 1;
             j++;
         } else {
@@ -4251,6 +4320,7 @@ public void flatten(TreeNode root) {
 思路：
 
 1. 中序遍历得到排序链表，输出倒数第k个节点
+2. 叉搜索树（二叉[排序]()树）满足：根节点大于左子树，小于右子树。那么[二叉树]()的   中序遍历序列就是一个递增序列   。为方便了找第K大的节点，我们可以调换左右子树的遍历顺序，这样遍历序列是一个递减序列，这样遍历到第K个元素就是我们要找的第K大的节点。
 
 ```java
 public int kthLargest(TreeNode root, int k) {
@@ -4269,6 +4339,26 @@ private void inorderTraversal(TreeNode root, List list) {
     inorderTraversal(root.left, list);
     list.add(root.val);
     inorderTraversal(root.right, list);
+}
+
+// 迭代
+public int kthLargest(TreeNode root, int k) {
+    Stack<TreeNode> stack = new Stack<>();
+    TreeNode p = root;
+    int count = 0;
+    while(p != null || !stack.isEmpty()){
+        while(p != null){
+            stack.push(p);
+            p = p.right;
+        }
+        p = stack.pop();
+        count++;
+        if(count == k){
+            return p.val;
+        }
+        p = p.left;
+    }
+    return 0;
 }
 ```
 
@@ -4741,50 +4831,6 @@ public class Solution {
             }
         }
         return -1;
-    }
-}
-```
-
-#### 牛客题霸-算法篇-矩阵最小路径和
-
-[url]()
-
-同 leetcode 
-
-动态规划，找到子问题，到矩阵每一个点的最小路径和
-
-```java
-public class Solution {
-    /**
-     * 
-     * @param matrix int整型二维数组 the matrix
-     * @return int整型
-     */
-    public int minPathSum (int[][] matrix) {
-        // write code here
-        int rows = matrix.length;
-        int cols = matrix[0].length;
-        int[][] dp = new int[rows][cols];
-        dp[0][0] = matrix[0][0];
-        
-        // 最上面一行只能一直往右得到
-        for (int j = 1; j < cols; j++) {
-            dp[0][j] = dp[0][j-1] + matrix[0][j];
-        }
-        
-        // 同理，最左边一行只能一直向下得到
-        for (int i = 1; i < rows; i++) {
-            dp[i][0] = dp[i-1][0] + matrix[i][0];
-        }
-        
-        // 遍历
-        for (int i = 1; i < rows; i ++) {
-            for (int j = 1; j < cols; j ++) {
-                // 每个元素选择左边和上边最小的元素得到最小路径和
-                dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + matrix[i][j];
-            }
-        }
-        return dp[rows-1][cols-1];
     }
 }
 ```
@@ -5980,6 +6026,12 @@ public boolean checkInclusion(String s1, String s2) {
     return false;
 }
 ```
+
+#### 数组中的不同元素个数
+
+题目要求：数组a,先单调递增再单调递减，输出数组中不同元素个数。要求：O(1)空间复杂度，不能改变原数组
+
+思路：从两头往中间走，i = 0，j = len-1，比较两个数，保证大的那个数不动小的数往中间走，每次比较看数值是否相等，如果相等 i++，j–，否则根据两个值大小确定是 i++ 还是 j–。
 
 
 
