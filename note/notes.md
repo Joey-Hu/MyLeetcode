@@ -837,6 +837,57 @@ private int binarySearchPos(int[] increasingSequence, int len, int x) {
 }
 ```
 
+#### [**NC91** **最长递增子序列**](https://www.nowcoder.com/practice/9cf027bf54714ad889d4f30ff0ae5481?tpId=117)
+
+```java
+public int[] LIS (int[] arr) {
+    if(arr == null) return null;
+    // write code here
+    int len = arr.length;
+    int maxLen[] = new int[len];
+    LinkedList<Integer> suar = new LinkedList<>();
+    suar.add(arr[0]);
+    maxLen[0] = 1;
+    for(int i = 0;i < len;i++){
+        if(arr[i] > suar.getLast()){
+            suar.add(arr[i]);
+            maxLen[i] = suar.size();
+        }else{
+            int m = BinaryFindH(suar,arr[i]);
+            suar.set(m,arr[i]);
+            maxLen[i] = m + 1;
+        }
+    }
+    int[] res = new int[suar.size()];
+    for(int i = len - 1,j = suar.size();i >= 0;i--){
+        if(maxLen[i] == j){
+            res[--j] = arr[i];
+        }
+    }
+    return res;
+}
+// 查找大于等于target的第一个元素的下标
+public int BinaryFindH(LinkedList<Integer> arr,int target){
+    int left = 0;
+    int right = arr.size() - 1;
+    int mid = (left + right)/2;
+    while(left < right){
+        mid = (left + right)/2;
+        if(arr.get(mid) > target){
+            right = mid - 1;
+        }else{
+            left = mid + 1;
+        }
+    }
+    if(arr.get(left) < target){    //判断是否为大于目标值的第一个数字
+        return left+1;
+    }else
+        return left;
+}
+```
+
+
+
 #### [lc70 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 
 思路：动态规划；
@@ -1727,7 +1778,7 @@ public boolean check(int[][] matrix, int mid, int k, int n) {
 
 ### 哈希
 
-#### 牛客题霸-算法-出现次数的 TopK 问题
+#### 出现次数的 TopK 问题
 
 使用桶排序
 
@@ -1782,7 +1833,7 @@ public class Solution {
 
  
 
-#### 牛客题霸-算法-数组中出现次数超过一半的数字
+#### 数组中出现次数超过一半的数字
 
 [url](https://www.nowcoder.com/practice/e8a1b01a2df14cb2b228b30ee6a92163?tpId=190&&tqId=35371&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
 
@@ -1833,7 +1884,7 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法-未排序正数数组中累加和为给定值的最长子数组长度
+#### 未排序正数数组中累加和为给定值的最长子数组长度
 
 使用hashMap
 
@@ -1974,8 +2025,6 @@ public int longestConsecutive(int[] nums) {
     return longestLen;
 }
 ```
-
-
 
 ### 回溯法
 
@@ -2366,6 +2415,29 @@ public ListNode reverseKGroup(ListNode head, int k) {
     }
     return prev;
 }
+
+// 最后不足K个节点的部分也反转
+public static ListNode reverseKgroup(ListNode head, int k) {
+    if (head == null)
+        return head;
+    ListNode cur = head;
+    ListNode reHead = null;
+
+    int count = 0;
+    /* Reverse first k nodes of linked list */
+    while (count < k && cur != null) {
+        ListNode reCur = cur;
+        cur = cur.next;
+        reCur.next = reHead;
+        reHead = reCur;
+        count++;
+    }
+
+    if (cur != null)
+        head.next = reverseKgroup(cur, k);
+
+    return reHead;
+}
 ```
 
 ```java
@@ -2633,6 +2705,120 @@ public class M146_LRUCache {
     }
 }
 ```
+
+#### [lc460. LFU 缓存](https://leetcode-cn.com/problems/lfu-cache/)
+
+```java
+class LFUCache {
+    Map<Integer, Node> cache; // 存储缓存的内容
+    Map<Integer, DoublyLinkedList> freqMap; // 存储每个频次对应的双向链表
+    int size;
+    int capacity;
+    int min; // 存储当前最小频次
+
+    public LFUCache(int capacity) {
+        cache = new HashMap<> (capacity);
+        freqMap = new HashMap<>();
+        this.capacity = capacity;
+    }
+    
+    public int get(int key) {
+        Node node = cache.get(key);
+        if (node == null) {
+            return -1;
+        }
+        freqInc(node);
+        return node.value;
+    }
+    
+    public void put(int key, int value) {
+        if (capacity == 0) {
+            return;
+        }
+        Node node = cache.get(key);
+        if (node != null) {
+            node.value = value;
+            freqInc(node);
+        } else {
+            if (size == capacity) {
+                DoublyLinkedList minFreqLinkedList = freqMap.get(min);
+                cache.remove(minFreqLinkedList.tail.pre.key);
+                minFreqLinkedList.removeNode(minFreqLinkedList.tail.pre); // 这里不需要维护min, 因为下面add了newNode后min肯定是1.
+                size--;
+            }
+            Node newNode = new Node(key, value);
+            cache.put(key, newNode);
+            DoublyLinkedList linkedList = freqMap.get(1);
+            if (linkedList == null) {
+                linkedList = new DoublyLinkedList();
+                freqMap.put(1, linkedList);
+            }
+            linkedList.addNode(newNode);
+            size++;  
+            min = 1;   
+        }
+    }
+
+    void freqInc(Node node) {
+        // 从原freq对应的链表里移除, 并更新min
+        int freq = node.freq;
+        DoublyLinkedList linkedList = freqMap.get(freq);
+        linkedList.removeNode(node);
+        if (freq == min && linkedList.head.post == linkedList.tail) { 
+            min = freq + 1;
+        }
+        // 加入新freq对应的链表
+        node.freq++;
+        linkedList = freqMap.get(freq + 1);
+        if (linkedList == null) {
+            linkedList = new DoublyLinkedList();
+            freqMap.put(freq + 1, linkedList);
+        }
+        linkedList.addNode(node);
+    }
+}
+
+class Node {
+    int key;
+    int value;
+    int freq = 1;
+    Node pre;
+    Node post;
+
+    public Node() {}
+    
+    public Node(int key, int value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+
+class DoublyLinkedList {
+    Node head;
+    Node tail;
+
+    public DoublyLinkedList() {
+        head = new Node();
+        tail = new Node();
+        head.post = tail;
+        tail.pre = head;
+    }
+
+    void removeNode(Node node) {
+        node.pre.post = node.post;
+        node.post.pre = node.pre;
+    }
+
+    void addNode(Node node) {
+        node.post = head.post;
+        head.post.pre = node;
+        head.post = node;
+        node.pre = head;
+    }
+}
+```
+
+
 
 #### lc160 两链表相交
 
@@ -4573,7 +4759,7 @@ public Node connect(Node root) {
 
 ### 数组
 
-#### 牛客题霸-算法篇-两数之和
+#### 两数之和
 
 [url](https://www.nowcoder.com/practice/20ef0972485e41019e39543e8e895b7f?tpId=117&&tqId=34983&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
 
@@ -4604,7 +4790,7 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法篇-合并两个有序数组
+#### 合并两个有序数组
 
 [url](https://www.nowcoder.com/practice/89865d4375634fc484f3a24b7fe65665?tpId=117&&tqId=34943&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
 
@@ -4739,58 +4925,7 @@ public int[][] generateMatrix(int n) {
 }
 ```
 
-
-
-#### 牛客题霸-算法篇-数组中相加和为0的三元组
-
-[url](https://www.nowcoder.com/practice/345e2ed5f81d4017bbb8cc6055b0b711?tpId=117&&tqId=34975&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
-
-时间复杂度：O(NlogN)
-
-同 leetcode
-
-```java
-public List<List<Integer>> threeSum(int[] nums) {
-    // 排序
-    Arrays.sort(nums);
-    List<List<Integer>> res = new LinkedList<>();
-    for (int i = 0; i < nums.length - 2; i ++) {
-
-        if (i == 0 || (i > 0 && nums[i] != nums[i-1])) {
-            int low = i + 1;
-            int high = nums.length - 1;
-
-            while(low < high) {
-                if (nums[low] + nums[high] == -nums[i]) {
-                    res.add(Arrays.asList(nums[i], nums[low], nums[high]));
-                    while (low < high && nums[low] == nums[low + 1]) {
-                        low ++;
-                    }
-
-                    while (low < high && nums[high] == nums[high - 1]) {
-                        high --;
-                    }
-                    low ++;
-                    high --;
-                } else if (nums[low] + nums[high] > -nums[i]) {
-                    while (low < high && nums[high] == nums[high-1]) {
-                        high --;
-                    }
-                    high --;
-                } else {
-                    while (low < high && nums[low] == nums[low+1]) {
-                        low ++;
-                    }
-                    low ++;
-                }
-            }
-        }
-    }
-    return res;
-}
-```
-
-#### 牛客题霸-算法篇-在转动过的有序数组中寻找目标值
+#### 在转动过的有序数组中寻找目标值
 
 [url](https://www.nowcoder.com/practice/7cd13986c79d4d3a8d928d490db5d707?tpId=117&&tqId=34969&rp=1&ru=/ta/job-code-high&qru=/ta/job-code-high/question-ranking)
 
@@ -6648,6 +6783,48 @@ public String addStrings(String num1, String num2) {
 
 思路：和上一题思路一样，区别主要在于10进制转换为36进制，涉及到 char 转 int 和 int 转 char
 
+```java
+public String add36Strings(String num1, String num2) {
+    int idx1 = num1.length() - 1;
+    int idx2 = num2.length() - 1;
+    StringBuilder res = new StringBuilder();
+    int carry = 0;
+
+    while (idx1 >= 0 || idx2 >= 0 || carry != 0) {
+        int tmp = carry;
+        if (idx1 >= 0) {
+            tmp += getInt(num1.charAt(idx1--));
+        }
+
+        if (idx2 >= 0) {
+            tmp += getInt(num2.charAt(idx2--));
+        }
+
+        carry = tmp / 36;
+        res.insert(0, getChar(tmp));
+    }
+    return res.toString();
+}
+
+public int getInt(char ch) {
+    if (ch >= '0' && ch <= '9') {
+        return ch - '0';
+    }else {
+        return ch - 'a' + 10;
+    }
+}
+
+public char getChar(int num) {
+    if (num <= 9 && num >= 0) {
+        return num + '0';
+    }else {
+        return num - 10 + 'a';
+    }
+}
+```
+
+
+
 #### lc224 基本计算器
 
 有点复杂啊。。。
@@ -7293,6 +7470,94 @@ private void swap(int[] nums, int i, int j) {
     nums[j] = tmp;
 }
 ```
+
+#### 手动构建链表和树
+
+```java
+// 构建链表
+//创建一个链表的类
+class ListNode{
+	int val;	//数值 data
+	ListNode next;	// 结点 node
+	
+	ListNode(int x){	//可以定义一个有参构造方法，也可以定义一个无参构造方法
+		val = x;
+	}
+	// 添加新的结点
+	public void add(int newval) {
+		ListNode newNode = new ListNode(newval);
+		if(this.next == null)
+			this.next = newNode;
+		else
+			this.next.add(newval);
+	}
+	// 打印链表
+	public void print() {
+		System.out.print(this.val);
+		if(this.next != null)
+			{
+				System.out.print("-->");
+				this.next.print();
+			}
+	}
+}
+public class CreateListNode 
+{
+	public static void main(String[] args)
+	{
+		ListNode l1 = new ListNode(1);	//创建链表对象 l1 （对应有参 和 无参 构造方法）
+		l1.add(2);				//插入结点，打印
+		l1.add(3);
+		l1.print();
+	}
+}
+// 构建树
+private int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };  
+private static List<Node> nodeList = null;  
+
+/** 
+     * 内部类：节点 
+     *  
+     * @author ocaicai@yeah.net @date: 2011-5-17 
+     *  
+     */  
+private static class Node {  
+    Node leftChild;  
+    Node rightChild;  
+    int data;  
+
+    Node(int newData) {  
+        leftChild = null;  
+        rightChild = null;  
+        data = newData;  
+    }  
+}  
+
+public void createBinTree() {  
+    nodeList = new LinkedList<Node>();  
+    // 将一个数组的值依次转换为Node节点  
+    for (int nodeIndex = 0; nodeIndex < array.length; nodeIndex++) {  
+        nodeList.add(new Node(array[nodeIndex]));  
+    }  
+    // 对前lastParentIndex-1个父节点按照父节点与孩子节点的数字关系建立二叉树  
+    for (int parentIndex = 0; parentIndex < array.length / 2 - 1; parentIndex++) {  
+        // 左孩子  
+        nodeList.get(parentIndex).leftChild = nodeList.get(parentIndex * 2 + 1);  
+        // 右孩子  
+        nodeList.get(parentIndex).rightChild = nodeList.get(parentIndex * 2 + 2);  
+    }  
+    // 最后一个父节点:因为最后一个父节点可能没有右孩子，所以单独拿出来处理  
+    int lastParentIndex = array.length / 2 - 1;  
+    // 左孩子  
+    nodeList.get(lastParentIndex).leftChild = nodeList.get(lastParentIndex * 2 + 1);  
+    // 右孩子,如果数组的长度为奇数才建立右孩子  
+    if (array.length % 2 == 1) {  
+        nodeList.get(lastParentIndex).rightChild = nodeList.get(lastParentIndex * 2 + 2);  
+    }  
+}
+```
+
+
 
 ### 笔试真题
 
