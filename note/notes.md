@@ -1,3 +1,158 @@
+### 多线程
+
+#### [lc1195. 交替打印字符串](https://leetcode-cn.com/problems/fizz-buzz-multithreaded/)
+
+思路：1. 使用synchronized+wait+notify方式；2. 使用ReentrantLock+Condition方式
+
+```java
+// synchronized+wait+notify
+class FizzBuzz {
+    private int n;
+    private int i = 1;
+
+    public FizzBuzz(int n) {
+        this.n = n;
+    }
+
+    // printFizz.run() outputs "fizz".
+    public void fizz(Runnable printFizz) throws InterruptedException {
+        synchronized(this) {
+            while (i <= n) {
+                if (i % 3 == 0 && i % 5 != 0) {
+                    printFizz.run();
+                    i ++;
+                    this.notifyAll();
+                }else {
+                    this.wait();
+                }
+            }
+        }
+    }
+
+    // printBuzz.run() outputs "buzz".
+    public void buzz(Runnable printBuzz) throws InterruptedException {
+        synchronized(this) {
+            while (i <= n) {
+                if (i % 3 != 0 && i % 5 == 0) {
+                    printBuzz.run();
+                    i ++;
+                    this.notifyAll();
+                }else {
+                    this.wait();
+                }
+            }
+        }
+    }
+
+    // printFizzBuzz.run() outputs "fizzbuzz".
+    public void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        synchronized(this) {
+            while (i <= n) {
+                if (i % 3 == 0 && i % 5 == 0) {
+                    printFizzBuzz.run();
+                    i ++;
+                    this.notifyAll();
+                }else {
+                    this.wait();
+                }
+            }
+        }
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public void number(IntConsumer printNumber) throws InterruptedException {
+        synchronized(this) {
+            while (i <= n) {
+                if (i % 3 != 0 && i % 5 != 0) {
+                    printNumber.accept(i);
+                    i ++;
+                    this.notifyAll();
+                }else {
+                    this.wait();
+                }
+            }
+        }
+    }
+}
+
+// ReentrantLock+Condition
+class FizzBuzz {
+    private int n;
+    private int i = 1;
+    private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+
+    public FizzBuzz(int n) {
+        this.n = n;
+    }
+
+    // printFizz.run() outputs "fizz".
+    public void fizz(Runnable printFizz) throws InterruptedException {
+        while (i <= n) {
+            lock.lock();
+            if (i % 3 == 0 && i % 5 != 0) {
+                printFizz.run();
+                i ++;
+                condition.signalAll();
+            }else {
+                condition.await();
+            }
+            lock.unlock();
+        }
+    }
+
+    // printBuzz.run() outputs "buzz".
+    public void buzz(Runnable printBuzz) throws InterruptedException {
+        while(i<=n){
+            lock.lock();
+            if(i%5==0&&i%3!=0){
+                printBuzz.run();
+                i++;
+                condition.signalAll();
+            }
+            else{
+                condition.await();
+            }
+            lock.unlock();
+        }
+    }
+
+    // printFizzBuzz.run() outputs "fizzbuzz".
+    public void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        while(i<=n){
+            lock.lock();
+            if(i%3==0&&i%5==0){
+                printFizzBuzz.run();
+                i++;
+                condition.signalAll();
+            }
+            else{
+                condition.await();
+            }
+            lock.unlock();
+        }
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public void number(IntConsumer printNumber) throws InterruptedException {
+        while(i<=n){
+            lock.lock();
+            if(i%3!=0&&i%5!=0){
+                printNumber.accept(i);
+                i++;
+                condition.signalAll();
+            }
+            else{
+                condition.await();
+            }
+            lock.unlock();
+        }          
+    }
+}
+```
+
+
+
 ### 贪心算法
 
 #### [lc605. 种花问题](https://leetcode-cn.com/problems/can-place-flowers/)
@@ -1240,25 +1395,29 @@ public int minEditCost (String str1, String str2, int ic, int dc, int rc) {
 
 #### [lc221. 最大正方形](https://leetcode-cn.com/problems/maximal-square/)
 
-思路：`dp[i + 1][j + 1]` 表示 「以第 `i` 行、第 `j` 列为右下角的正方形的最大边长」
+思路：`dp[i + 1][j + 1]` 表示 以第 `i` 行、第 `j` 列为右下角的正方形的最大边长
 
 若某格子值为 1，则以此为右下角的正方形的、最大边长为：上面的正方形、左面的正方形或左上的正方形中，最小的那个，再加上此格。
 
 ```java
 public int maximalSquare(char[][] matrix) {
-    if (matrix == null || matrix.length < 1 || matrix[0].length < 1) {
+    if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
         return 0;
     }
 
     int rows = matrix.length;
     int cols = matrix[0].length;
     int maxWidth = 0;
-    int[][] dp = new int[rows+1][cols+1];
+    int[][] dp = new int[rows][cols];
     for (int i = 0; i < rows; i ++) {
         for (int j = 0; j < cols; j ++) {
             if (matrix[i][j] == '1') {
-                dp[i+1][j+1] = Math.min(dp[i][j], Math.min(dp[i+1][j], dp[i][j+1])) + 1;
-                maxWidth = Math.max(maxWidth, dp[i+1][j+1]);
+                if (i == 0 || j == 0) {
+                    dp[i][j] = 1;
+                }else {
+                    dp[i][j] = Math.min(dp[i-1][j-1], Math.min(dp[i-1][j], dp[i][j-1])) + 1;
+                }
+                maxWidth = Math.max(maxWidth, dp[i][j]);
             } 
         }
     }
@@ -2144,7 +2303,7 @@ private void backtrack(List<List<Integer>> res, List<Integer> temp, int[] nums, 
 }
 ```
 
-#### lc39 组合总和
+#### [lc39 组合总和](https://leetcode-cn.com/problems/combination-sum/)
 
 思路：回溯法
 
@@ -5900,7 +6059,7 @@ public int maxArea(int[] height) {
     }
 ```
 
-#### lc76 最小覆盖子串
+#### [lc76 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
 
 思路：使用左右指针作为窗口的边界，右指针一直向右滑动，直到窗口中包含字符串 t（使用 count 计数器），此时需要判断左边界是否多余：这时**需要记录此时的窗口长度，起始下标，**向右移动左指针直到窗口中不能够包含字符串 t。然后再去 扩大右边界直到窗口包含字符串 t，重复上述操作 ...
 
