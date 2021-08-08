@@ -7453,6 +7453,13 @@ public boolean areAlmostEqual(String s1, String s2) {
 }
 ```
 
+#### [lc468. 验证IP地址](https://leetcode-cn.com/problems/validate-ip-address/)
+
+思路：首先按照IP中是含有 ‘.’ 还是 ‘:’ 进行划分是IPv4还是IPv6，然后split分割成String[] ipSegments
+
+* IPv4判断：ipSegments长度是否等于4，逐个判断segment的长度是否是0-3之间，是否有前置0，segment是否包含非数字，segment的值是否是小于255;
+* IPv6判断：ipSegments长度是否等于8，逐个判断segment的长度是否在0-4之间，判断segment字符是否在 ‘a’到 ‘f' 之间。
+
 ### Random
 
 #### [lc470 用 rand7() 实现 rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/solution/yong-rand7-shi-xian-rand10-by-leetcode/)
@@ -7468,6 +7475,8 @@ public int rand10() {
     return 1 + (idx - 1) % 10;
 }
 ```
+
+
 
 
 
