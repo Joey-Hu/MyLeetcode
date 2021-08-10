@@ -498,6 +498,137 @@ public int lastRemaining(int n, int m) {
 }
 ```
 
+#### [lc133. 克隆图](https://leetcode-cn.com/problems/clone-graph/)
+
+思路：
+
+1. 使用dfs来克隆图，使用一个哈希表来存储所有已被访问和克隆的节点。哈希表中的 key 是原始图中的节点，value 是克隆图中的对应节点。
+2. 从给定节点开始遍历图。如果某个节点已经被访问过，则返回其克隆图中的对应节点。
+3. 如果当前访问的节点不在哈希表中，则创建它的克隆节点并存储在哈希表中。注意：在进入递归之前，必须先创建克隆节点并保存在哈希表中。如果不保证这种顺序，可能会在递归中再次遇到同一个节点，再次遍历该节点时，陷入死循环。
+4. 递归调用每个节点的邻接点。每个节点递归调用的次数等于邻接点的数量，每一次调用返回其对应邻接点的克隆节点，最终返回这些克隆邻接点的列表，将其放入对应克隆节点的邻接表中。这样就可以克隆给定的节点和其邻接点。
+
+#### [马走棋盘算法](https://blog.csdn.net/guozhangjie1992/article/details/106986284)
+
+```java
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+ 
+public class HorseChessDemo {
+    // 棋盘的行数
+    private static int X;
+    // 棋盘的列数
+    private static int Y;
+ 
+    // 标记棋盘各个位置是否被访问
+    private static boolean visited[];
+ 
+    // 判断是否成功
+    private static boolean isFinished;
+ 
+    public static void main(String[] args) {
+        System.out.println("骑士开始周游啦...");
+        X = 6;
+        Y = 6;
+        // 初始位置行数
+        int row = 1;
+        // 初始位置列数
+        int column = 2;
+        // 创建棋盘
+        int[][] chessboard = new int[X][Y];
+        visited = new boolean[X * Y];
+        
+        traversalChess(chessboard, row - 1, column - 1, 1);
+        System.out.print(step);
+    }
+ 
+    public static void traversalChess(int[][] chessboard, int row, int column, int step) {
+        chessboard[row][column] = step;
+        // row * X + column表示被访问节点的位置，即从0开始数
+        visited[row * X + column] = true;
+        // 获取下一步可以走的位置的集合
+        ArrayList<Point> arrayList = next(new Point(column, row));
+        // 排序
+        sort(arrayList);
+        while (!arrayList.isEmpty()) {
+            Point point = arrayList.remove(0);
+            // 判断是否被访问过
+            if (!visited[point.y * X + point.x]) {
+                // 记得step+1，表示一共走的步数
+                traversalChess(chessboard, point.y, point.x, step + 1);
+            }
+        }
+        // 判断马儿是否完成了任务，使用step和棋盘总步数进行比较
+        // 如果没有完成，则将棋盘还原
+        if (step < X * Y && !isFinished) {
+            chessboard[row][column] = 0;
+            visited[row * X + column] = false;
+        } else {
+            isFinished = true;
+        }
+    }
+ 
+    /**
+     * 根据当前的位置，计算马儿还可以走哪些位置，并放入list中，list最大为8
+     *
+     * @param point
+     * @return
+     */
+    public static ArrayList<Point> next(Point point) {
+        ArrayList<Point> arrayList = new ArrayList<>();
+        Point p1 = new Point();
+        // 表示马儿可以走上图中的位置1
+        if ((p1.x = point.x - 1) >= 0 && (p1.y = point.y - 2) >= 0) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置2
+        if ((p1.x = point.x + 1) < X && (p1.y = point.y - 2) >= 0) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置3
+        if ((p1.x = point.x + 2) < X && (p1.y = point.y - 1) >= 0) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置4
+        if ((p1.x = point.x + 2) < X && (p1.y = point.y + 1) < Y) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置5
+        if ((p1.x = point.x + 1) < X && (p1.y = point.y + 2) < Y) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置6
+        if ((p1.x = point.x - 1) >= 0 && (p1.y = point.y + 2) < Y) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置7
+        if ((p1.x = point.x - 2) >= 0 && (p1.y = point.y + 1) < Y) {
+            arrayList.add(new Point(p1));
+        }
+        // 表示马儿可以走上图中的位置8
+        if ((p1.x = point.x - 2) >= 0 && (p1.y = point.y - 1) >= 0) {
+            arrayList.add(new Point(p1));
+        }
+        return arrayList;
+    }
+ 
+    /**
+     * 对list进行排序
+     * @param arrayList
+     */
+    public static void sort(ArrayList<Point> arrayList) {
+        arrayList.sort(new Comparator<Point>() {
+            @Override
+            public int compare(Point o1, Point o2) {
+                int count1 = next(o1).size();
+                int count2 = next(o2).size();
+                return count1 - count2;
+            }
+        });
+    }
+}
+```
+
 
 
 ### 拓扑排序
@@ -1485,7 +1616,7 @@ public int largestRectangleArea(int[] heights) {
 
 思路：相向双指针，如果头尾的两个指针指向的字符相等，那我们就同时相向移动两个指针，**但是如果头尾的两个指针指向的字符不相等，我们就需要插入字符了**。这里有两个选择，在头指针的前方插入尾指针指向的字符，移动尾指针；还有就是在尾指针的后方插入头指针指向的字符，移动头指针。
 
-每当头尾指针指向的字符不相同的时候，我们都有这两种选择，最终，我们要求使得区间 [0, n] 是回文的最小插入次数，我们可以定义，dp[i][j] 表示的是使得区间 [i, j] 是回文的最小插入次数
+每当头尾指针指向的字符不相同的时候，我们都有这两种选择，最终，我们要求使得区间 [0, n] 是回文的最小插入次数，我们可以定义，dp\[i][j] 表示的是使得区间 [i, j] 是回文的最小插入次数
 
 ```java
 public int minInsertions(String s) {
@@ -1519,6 +1650,41 @@ private int helper(char[] sArr, int left, int right, int[][] memo) {
 ### 队列
 
 #### 用队列实现栈
+
+```java
+class MyStack {
+    Queue<Integer> queue;
+
+    /** Initialize your data structure here. */
+    public MyStack() {
+        queue = new LinkedList<>();
+    }
+    
+    /** Push element x onto stack. */
+    public void push(int x) {
+        queue.offer(x);
+        // 重新排序，将队列中除了新添加的x之外的所有元素重新出队入队一次，这样x就变成了最先出去的元素了
+        for (int i = 0; i < queue.size()-1; i ++) {
+            queue.offer(queue.poll());
+        }
+    }
+    
+    /** Removes the element on top of the stack and returns that element. */
+    public int pop() {
+        return queue.poll();
+    }
+    
+    /** Get the top element. */
+    public int top() {
+        return queue.peek();
+    }
+    
+    /** Returns whether the stack is empty. */
+    public boolean empty() {
+        return queue.isEmpty();
+    }
+}
+```
 
 
 
@@ -1566,13 +1732,11 @@ public class Solution {
 }
 ```
 
-#### 牛客题霸-算法-随时找到数据流的中位数
-
-[同leetcode](https://leetcode.com/submissions/detail/441062711/)
+#### [数据流的中位数](https://leetcode-cn.com/problems/shu-ju-liu-zhong-de-zhong-wei-shu-lcof/)
 
 
 
-#### lc[239. 滑动窗口最大值（HARD）](https://leetcode-cn.com/problems/sliding-window-maximum/)
+#### [lc239. 滑动窗口最大值（HARD）](https://leetcode-cn.com/problems/sliding-window-maximum/)
 
 思路：单调队列 + 滑动窗口
 
@@ -1607,7 +1771,7 @@ public int[] maxSlidingWindow(int[] nums, int k) {
 
 ### 二分 & 分治
 
-#### lc69 sqrt(x)
+#### [lc69 sqrt(x)](https://leetcode-cn.com/problems/sqrtx/)
 
 思路；二分查找（右边界），在 1-x 之间查找 sqrt(x)，注意边界
 
@@ -1659,9 +1823,9 @@ public static float fn(float n, float e){
 }
 ```
 
+#### 旋转数组问题
 
-
-#### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
+##### [lc153. 寻找旋转排序数组中的最小值](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/)
 
 思路：二分，将中间指针指向的元素与最右边的元素比较，收缩左边界
 
@@ -1684,7 +1848,7 @@ public int findMin(int[] nums) {
     }
 ```
 
-#### [lc154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
+##### [lc154. 寻找旋转排序数组中的最小值 II](https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/)
 
 思路：有重复值的情况
 
@@ -1708,7 +1872,7 @@ public int findMin(int[] nums) {
 }
 ```
 
-#### lc33 搜索排序旋转数组
+##### lc33 搜索排序旋转数组
 
 思路：二分查找
 
@@ -1933,15 +2097,17 @@ public boolean check(int[][] matrix, int mid, int k, int n) {
 }
 ```
 
+#### [lc611. 有效三角形的个数](https://leetcode-cn.com/problems/valid-triangle-number/)
+
+给定一个包含非负整数的数组，你的任务是统计其中可以组成三角形三条边的三元组个数。
+
 
 
 ### 哈希
 
-#### 出现次数的 TopK 问题
+#### [出现次数的 TopK 问题](https://www.nowcoder.com/practice/fd711bdfa0e840b381d7e1b82183b3ee?tpId=190&&tqId=36047&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
 
 使用桶排序
-
-[url](https://www.nowcoder.com/practice/fd711bdfa0e840b381d7e1b82183b3ee?tpId=190&&tqId=36047&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
 
 ```java
 public class Solution {
@@ -2233,8 +2399,6 @@ private void backtrack(List<List<Integer>> track, ArrayList<Integer> tempList, i
 }
 ```
 
-
-
 #### lc[46. 全排列](https://leetcode-cn.com/problems/permutations/)
 
 ```java
@@ -2375,8 +2539,6 @@ private void backtrack(int[] candidates, int remain, List<List<Integer>> res, Li
 }
 ```
 
-
-
 #### lc79. 单词搜索
 
 ```java
@@ -2410,7 +2572,26 @@ private boolean backtrack(char[][] board, char[] wordCharArray, int idx, int row
 }
 ```
 
-#### lc113 路径总和
+#### [lc112. 路径总和](https://leetcode-cn.com/problems/path-sum/)
+
+```java
+public boolean hasPathSum(TreeNode root, int targetSum) {
+    return dfs(root, targetSum);
+}
+
+private boolean dfs(TreeNode root, int remain) {
+    if (root == null) {
+        return false;
+    }
+    if (root.left == null && root.right == null && remain == root.val) {
+        return true;
+    }
+
+    return dfs(root.left, remain-root.val) || dfs(root.right, remain-root.val);
+}
+```
+
+#### [lc113 路径总和 II](https://leetcode-cn.com/problems/path-sum-ii/)
 
 思路：每当DFS搜索到新结点时，保存该节点，每当找到一条路径时，保存该路径，如果 搜索到叶子节点，发现不是路径时，返回上一节点
 
@@ -2442,15 +2623,26 @@ private void pathSum(TreeNode root, int sum, List<Integer> temp, List<List<Integ
 }
 ```
 
-#### lc129 求根节点到叶子结点数字之和
+#### [lc129 求根节点到叶子结点数字之和](https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/)
 
 思路：
 
 ```java
+public int sumNumbers(TreeNode root) {
+    return dfs(root, 0);
+}
 
+private int dfs(TreeNode root, int preSum) {
+    if (root == null) {
+        return 0;
+    }
+
+    if (root.left == null && root.right == null) {
+        return preSum * 10 + root.val;
+    }
+    return dfs(root.left, preSum * 10 + root.val) + dfs(root.right, preSum * 10 + root.val);
+}
 ```
-
-
 
 #### [lc22 括号生成](https://leetcode-cn.com/problems/generate-parentheses/)
 
@@ -2530,6 +2722,41 @@ private void backtrack(String s, List<String> ans, int pos, List<String> tmp) {
         // 回退到上一个元素，即回溯
         tmp.remove(tmp.size() - 1);
     }
+}
+```
+
+#### [lc17. 电话号码的字母组合](https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/)
+
+```java
+public List<String> letterCombinations(String digits) {
+    List<String> res = new ArrayList<>();
+
+    if (digits.length() == 0) {
+        return res;
+    }
+
+    String[] phoneNumber = new String[]{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+    addLetters(res, phoneNumber, digits, 0, "");
+
+    return res;
+}
+
+private void addLetters(List<String> res, String[] phoneNumber, String digits, int level, String s) {
+    // S长度已经和digits长度一致，则将s加入到res中
+    if (level == digits.length()) {
+        res.add(s);
+        // 返回上一层
+        return;
+    }
+
+    char ch = digits.charAt(level);
+    String letters = phoneNumber[ch - '0'];
+    for (int i = 0; i < letters.length(); i++) {
+        // 递归调用，进入下一层
+        addLetters(res, phoneNumber, digits, level+1, s+letters.charAt(i));
+    }
+    return;
 }
 ```
 
@@ -3166,8 +3393,6 @@ public ListNode mergeTwoList(ListNode l1, ListNode l2) {
 }
 ```
 
-3. 
-
 #### 字节跳动高频题——排序奇升偶降链表
 
 https://mp.weixin.qq.com/s/377FfqvpY8NwMInhpoDgsw
@@ -3376,8 +3601,6 @@ public ListNode oddEvenList(ListNode head) {
 
 }
 ```
-
-
 
 #### lc141 环形链表
 
@@ -5766,6 +5989,73 @@ public int[][] matrixBlockSum(int[][] mat, int k) {
 
 #### [lc670. 最大交换](https://leetcode-cn.com/problems/maximum-swap/)
 
+给定一个非负整数，你**至多**可以交换一次数字中的任意两位。返回你能得到的最大值。
+
+思路：遍历元素，找到其右边大于他的最大元素，并交换位置
+
+```java
+public int maximumSwap(int num) {
+    char[] numArray = String.valueOf(num).toCharArray();
+    int[] last = new int[10];
+
+    // 记录每一位数字最后出现的下标
+    for (int i = 0; i < numArray.length; i ++) {
+        last[numArray[i]-'0'] = i;
+    }
+
+    for (int i = 0; i < numArray.length; i ++) {
+        // 找到其右边的大于他的最大元素
+        for (int k = 9; k > numArray[i]-'0'; k --) {
+            if (last[k] > i) {
+                char tmp = numArray[i];
+                numArray[i] = numArray[last[k]];
+                numArray[last[k]] = tmp;
+                return Integer.valueOf(new String(numArray));
+            }
+        }
+    }
+    return num;
+}
+```
+
+#### [lc498. 对角线遍历](https://leetcode-cn.com/problems/diagonal-traverse/)
+
+思路：模拟
+
+```java
+public int[] findDiagonalOrder(int[][] mat) {
+    int m = mat.length;
+    int n = mat[0].length;
+    int[] res = new int[m * n];
+    int row = 0;
+    int col = 0;
+    int dir = 1;
+    int idx = 0;
+    while (row < m && col < n) {
+        res[idx ++] = mat[row][col];
+        int newRow = row + (dir == 1 ? -1 : 1); // dir = 1，斜向上；dir = -1, 斜向下
+        int newCol = col + (dir == 1 ? 1 : -1);
+
+        if (newRow < 0 || newRow >= m || newCol < 0 || newCol >= n) {
+            if (dir == 1) {
+                row += (col == n-1 ? 1 : 0);
+                col += (col < n-1 ? 1 : 0);
+            }else {
+                col += (row == m-1 ? 1 : 0);
+                row += (row < m-1 ? 1 : 0); 
+            }
+            dir = -dir;
+        }else {
+            row = newRow;
+            col = newCol;
+        }
+    }
+    return res;
+}
+```
+
+
+
 ### 双指针
 
 #### [lc3 无重复字符的最长子串](https://leetcode.com/problems/longest-substring-without-repeating-characters/)（高频）
@@ -6549,9 +6839,7 @@ class MyStack {
 
 
 
-#### lc20 有效括号序列
-
-[url](https://www.nowcoder.com/practice/37548e94a270412c8b9fb85643c8ccc2?tpId=190&&tqId=35194&rp=1&ru=/ta/job-code-high-rd&qru=/ta/job-code-high-rd/question-ranking)
+#### [lc20 有效括号序列](https://leetcode-cn.com/problems/valid-parentheses/)
 
 ```java
 public class Solution {
@@ -6591,7 +6879,7 @@ public class Solution {
 }
 ```
 
-#### lc155 最小栈
+#### [lc155 最小栈](https://leetcode-cn.com/problems/min-stack/)
 
 最小栈的关键在于每次获取最小值的时间复杂度是O(1)，处理办法就是每次插入小于或等于最小值 min 的元素之前，先插入 preMin
 
@@ -6795,6 +7083,65 @@ public static void main(String[] args) {
     test.allPop(push, new Stack<Character>(), 0, "");
 }
 ```
+
+#### [lc1856. 子数组最小乘积的最大值](https://leetcode-cn.com/problems/maximum-subarray-min-product/)
+
+思路：前缀和+单调栈
+
+* 使用前缀和，对数组做一遍预处理
+
+* 然后使用单调栈（单调递增）
+  从左到右，求一遍每个元素右边第一个小于的元素的
+  从右到左，求一遍每个元素左边第一个小于该元素的
+  随后将元素下标在数组中，
+
+* 和前缀和配合使用，获得最终解，每个元素都有可能作为子数组中最小元素
+
+```java
+public int maxSumMinProduct(int[] nums) {
+    // 前缀和, 存储下标“之前”的元素和+nums[0]
+    int n = nums.length;
+    long[] pre = new long[n+1];
+    pre[0] = nums[0];
+    for (int i = 1; i <= n; i ++) {
+        pre[i] = pre[i-1] + nums[i-1];
+    }
+
+    // 求每个元素右边第一个比其小的（单调递增栈）
+    Stack<Integer> stack = new Stack<>();
+    int[] rightLower = new int[n];
+    Arrays.fill(rightLower, n); // 默认为n，即没发现
+    for (int i = 0; i < n; i ++) {
+        while (!stack.empty() && nums[stack.peek()] > nums[i]) {
+            int idx = stack.pop();
+            rightLower[idx] = i;
+        }
+        stack.push(i);
+    }
+    stack.clear();
+
+    // 求每个元素左边第一个比其小的（单调递增栈）
+    int[] leftLower = new int[n];
+    Arrays.fill(leftLower, -1);
+    for (int i = n-1; i >= 0; i --) {
+        while (!stack.empty() && nums[stack.peek()] > nums[i]) {
+            int idx = stack.pop();
+            leftLower[idx] = i; 
+        }
+        stack.push(i);
+    }
+
+    long res = 0;
+    for (int i = 0; i < n; i ++) {
+        int right = rightLower[i];
+        int left = leftLower[i] + 1;
+        res = Math.max(res, (pre[right] - pre[left]) * nums[i]);
+    }
+    return (int)(res % ((long)(1e9+7)));
+}
+```
+
+
 
 
 
@@ -7453,6 +7800,8 @@ public boolean areAlmostEqual(String s1, String s2) {
 }
 ```
 
+#### [lc1247. 交换字符使得字符串相同](https://leetcode-cn.com/problems/minimum-swaps-to-make-strings-equal/)
+
 #### [lc468. 验证IP地址](https://leetcode-cn.com/problems/validate-ip-address/)
 
 思路：首先按照IP中是含有 ‘.’ 还是 ‘:’ 进行划分是IPv4还是IPv6，然后split分割成String[] ipSegments
@@ -7460,7 +7809,7 @@ public boolean areAlmostEqual(String s1, String s2) {
 * IPv4判断：ipSegments长度是否等于4，逐个判断segment的长度是否是0-3之间，是否有前置0，segment是否包含非数字，segment的值是否是小于255;
 * IPv6判断：ipSegments长度是否等于8，逐个判断segment的长度是否在0-4之间，判断segment字符是否在 ‘a’到 ‘f' 之间。
 
-### Random
+### 数学
 
 #### [lc470 用 rand7() 实现 rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/solution/yong-rand7-shi-xian-rand10-by-leetcode/)
 
@@ -7476,9 +7825,9 @@ public int rand10() {
 }
 ```
 
+#### [lc458. 可怜的小猪](https://leetcode-cn.com/problems/poor-pigs/)
 
-
-
+思路：https://leetcode-cn.com/problems/poor-pigs/solution/hua-jie-suan-fa-458-ke-lian-de-xiao-zhu-by-guanpen/
 
 ### 排序
 
