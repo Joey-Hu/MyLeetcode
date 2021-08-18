@@ -409,18 +409,18 @@ public int longestIncreasingPath(int[][] matrix) {
         for (int j = 0; j < matrix[0].length; j ++) {
             // 因为每次访问的都是更大的元素，不可能会访问之前访问过的某个元素，所以不用vis数组
             // boolean[][] vis = new boolean[matrix.length][matrix[0].length];
-            longestPath = Math.max(longestPath, dfs(matrix, i, j, cache, null));
+            longestPath = Math.max(longestPath, dfs(matrix, i, j, cache, -1));
         }
     }
     return longestPath;
 }
 
-private int dfs(int[][] matrix, int i, int j, int[][] cache, Integer pre) {
+private int dfs(int[][] matrix, int i, int j, int[][] cache, int pre) {
     if (i < 0 || i >= matrix.length || j < 0 || j >= matrix[0].length) {
         return 0;
     }
 
-    if (pre != null && matrix[i][j] <= pre) {
+    if (pre != -1 && matrix[i][j] <= pre) {
         return 0;
     }
 
@@ -1229,12 +1229,6 @@ $$
 ```java
 public int backToOrigin(int length, int n) {
     int[][] dp = new int[n+1][length];
-    
-    for (int i = 0; i < dp.length; i++) {
-        for (int j = 0; j < dp[0].length; j++) {
-            dp[i][j] = 0;
-        }
-    }
     dp[0][0] = 1;
     for (int i = 1; i < dp.length; i++) {
         for (int j = 0; j < dp[0].length; j++) {
@@ -1646,6 +1640,31 @@ private int helper(char[] sArr, int left, int right, int[][] memo) {
 
 }
 ```
+
+#### [lc32. 最长有效括号](https://leetcode-cn.com/problems/longest-valid-parentheses/)
+
+```java
+public int longestValidParentheses(String s) {
+    int maxans = 0;
+    // dp[i]表示以下标 ii 字符结尾的最长有效括号的长度，显然有效的子串一定以 ‘)’ 结尾，因此我们可以知道以 ‘(’ 结尾的子串对应的 dp 值必定为 0 ，我们只需要求解 ‘)’ 在 dp 数组中对应位置的值。
+    int[] dp = new int[s.length()];
+    for (int i = 1; i < s.length(); i++) {
+        if (s.charAt(i) == ')') {
+            // 当s[i]是‘)’且s[i-1]也是‘)’，字符串形如 “……()”，则表示有效括号增加两个
+            if (s.charAt(i - 1) == '(') {
+                dp[i] = (i-2 >= 0 ? dp[i - 2] : 0) + 2;
+            } else if (i - dp[i - 1] > 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
+                // s[i]是')'且s[i-1]也是‘)’,字符串形如 “……))”,我们考虑如果倒数第二个 ‘)’ 是一个有效子字符串的一部分（记作 sub_s），对于最后一个 ‘)’ ，如果它是一个更长子字符串的一部分，那么它一定有一个对应的 ‘(’ ，且它的位置在倒数第二个 ‘)’ 所在的有效子字符串的前面（也就是 sub_s的前面）。因此，如果子字符串 sub_s 的前面恰好是 ‘(’ ，那么我们就用 2 加上 sub_s 的长度（dp[i−1]）去更新 dp[i]。同时，我们也会把有效子串 “(sub_s)”之前的有效子串的长度也加上，也就是再加上 dp[i−dp[i−1]−2]。
+                dp[i] = dp[i - 1] + ((i - dp[i - 1] - 2) >= 0 ? dp[i - dp[i - 1] - 2] : 0) + 2;
+            }
+            maxans = Math.max(maxans, dp[i]);
+        }
+    }
+    return maxans;
+}
+```
+
+
 
 ### 队列
 
@@ -4498,6 +4517,58 @@ if (children != null) {
             queue.offer(children.get(j));
         }
     }
+}
+```
+
+#### [lc559. N 叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-n-ary-tree/)
+
+思路：1. 递归， 2. 迭代
+
+```java
+// 递归
+public int maxDepth(Node root) {
+    if (root == null) {
+        return 0;
+    }
+
+    if (root.children == null) {
+        return 1;
+    }
+
+    int max = 0;
+    for (Node child : root.children) {
+        max = Math.max(max, maxDepth(child));
+    }
+    // 最大深度是所有子结点的最大深度+1
+    return max + 1;
+}
+
+// 迭代
+public int maxDepth(Node root) {
+    int res = 0;
+    if (root == null) {
+        return res;
+    }
+
+    Queue<Node> queue = new LinkedList<>();
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+        int size = queue.size();
+        for (int i = 0; i < size; i ++) {
+            Node cur = queue.poll();
+            List<Node> children = cur.children;
+            if (children == null) {
+                continue;
+            }
+            for (int j = 0; j < children.size(); j ++) {
+                if (children.get(j) != null) {
+                    queue.offer(children.get(j));
+                }
+            }
+        }
+        res ++;
+    }
+    return res;
 }
 ```
 
