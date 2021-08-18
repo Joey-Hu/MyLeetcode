@@ -272,7 +272,7 @@ public String largestNumber(int[] nums) {
 
 #### [lc678. 有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
 
-#### [134. 加油站](https://leetcode-cn.com/problems/gas-station/)
+#### [lc134. 加油站](https://leetcode-cn.com/problems/gas-station/)
 
 ```java
 public int canCompleteCircuit(int[] gas, int[] cost) {
@@ -2760,11 +2760,93 @@ private void addLetters(List<String> res, String[] phoneNumber, String digits, i
 }
 ```
 
+#### [lc51. N 皇后](https://leetcode-cn.com/problems/n-queens/)
 
+时间复杂度：O(N!) 空间复杂度：O(N)
 
+```java
+class Solution {
 
+    List<List<String>> list = new ArrayList<List<String>>();  // 最终的结果
 
+    public List<List<String>> solveNQueens(int n) {
+        char[][] visited = new char[n][n];  // 标记数组
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(visited[i], '.');
+        }
+        solveNQueensHelper(n, visited, 0);
+        return list;
+    }
 
+    public void solveNQueensHelper(int n, char[][] visited, int row) {
+        // 递归出口
+        if(row == n){
+            List<String> subList = new ArrayList<String>();
+            for(char[] c : visited) {
+                subList.add(new String(c));
+            }
+            list.add(subList);
+            return;
+        }
+
+        boolean flag = false;
+        for(int j = 0; j < n; j++){
+            /*** 排除已访问情况 ***/
+            // 排除列
+            flag = false;
+            for(int i = row - 1; i >= 0; i--) {
+                if(visited[i][j] == 'Q') {
+                    flag = true;
+                    break;
+                }                    
+            }
+            if(flag)  {
+                flag = false; // 将 flag 还原为 false;
+                continue;
+            }
+
+            // 从左上到右下排除  row - j = i - x
+            for(int i = row - 1; i >= 0; i--) {
+                if( (i - (row - j)) >= 0 ) {  // 左边的要 >= 0
+                    if(visited[i][i - (row - j)] == 'Q') {
+                        flag = true;
+                        break;
+                    } 
+                }
+                                   
+            }
+            if(flag)  {
+                flag = false; // 将 flag 还原为 false;
+                continue;
+            }
+
+            // 从右下到左上排除  row + j = i + x
+            for(int i = row - 1; i >= 0; i--) {
+                if((row + j - i) < n) {  // 右边的要 < n
+                    if(visited[i][row + j - i] == 'Q') {
+                        flag = true;
+                        break;
+                    } 
+                }
+                                   
+            }
+            if(flag)  {
+                flag = false;  // 将 flag 还原为 false;
+                continue;
+            }
+
+            // 选择
+            visited[row][j] = 'Q';
+
+            // 递归
+            solveNQueensHelper(n, visited, row+1);
+
+            // 撤销选择
+            visited[row][j] = '.';
+        }        
+    }
+}
+```
 
 ### 链表
 
@@ -3785,7 +3867,7 @@ private ListNode reverse(ListNode head) {
 }
 ```
 
-#### LC148 链表排序
+#### [LC148 链表排序](https://leetcode-cn.com/problems/sort-list/)
 
 思路：
 
@@ -3842,7 +3924,7 @@ private ListNode mergeLists(ListNode left, ListNode right) {
 
 
 
-#### lc[83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
+#### [lc83. 删除排序链表中的重复元素](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/)
 
 思路：遍历结点，判断cur.val ?= next.val，如果相等，cur连接到next的下一个节点，否则，cur向前移动
 
@@ -3866,7 +3948,7 @@ public ListNode deleteDuplicates(ListNode head) {
 }
 ```
 
-#### lc82 删除有序链表中的重复元素 II
+#### [lc82 删除有序链表中的重复元素 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/)
 
 同理还有[26. 删除有序数组中的重复项](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array/)、[80. 删除有序数组中的重复项 II](https://leetcode-cn.com/problems/remove-duplicates-from-sorted-array-ii/)
 
@@ -5737,43 +5819,34 @@ public int[][] insert(int[][] intervals, int[] newInterval) {
 
 思路：
 
-1. 所有1....n之外的数都可以忽略，因为缺失的第一个正整数一定是在1... n+1之间
+0. 哈希表（时间复杂度O(N)）：将所有数字放到hashSet中，然后从1开始遍历到len(n)，用contains判断是否存在；
 
-2. 如何表示1... n之间的某个元素出现过：将 nums[idx-1] 变成负数用来表示该索引 idx 代表的数出现过
-3. 找到第一个为正数的元素，该元素的下标代表的数就是缺失的第一个正数，如果没有找到，表示1... n的元素是满的
+1. 我们要找的数就在 [1, N + 1] 里，最后 N + 1 这个元素我们不用找。因为在前面的 N 个元素都找不到的情况下，我们才返回 N + 1；
+   那么，我们可以采取这样的思路：就把 1 这个数放到下标为 0 的位置， 2 这个数放到下标为 1 的位置，按照这种思路整理一遍数组。然后我们再遍历一次数组，第 1 个遇到的它的值不等于下标的那个数，就是我们要找的缺失的第一个正数。
+   这个思想就相当于我们自己编写哈希函数，这个哈希函数的规则特别简单，那就是数值为 i 的数映射到下标为 i - 1 的位置。
 
 ```java
 public int firstMissingPositive(int[] nums) {
-    int n = nums.length;
+    int len = nums.length;
 
-    // 将所有小于等于 0 或者是大于 n 的元素都标记成 n+1
-    for (int i = 0; i < nums.length; i++) {
-        if (nums[i] <= 0 || nums[i] > n) {
-            nums[i] = n + 1;
+    for (int i = 0; i < len; i ++) {
+        while (nums[i] > 0 && nums[i] <= len && nums[nums[i]-1] != nums[i]) {
+            swap(nums, nums[i]-1, i);
         }
     }
 
-    // 将nums[nums[i]-1]变成负数用来表示该索引代表的数出现过
-    for (int i = 0; i < n; i++) {
-        // 为了防止重复元素的出现，由于之前已经出现过，所以此时的nums[i]被标记成负数，等到再次出现时，需要进行绝对值处理
-        int num = Math.abs(nums[i]);
-        if (num > n) {
-            continue;
-        }
-        num --;
-        if (nums[num] > 0) {
-            nums[num] = -1 * nums[num];
-        }
-    }
-    // 找到第一个为正数的元素，该元素的下标代表的数就是缺失的第一个正数
-    for (int i = 0; i < n; i++) {
-        if (nums[i] >= 0) {
+    for (int i = 0; i < len; i ++) {
+        if (nums[i]-1 != i) {
             return i + 1;
         }
     }
+    return len + 1;
+}
 
-    // 如果没有找到正数索引，表示nums中包含1...n所有元素
-    return n + 1;
+private void swap(int[] nums, int i, int j) {
+    int tmp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = tmp;
 }
 ```
 
@@ -6542,7 +6615,7 @@ private int getKth(int[] nums1, int start1, int end1, int[] nums2, int start2, i
 }
 ```
 
-#### lc5 最长回文子串
+#### [lc5 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
 
 思路：中心扩散
 
@@ -7254,6 +7327,41 @@ public int largestRectangleArea(int[] heights) {
 }
 ```
 
+#### [lc402. 移掉 K 位数字](https://leetcode-cn.com/problems/remove-k-digits/)
+
+```java
+public String removeKdigits(String num, int k) {
+    Deque<Character> deque = new LinkedList<Character>();
+    int length = num.length();
+    for (int i = 0; i < length; ++i) {
+        char digit = num.charAt(i);
+        while (!deque.isEmpty() && k > 0 && deque.peekLast() > digit) {
+            deque.pollLast();
+            k--;
+        }
+        deque.offerLast(digit);
+    }
+	
+    // 如果我们删除了 m 个数字且 m<k，这种情况下我们需要从序列尾部删除额外的 k−m 个数字。
+    for (int i = 0; i < k; ++i) {
+        deque.pollLast();
+    }
+	
+    // 处理前导零
+    StringBuilder ret = new StringBuilder();
+    boolean leadingZero = true;
+    while (!deque.isEmpty()) {
+        char digit = deque.pollFirst();
+        if (leadingZero && digit == '0') {
+            continue;
+        }
+        leadingZero = false;
+        ret.append(digit);
+    }
+    return ret.length() == 0 ? "0" : ret.toString();
+}
+```
+
 
 
 ### 字符串
@@ -7809,6 +7917,43 @@ public boolean areAlmostEqual(String s1, String s2) {
 * IPv4判断：ipSegments长度是否等于4，逐个判断segment的长度是否是0-3之间，是否有前置0，segment是否包含非数字，segment的值是否是小于255;
 * IPv6判断：ipSegments长度是否等于8，逐个判断segment的长度是否在0-4之间，判断segment字符是否在 ‘a’到 ‘f' 之间。
 
+
+
+#### [LC722. 删除注释](https://leetcode-cn.com/problems/remove-comments/)
+
+```JAVA
+public List<String> removeComments(String[] source) {
+    boolean inBlock = false;
+    StringBuilder newline = new StringBuilder();
+    List<String> ans = new ArrayList();
+    for (String line: source) {
+        int i = 0;
+        char[] chars = line.toCharArray();
+        if (!inBlock) newline = new StringBuilder();
+        while (i < line.length()) {
+            if (!inBlock && i+1 < line.length() && chars[i] == '/' && chars[i+1] == '*') {
+                inBlock = true;
+                i++;
+            } else if (inBlock && i+1 < line.length() && chars[i] == '*' && chars[i+1] == '/') {
+                inBlock = false;
+                i++;
+            } else if (!inBlock && i+1 < line.length() && chars[i] == '/' && chars[i+1] == '/') {
+                break;
+            } else if (!inBlock) {
+                newline.append(chars[i]);
+            }
+            i++;
+        }
+        if (!inBlock && newline.length() > 0) {
+            ans.add(new String(newline));
+        }
+    }
+    return ans;
+}
+```
+
+
+
 ### 数学
 
 #### [lc470 用 rand7() 实现 rand10()](https://leetcode-cn.com/problems/implement-rand10-using-rand7/solution/yong-rand7-shi-xian-rand10-by-leetcode/)
@@ -8073,570 +8218,3 @@ public void createBinTree() {
     }  
 }
 ```
-
-
-
-### 笔试真题
-
-#### [华为-4.14-翻转括号内的字符串](https://blog.csdn.net/wjinjie/article/details/115979659)
-
-思路：利用栈记录下'('的起始位置，每次遇到 ‘)’ 就弹出栈，进行一次reverse
-
-```java
-public String reverseStringInStack(String s) {
-    Stack<Integer> stack = new Stack<>();
-    // string 类型不好直接逆转，转换成数组格式容易逆转
-    char[] chArray = s.toCharArray();
-
-    for (int i = 0; i < chArray.length; i ++) {
-        char ch = chArray[i];
-        if (ch == '(') {
-            // 将起始位置入栈
-            stack.push(i);
-        }else if (ch == ')') {
-            // 起始位置出栈，完成reverse
-            int start = stack.pop();
-            reverse(chArray, start+1, i-1);
-        }
-    }
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < chArray.length; i ++) {
-        if (chArray[i] == '(' || chArray[i] == ')') {
-            continue;
-        }
-        sb.append(chArray[i]);
-    }
-    return sb.toString();
-}
-
-private void reverse(char[] charArray, int left, int right) {
-
-    while (left < right) {
-        char tmp = charArray[left];
-        charArray[left] = charArray[right];
-        charArray[right] = tmp;
-        left ++;
-        right --;
-    }
-}
-```
-
-#### [华为-4.14-无线设备传输](https://blog.csdn.net/wjinjie/article/details/115979659)
-
-思路：lc45原题
-
-```java
-public int jump(int[] nums) {
-    int i = 0;
-    int longest = 0;
-    int end = 0;
-    int step = 0;
-    while (i < nums.length-1) {
-        longest = Math.max(longest, nums[i] + i);
-        // 每次在上次能跳到的范围（end）内选择一个能跳的最远的位置（也就是能跳到max_far位置的点）作为下次的起跳点 
-        if (i == end) {
-            end = longest;
-            step ++;
-        }
-        i ++;
-    }
-    return step;
-}
-```
-
-#### [虾皮-4.21- 爬楼梯](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
-
-leetcode 70
-
-#### [虾皮-4.21- 子串包含关系](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
-
-KMP算法，lc28
-
-#### [虾皮-4.21- 不重复数组子集](https://www.nowcoder.com/discuss/645948?type=post&order=time&pos=&page=1&ncTraceId=&channel=-1&source_id=search_post_nctrack)
-
-lc 原题
-
-#### [虾皮 - 黑白方格画](https://leetcode-cn.com/problems/ccw6C7/)
-
-```java
-public int paintingPlan(int n, int k) {
-    if (k > n * n) {
-        return 0;
-    }
-    if (k == 0 || k == n * n) {
-        return 1;
-    }
-
-    int ans = 0;
-    for (int i = 0; i <= n; i ++) {
-        for (int j = 0; j <= n; j ++) {
-            if (i * n + j * n - i * j == k) {
-                ans += cnt(i, n) * cnt(j, n);
-            }
-        }
-    }
-    return ans;
-}
-
-private int cnt(int num, int n) {
-    // 计算从n中获取num个元素的方法数 C_n^num
-    int ans = 1;
-    for (int i = n; i >= n-num+1; i--) {
-        ans *= i;
-    }
-    for (int i = num; i >= 1; i--) {
-        ans /= i;
-    }
-    return ans;
-}
-```
-
-虾皮 - 20.8.19 - [有效的括号字符串](https://leetcode-cn.com/problems/valid-parenthesis-string/)
-
-思路：[lc原题](https://leetcode.com/problems/valid-parenthesis-string/discuss/543521/Java-Count-Open-Parenthesis-O(n)-time-O(1)-space-Picture-Explain)
-
-
-
-
-
-### leetcode 周赛
-
-#### [5726. 数组元素积的符号](https://leetcode-cn.com/problems/sign-of-the-product-of-an-array/)
-
-```java
-public int arraySign(int[] nums) {
-    int oddCount = 0;
-
-    for (int i = 0; i < nums.length; i++) {
-        if (nums[i] == 0) {
-            return 0;
-        }if (nums[i] < 0) {
-            oddCount ++;
-        }
-    }
-
-    return oddCount % 2 == 0 ? 1 : -1;
-}
-```
-
-#### [5727. 找出游戏的获胜者](https://leetcode-cn.com/problems/find-the-winner-of-the-circular-game/)
-
-经典约瑟夫环问题
-
-```java
-public int findTheWinner(int n, int k) {
-    ArrayList<Integer> list = new ArrayList<>();
-    for (int i = 1; i <= n; i++) {
-        list.add(i);
-    }
-    int start = 0;
-    while (list.size() > 1) {
-        //注意这里的获取id的方式，模size防止越界
-        int id = (start + k - 1) % list.size();
-        list.remove(id);
-        start = id;
-    }
-    return list.get(0);
-}
-```
-
-#### [5728. 最少侧跳次数](https://leetcode-cn.com/problems/minimum-sideway-jumps/)
-
-动态规划
-
-解题思路
-一共3条跑道，n个点，如果跑道i当前位置k(0<=k<n)有石头，无论如何跳也到不了该处，dp\[k][i]=Integer.MAX_VALUE-1（避免加1后超出int范围）；
-
-如果当前位置没有石头，则跳到该点的方法为:
-
-* 同一跑道前一节点跳过来，dp\[k][i]=dp\[k-1][i]，
-
-* 其他两条跑道中没有石头的节点 j 跳过来，前一节点次数加1(侧跳一次),dp\[k-1][j]+1。
-
-取最小值dp\[k]][i]=Math.min(dp\[k-1][i],dp\[k-1][j]+1)。
-
-```java
-public int minSideJumps(int[] obstacles) {
-    int n = obstacles.length;
-    int[][] dp=new int[n][3];
-    // 一开始就侧跳
-    dp[0][0]=1;
-    dp[0][2]=1;
-
-    for(int i=1;i<n;++i){
-        // 如果障碍在第一条道上的位置i
-        if(obstacles[i]==1){   
-            // 如果跑道i当前位置k(0<=k<n)有石头，无论如何跳也到不了该处，dp\[k][i]=Integer.MAX_VALUE-1（避免加1后超出int范围）；
-            dp[i][0]=Integer.MAX_VALUE-1;
-            // 两种情况，取最小值
-            dp[i][1]=Math.min(dp[i-1][1],dp[i-1][2]+1);
-            dp[i][2]=Math.min(dp[i-1][2],dp[i-1][1]+1);                
-        }else if(obstacles[i]==2){
-            dp[i][1]=Integer.MAX_VALUE-1;
-            dp[i][0]=Math.min(dp[i-1][0],dp[i-1][2]+1);
-            dp[i][2]=Math.min(dp[i-1][2],dp[i-1][0]+1);                
-        }else if(obstacles[i]==3){
-            dp[i][2]=Integer.MAX_VALUE-1;
-            dp[i][0]=Math.min(dp[i-1][0],dp[i-1][1]+1);
-            dp[i][1]=Math.min(dp[i-1][1],dp[i-1][0]+1);                
-        }else{
-            dp[i][0]=Math.min(dp[i-1][0],Math.min(dp[i-1][1],dp[i-1][2])+1);
-            dp[i][1]=Math.min(dp[i-1][1],Math.min(dp[i-1][0],dp[i-1][2])+1);
-            dp[i][2]=Math.min(dp[i-1][2],Math.min(dp[i-1][0],dp[i-1][1])+1);
-        }            
-    }
-
-    return Math.min(dp[n-1][0],Math.min(dp[n-1][1],dp[n-1][2]));
-}
-```
-
-#### [5729. 求出 MK 平均值](https://leetcode-cn.com/problems/finding-mk-average/)
-#### [5738. K 进制表示下的各位数字总和](https://leetcode-cn.com/problems/sum-of-digits-in-base-k/)
-
-```java
-public int sumBase(int n, int k) {
-    int res = 0;
-    while (n > 0) {
-        res += n % k;
-        n = n / k;
-    }
-    return res;
-
-}
-```
-
-#### [5739. 最高频元素的频数](https://leetcode-cn.com/problems/frequency-of-the-most-frequent-element/)
-
-解题思路
-
-首先很容易想到，先对数组进行排序。
-
-接下来，我们只需要找到某一段区间内，每个值与该区间内最后一个值相差的总和，不超过目标k的最大值
-
-[**参考**](https://leetcode-cn.com/problems/frequency-of-the-most-frequent-element/solution/jian-dan-yi-dong-zui-zi-ran-de-chu-li-lu-9i9a/)
-
-```java
-public int maxFrequency(int[] nums, int k) {
-    Arrays.sort(nums);
-    int ans = 1;
-    int left = 0;
-    long chaSum = 0;
-    for (int i = 1; i < nums.length; i ++) {
-        //计算区间内每个值，与区间内最后一个值相差的总和
-        chaSum += (nums[i]-nums[i-1]) * (i-left);
-        while (chaSum > k) {
-            //那么就减去区间内最左侧的值与最后一个值的差距。
-            //然后再让区间左侧向右移动一位，相等于整个区间缩小了一位距离，在缩小的区间内再判断是否满足要求
-            chaSum -= nums[i] - nums[left];
-            left++;
-        }
-        ans = Math.max(i - left + 1, ans);
-    }
-    return ans;
-}
-```
-
-#### [5740. 所有元音按顺序排布的最长子字符串](https://leetcode-cn.com/problems/longest-substring-of-all-vowels-in-order/)
-
-思路：判断字符种类和大小
-
-这5个元音字符是升序的且字符串中仅包含这些元音字母，所以**当字符串满足整体升序的同时字符种类达到5,那么这个字符串就是美丽的**
-
-```java
-public int longestBeautifulSubstring(String word) {
-    int types = 1;
-    int len = 1;
-    int ans = 0;
-    for (int i = 1; i < word.length(); i ++) {
-        if (word.charAt(i) >= word.charAt(i-1)) {
-            //更新当前字符串长度
-            len ++;
-        }
-        if (word.charAt(i) > word.charAt(i-1)) {
-            //更新当前字符种类
-            types ++;
-        }
-        if (word.charAt(i) < word.charAt(i-1)) {
-            // 不美丽，从当前字符开始
-            types = 1;
-            len = 1;
-        }
-        if (types == 5) {
-            //更新最大字符串
-            ans = Math.max(ans, len);
-        }
-    }
-    return ans;
-}
-```
-
-#### [5741. 最高建筑高度](https://leetcode-cn.com/problems/maximum-building-height/)
-
-#### [5746. 到目标元素的最小距离](https://leetcode-cn.com/problems/minimum-distance-to-the-target-element/)
-
-思路：从 start 两侧开始逐个遍历，找到等于 target 且离 start 最近的元素
-
-```java
-public int getMinDistance(int[] nums, int target, int start) {
-    int len = nums.length;
-    int minDist = 0;
-    while (start + minDist < len || start - minDist >= 0) {
-        if (start + minDist < len && nums[start + minDist] == target) {
-            return minDist; 
-        }
-        if (start - minDist >= 0 && nums[start - minDist] == target) {
-            return minDist;
-        }
-        minDist ++;
-    }
-    return -1;
-
-}
-```
-
-####   [5747. 将字符串拆分为递减的连续值](https://leetcode-cn.com/problems/splitting-a-string-into-descending-consecutive-values/)
-
-#### [5749. 邻位交换的最小次数](https://leetcode-cn.com/problems/minimum-adjacent-swaps-to-reach-the-kth-smallest-number/)
-
-#### [5748. 包含每个查询的最小区间](https://leetcode-cn.com/problems/minimum-interval-to-include-each-query/)
-
-#### [LCS 01. 下载插件](https://leetcode-cn.com/problems/Ju9Xwi/)
-
-```java
-public int leastMinutes(int n) {
-    // 优先扩大带宽，最后一下是进行下载
-    int time = (int)Math.ceil(Math.log(n) / Math.log(2));
-    return time + 1;
-}
-```
-
-#### [LCS 02. 完成一半题目](https://leetcode-cn.com/problems/WqXACV/)
-
-思路：
-
-```java
-public int halfQuestions(int[] questions) {
-    Map<Integer, Integer> freq = new HashMap<>();
-
-    for (int i = 0; i < questions.length; i ++) {
-        freq.put(questions[i], freq.getOrDefault(questions[i], 0) + 1);
-    }
-
-    // List<Map.Entry<Integer, Integer>> list = new ArrayList<Map.Entry<Integer, Integer>>(freq.entrySet());
-
-    // Collections.sort(list, new Comparator<Map.Entry<Integer, Integer>>() {
-    //     //升序排序
-    //     public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {
-    //         return o2.getValue().compareTo(o1.getValue());
-    //     }
-    // });
-    // 这里只需要排序一下values即可
-    Integer[] freqs = freq.values().toArray(new Integer[freq.size()]);
-    Arrays.sort(freqs);
-    int sum = 0;
-    int count = 0;
-    for (int i = freqs.length-1; i >= 0; i--) {
-        sum += freqs[i];
-        count ++;
-        if (sum >= questions.length / 2) {
-            break;
-        }
-    }
-    return count;
-}
-```
-
-#### [LCS 03. 主题空间](https://leetcode-cn.com/problems/YesdPw/)
-
-```java
-class Solution {
-    boolean[][] vis;
-    // 主题空间是否与走廊相邻
-    boolean hasZeroNeighbor;
-    int m;
-    int n;
-    // 主题空间的面积
-    int cnt;
-
-    public int largestArea(String[] grid) {
-        m = grid.length;
-        n = grid[0].length();
-        vis = new boolean[m][n];
-
-        int res = 0;
-        for (int i = 0; i < m; i ++) {
-            for (int j = 0; j < n; j ++) {
-                hasZeroNeighbor = false;
-                if (!vis[i][j]) {
-                    cnt = 0;
-                    dfs(grid, i, j, grid[i].charAt(j));
-                    if (!hasZeroNeighbor) {
-                        res = res > cnt ?res : cnt;
-                    }
-                }
-            }
-        }
-        return res;        
-    }
-
-    private void dfs(String[] grid, int x, int y, char ch) {
-        // 边界条件，因为grid四周默认都是0邻居，所以需要将hasZeroNeighbor置为true
-        if (x < 0 || y < 0 || x >= m || y >= n) {
-            hasZeroNeighbor = true;
-            return;
-        }
-        char cur = grid[x].charAt(y);
-        // 当前区域不等于上一个区域 或者 当前区域访问过
-        if (cur != ch || vis[x][y]) {
-            // 如果当前区域是'0'，说明上一层区域存在0邻居
-            if (cur == '0') {
-                hasZeroNeighbor = true;
-            }
-            return;
-        }
-        cnt ++;
-        vis[x][y] = true;
-        dfs(grid, x+1, y, ch);
-        dfs(grid, x-1, y, ch);
-        dfs(grid, x, y+1, ch);
-        dfs(grid, x, y-1, ch);
-    }
-}
-```
-
-#### [1903. 字符串中的最大奇数](https://leetcode-cn.com/problems/largest-odd-number-in-string/)
-
-思路：只要判断最后一位是不是奇数即可
-
-```java
-public String largestOddNumber(String num) {
-    // char[] numArray = num.toCharArray();
-    int idx = num.length() - 1;
-
-    while (idx >= 0) {
-        char ch = num.charAt(idx);
-        if ((ch - '0') % 2 == 1) {
-            return num.substring(0, idx+1);
-        }
-        idx --;
-    }  
-    return "";
-}
-```
-
-#### [1904. 你完成的完整对局数](https://leetcode-cn.com/problems/the-number-of-full-rounds-you-have-played/)
-
-思路：直接转换成分钟比较，这样直接省去了小时大小的比较
-
-```java
-public int numberOfRounds(String startTime, String finishTime) {
-    int startMin = toMinutes(startTime);
-    int finishMin = toMinutes(finishTime);
-
-    // 通宵
-    if (startMin > finishMin) {
-        finishMin += 1440;
-    }
-    // 结束必须向下取整，因为只有到15的倍数时才算参加完一局，开始必须向上取整，因为只有到15的倍数时才算开始参加一局
-    return (int)Math.floor(finishMin * 1.0 / 15) - (int)Math.ceil(startMin * 1.0 / 15);
-
-}
-
-private int toMinutes(String time) {
-    int hour = Integer.parseInt(time.split(":")[0]);
-    int min = Integer.parseInt(time.split(":")[1]);
-
-    return hour * 60 + min;
-}
-```
-
-#### [1905. 统计子岛屿](https://leetcode-cn.com/problems/count-sub-islands/)
-
-思路：首先将grid2中的非子岛屿的区域置为0，在grid 2 中搜索某一个岛屿的过程中，我们需要判断岛屿包含的每一个格子是否都在 grid1中出现了。如果全部出现，那么将答案增加 1。
-
-```java
-public int countSubIslands(int[][] grid1, int[][] grid2) {
-    int res = 0;
-    for (int i = 0; i < grid2.length; i ++) {
-        for (int j = 0; j < grid2[0].length; j ++) {
-            // 先将所有非子岛屿置为0
-            if (grid2[i][j]==1 && grid1[i][j] == 0) {
-                dfs(grid1, grid2, i, j);
-            }
-        }
-    }
-
-    for (int i = 0; i < grid2.length; i ++) {
-        for (int j = 0; j < grid2[0].length; j ++) {
-            // 遍历获得子岛屿个数
-            if (grid2[i][j]==1 && grid1[i][j] == 1) {
-                dfs(grid1, grid2, i, j);
-                res++;
-            }
-        }
-    }
-    return res;
-}
-
-private void dfs(int[][] grid1, int[][] grid2, int x, int y) {
-    if (x < 0 || x >= grid2.length || y < 0 || y >= grid2[1].length || grid2[x][y] == 0) {
-        return;
-    }
-    grid2[x][y] = 0;
-    dfs(grid1, grid2, x-1, y);
-    dfs(grid1, grid2, x+1, y);
-    dfs(grid1, grid2, x, y-1);
-    dfs(grid1, grid2, x, y+1);  
-}
-```
-
-#### [1906. 查询差绝对值的最小值](https://leetcode-cn.com/problems/minimum-absolute-difference-queries/)（TLE）
-
-思路：
-
-#### [5801. 消灭怪物的最大数量](https://leetcode-cn.com/problems/eliminate-maximum-number-of-monsters/)
-
-思路：贪心思想，分别计算出每个怪物到达的时间并排序，每次都击杀最早到达城市的怪物。使用round代表当前轮数，如果怪物到达的步数 > 当前round，说明还未到达城市，可以击杀。否则返回。
-
-```java
-public int eliminateMaximum(int[] dist, int[] speed) {
-    int[] div = new int[dist.length];
-
-    for (int i = 0; i < div.length; i ++) {
-        div[i] = (int)Math.ceil(dist[i] * 1.0 / speed[i]);
-    }
-
-    Arrays.sort(div);
-    int idx = 0;
-    int count = 0;
-    int round = 1;
-    while (idx < div.length) {
-        // 当到达城市的步数小于等于当前轮数，表示可击杀
-        if (round <= div[idx]) {
-            count ++;
-            round ++;
-            idx ++;
-        }else {
-            return count;
-        }
-    }
-    return count;
-}
-```
-
-#### [5802. 统计好数字的数目](https://leetcode-cn.com/problems/count-good-numbers/)
-
-```java
-long modPow(long x, long y)
-{
-    if (y == 0)
-        return 1;
-    long p = modPow(x, y / 2);
-    return p * p * (y % 2 > 0 ? x : 1) % 1000000007;
-}
-public int countGoodNumbers(long n) {
-    return (int)(modPow(5, (n + 1) / 2) * modPow(4, n / 2) % 1000000007);    
-}
-```
-
-hu
