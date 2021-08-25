@@ -1303,6 +1303,7 @@ public int longestCommonSubsequence(String text1, String text2) {
 #### [lc62 不同路径](https://leetcode-cn.com/problems/unique-paths/)
 
 ```java
+// 动态规划：O(mn)，O(mn)
 public int uniquePaths(int m, int n) {
     int[][] dp = new int[m][n];
 
@@ -1323,6 +1324,15 @@ public int uniquePaths(int m, int n) {
         }
     }
     return dp[dp.length-1][dp[0].length-1];
+}
+
+// 优化：从左上角到右下角的过程中，我们需要移动 m+n-2 次，其中有 m-1次向下移动，n-1 次向右移动。因此路径的总数，就等于从 m+n-2 次移动中选择 m-1 次向下移动的方案数，即组合数：C_{m+n-2}^{m-1} = (m+n-2)(m+n-3)...n/(m-1)! = (m+n-2)!/((m-1)!(n-1)!)
+public int uniquePaths(int m, int n) {
+    long ans = 1;
+    for (int x = n, y = 1; y < m; ++x, ++y) {
+        ans = ans * x / y;
+    }
+    return (int) ans;
 }
 ```
 
@@ -1646,7 +1656,7 @@ private int helper(char[] sArr, int left, int right, int[][] memo) {
 ```java
 public int longestValidParentheses(String s) {
     int maxans = 0;
-    // dp[i]表示以下标 ii 字符结尾的最长有效括号的长度，显然有效的子串一定以 ‘)’ 结尾，因此我们可以知道以 ‘(’ 结尾的子串对应的 dp 值必定为 0 ，我们只需要求解 ‘)’ 在 dp 数组中对应位置的值。
+    // dp[i]表示以下标 i 字符结尾的最长有效括号的长度，显然有效的子串一定以 ‘)’ 结尾，因此我们可以知道以 ‘(’ 结尾的子串对应的 dp 值必定为 0 ，我们只需要求解 ‘)’ 在 dp 数组中对应位置的值。
     int[] dp = new int[s.length()];
     for (int i = 1; i < s.length(); i++) {
         if (s.charAt(i) == ')') {
@@ -2370,6 +2380,8 @@ public int longestConsecutive(int[] nums) {
 }
 ```
 
+#### [lc149. 直线上最多的点数](https://leetcode-cn.com/problems/max-points-on-a-line/)
+
 ### 回溯法
 
 #### [lc78. 子集](https://leetcode-cn.com/problems/subsets/)
@@ -2557,6 +2569,40 @@ private void backtrack(int[] candidates, int remain, List<List<Integer>> res, Li
     }
 }
 ```
+
+#### [lc254. 因子的组合](https://leetcode-cn.com/problems/factor-combinations/)
+
+该函数接收一个整数 *n* 并返回该整数所有的因子组合。
+
+```java
+public List<List<Integer>> getFactors(int n) {
+    List<List<Integer>> res = new ArrayList<>();
+    List<Integer> tmp = new ArrayList<>();
+
+    backtrack(res, tmp, n, 2);
+    return res;
+}
+
+private void backtrack(List<List<Integer>> res, List<Integer> tmp, int num, int start) {
+    if (num == 1) {
+        if (tmp.size() > 1) {
+            res.add(new ArrayList(tmp));
+            return;
+        }
+    }
+
+    for (int i = start; i <= num; i ++) {
+        if (num % i != 0) {
+            continue;
+        }
+        tmp.add(i);
+        backtrack(res, tmp, num/i, i);
+        tmp.remove(tmp.size()-1);
+    }
+}
+```
+
+
 
 #### lc79. 单词搜索
 
@@ -6198,6 +6244,57 @@ public int[] findDiagonalOrder(int[][] mat) {
 }
 ```
 
+#### [lc922. 按奇偶排序数组 II](https://leetcode-cn.com/problems/sort-array-by-parity-ii/)
+
+#### 前缀和
+
+#### [lc523. 连续的子数组和](https://leetcode-cn.com/problems/continuous-subarray-sum/)
+
+给你一个整数数组 nums 和一个整数 k ，编写一个函数来判断该数组是否含有同时满足下述条件的连续子数组：
+
+子数组大小 至少为 2 ，且
+子数组元素总和为 k 的倍数。
+如果存在，返回 true ；否则，返回 false 。
+
+如果存在一个整数 n ，令整数 x 符合 x = n * k ，则称 x 是 k 的一个倍数。0 始终视为 k 的一个倍数。
+
+```java
+public boolean checkSubarraySum(int[] nums, int k) {
+    // 这道题引入了一个概念 同余定理：即当两个数除以某个数的余数相等，那么二者相减后肯定可以被该数整除。
+    int len = nums.length;
+    if (len < 2) {
+        return false;
+    }
+
+    Map<Integer, Integer> map = new HashMap<>();
+    // key表示前缀和，value 表示结束下标
+    map.put(0 ,-1);
+    int remainder = 0;
+    for (int i = 0; i < len; i ++) {
+        remainder = (nums[i] + remainder) % k;
+        if (map.containsKey(remainder)) {
+            int preIndex = map.get(remainder);
+            if (i - preIndex >= 2) {
+                return true;
+            }
+        }else {
+            map.put(remainder, i);
+        }
+    }
+    return false;
+}
+```
+
+#### [lc628. 三个数的最大乘积](https://leetcode-cn.com/problems/maximum-product-of-three-numbers/)
+
+```java
+public int maximumProduct(int[] nums) {
+    Arrays.sort(nums);
+    int n = nums.length;
+    return Math.max(nums[n-1]*nums[n-2]*nums[n-3], nums[0]*nums[1]*nums[n-1]);
+}
+```
+
 
 
 ### 双指针
@@ -6759,7 +6856,42 @@ public boolean checkInclusion(String s1, String s2) {
 
 题目要求：数组a,先单调递增再单调递减，输出数组中不同元素个数。要求：O(1)空间复杂度，不能改变原数组
 
-思路：从两头往中间走，i = 0，j = len-1，比较两个数，保证大的那个数不动小的数往中间走，每次比较看数值是否相等，如果相等 i++，j–，否则根据两个值大小确定是 i++ 还是 j–。
+思路：从两头往中间走，i = 0，j = len-1，比较两个数，保证大的那个数不动小的数往中间走，每次比较看数值是否相等，如果相等 i++，j–，否则根据两个值大小确定是 i++ 还是 j–-。
+
+```java
+private static int countOfUniq(int[] nums) {
+    int res = 0;
+    int left = 0;
+    int right = nums.length - 1;
+
+    while (left <= right) {
+        if (nums[left] == nums[right]) {
+            res ++;
+            int tmp = nums[left];
+            while (left <= right && nums[right] == tmp) {
+                right --;
+            }
+            while (left <= right && nums[left] == tmp) {
+                left ++;
+            }
+        }
+        else if (nums[left] < nums[right]) {
+            res ++;
+            int tmp = nums[right];
+            while (left <= right && nums[right] == tmp) {
+                right --;
+            }
+        }else {
+            res ++;
+            int tmp = nums[left];
+            while (left <= right && nums[left] == tmp) {
+                left ++;
+            }
+        }
+    }
+    return  res;
+}
+```
 
 
 
@@ -8023,7 +8155,13 @@ public List<String> removeComments(String[] source) {
 }
 ```
 
+#### [lc541. 反转字符串 II](https://leetcode-cn.com/problems/reverse-string-ii/)
 
+给定一个字符串 s 和一个整数 k，从字符串开头算起，每 2k 个字符反转前 k 个字符。
+
+如果剩余字符少于 k 个，则将剩余字符全部反转。
+
+如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
 
 ### 数学
 
