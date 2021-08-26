@@ -7640,9 +7640,60 @@ public char getChar(int num) {
 }
 ```
 
+#### [lc43. 字符串相乘](https://leetcode-cn.com/problems/multiply-strings/)
 
+思路：参考竖式乘法，注意每次在结果后面加0
 
-#### lc224 基本计算器
+```java
+public String multiply(String num1, String num2) {
+    if (num1.equals("0") || num2.equals("0")) {
+        return "0";
+    }
+
+    String ans = "0";
+    int m = num1.length();
+    int n = num2.length();
+    for (int i = n - 1; i >= 0; i --) {
+        StringBuilder sb = new StringBuilder();
+        // 追加 0
+        for (int j = n-1; j > i; j --) {
+            sb.append(0);
+        }
+        int add = 0;
+        int y = num2.charAt(i) - '0';
+        for (int j = m-1; j >= 0; j --) {
+            int x = num1.charAt(j) - '0';
+            int product = x * y + add;
+            sb.append(product % 10);
+            add = product / 10;
+        }
+        if (add != 0) {
+            sb.append(add);
+        }
+        ans = addStrings(ans, sb.reverse().toString());
+    }
+    return ans;
+}
+
+private String addStrings(String num1, String num2) {
+    int i = num1.length() - 1;
+    int j = num2.length() - 1;
+    int add = 0;
+    StringBuilder ans = new StringBuilder();
+    while (i >= 0 || j >= 0 || add != 0) {
+        int x = i >= 0 ? num1.charAt(i) - '0' : 0;
+        int y = j >= 0 ? num2.charAt(j) - '0' : 0;
+        int result = x + y + add;
+        ans.append(result % 10);
+        add = result / 10;
+        i--;
+        j--;
+    }
+    return ans.reverse().toString();
+}
+```
+
+#### [lc224 基本计算器](https://leetcode-cn.com/problems/basic-calculator/)
 
 有点复杂啊。。。
 
@@ -7723,8 +7774,6 @@ public int myAtoi(String s) {
     return res * sign;
 }
 ```
-
-
 
 #### lc135 分发糖果
 
