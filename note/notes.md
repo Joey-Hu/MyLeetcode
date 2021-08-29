@@ -1674,6 +1674,35 @@ public int longestValidParentheses(String s) {
 }
 ```
 
+#### [lc97. 交错字符串](https://leetcode-cn.com/problems/interleaving-string/)
+
+```java
+public boolean isInterleave(String s1, String s2, String s3) {
+    int n = s1.length(), m = s2.length(), t = s3.length();
+
+    if (n + m != t) {
+        return false;
+    }
+
+    boolean[][] f = new boolean[n + 1][m + 1];
+
+    f[0][0] = true;
+    for (int i = 0; i <= n; ++i) {
+        for (int j = 0; j <= m; ++j) {
+            int p = i + j - 1;
+            if (i > 0) {
+                f[i][j] = f[i][j] || (f[i - 1][j] && s1.charAt(i - 1) == s3.charAt(p));
+            }
+            if (j > 0) {
+                f[i][j] = f[i][j] || (f[i][j - 1] && s2.charAt(j - 1) == s3.charAt(p));
+            }
+        }
+    }
+
+    return f[n][m];
+}
+```
+
 
 
 ### 队列
@@ -2129,6 +2158,67 @@ public boolean check(int[][] matrix, int mid, int k, int n) {
 #### [lc611. 有效三角形的个数](https://leetcode-cn.com/problems/valid-triangle-number/)
 
 给定一个包含非负整数的数组，你的任务是统计其中可以组成三角形三条边的三元组个数。
+
+#### [lc875. 爱吃香蕉的珂珂](https://leetcode-cn.com/problems/koko-eating-bananas/)
+
+思路：
+
+```java
+public int minEatingSpeed(int[] piles, int h) {
+    int low = 1;
+    int high = (int) 1e9;
+    int ans = 0;
+
+    while (low < high) {
+        int need = 0;
+        int mid = low + (high - low) / 2;
+
+        for (int i = 0; i < piles.length; i ++) {
+            need += Math.ceil(piles[i] * 1.0 / mid);
+        }
+
+        if (need > h) {
+            low = mid + 1;
+        }else {
+            // ans = mid;
+            high = mid;
+        }
+    }
+    return high;
+}
+```
+
+#### [lc287. 寻找重复数](https://leetcode-cn.com/problems/find-the-duplicate-number/)
+
+```java
+public int findDuplicate(int[] nums) {
+    // 二分法
+    // 将中指针指向n/2,那小于n/2的元素的个数就为n/2-1
+    // 如果小于n/2的元素个数大于n/2-1，说明有重复，范围缩小到[0,n/2-1]
+    // 否则说明没有重复，范围缩小到[n/2+1, n]
+
+    int low = 1;
+    int high = nums.length - 1;
+    int ans = -1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        int count = 0;
+        for (int num : nums) {
+            if (num < mid) {
+                count ++;
+            }
+        }
+        if (count >= mid) {
+            high = mid - 1;
+        }else {
+            low = mid + 1;
+            ans = mid;
+        }
+    }
+    return ans;
+}
+```
 
 
 
