@@ -1239,6 +1239,45 @@ public int backToOrigin(int length, int n) {
 }
 ```
 
+#### 补充题. 环形城市
+
+ 10个城市编号0~9，城市之间移动只能前后移动（比如5只能到4或者6），10个城市构成一个环，从0可以到9，从9也可以到0。从任意城市X出发，途径N个城市，问有多少途径？
+
+```java
+public class Main {
+    //dp + 递归
+    static int solution(int X, int N){
+        int result = recur(X, X + 1, N);
+        return result * 2;
+    }
+
+    static int recur(int X, int Y, int N) {
+        if (N == 0) {
+            if (Y == X) {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+        //处理循环
+        int pre = Y - 1;
+        if (pre < 0) {
+            pre = 9;
+        }
+        int next = Y + 1;
+        if (next > 9) {
+            next = 0;
+        }
+        return recur(X, pre, N-1) + recur(X, next, N-1);
+    }
+    public static void main(String[] args) {
+        System.out.println(solution(0, 3));
+    }
+}
+```
+
+
+
 #### [lc64 最小路径和](https://leetcode-cn.com/problems/minimum-path-sum/)
 
 思路：
@@ -2122,7 +2161,34 @@ public int[] searchRange(int[] nums, int target) {
 
 #### [lc378. 有序矩阵中第 K 小的元素](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/)
 
+原题是每行和每列元素均按升序排序
+
+思路：优先队列；二分查找
+
 ```java
+// 优先队列 O(N^2*logK) O(K)
+public int kthSmallest(int[][] matrix, int k) {
+    // 大顶堆，堆k个元素
+    PriorityQueue<Integer> q = new PriorityQueue<>((a, b) -> b - a);
+    // 遍历矩阵，当堆未满时，直接入堆；当堆满时，大于等于堆顶直接丢弃，比堆小时，删除堆顶元素后入堆，最后遍历完堆顶元素即为第k小元素
+    for (int [] row : matrix) {
+        for (int num : row) {
+            if (q.size() == k) {
+                if (num < q.peek()) {
+                    q.poll();
+                    q.offer(num);
+                }                    
+            } else {
+                q.offer(num);
+            }
+        }
+    }
+
+    return q.peek();
+
+}
+
+// 二分查找
 public int kthSmallest(int[][] matrix, int k) {
     int n = matrix.length;
     int left = matrix[0][0];
@@ -2140,14 +2206,17 @@ public int kthSmallest(int[][] matrix, int k) {
 }
 // 检查小于mid的元素个数是否大于等于k
 public boolean check(int[][] matrix, int mid, int k, int n) {
+    // 以列为单位找，找到每一列最后一个<=mid的数即知道每一列有多少个数<=mid
     int i = n - 1;
     int j = 0;
     int num = 0;
     while (i >= 0 && j < n) {
         if (matrix[i][j] <= mid) {
+            // 第j列有i+1个元素<=mid
             num += i + 1;
             j++;
         } else {
+            // 第j列目前的数大于mid，需要继续在当前列往上找
             i--;
         }
     }
@@ -6037,16 +6106,19 @@ public int firstMissingPositive(int[] nums) {
     int len = nums.length;
 
     for (int i = 0; i < len; i ++) {
+        // 将满足1到len之间的数字放到指定的位置上，比如1放到index为0的位置，2放到index为1的位置
         while (nums[i] > 0 && nums[i] <= len && nums[nums[i]-1] != nums[i]) {
             swap(nums, nums[i]-1, i);
         }
     }
 
     for (int i = 0; i < len; i ++) {
-        if (nums[i]-1 != i) {
+        // 找到第一个“不正确”元素，返回
+        if (nums[i] != i + 1) {
             return i + 1;
         }
     }
+    // 如果都正确，返回len+1
     return len + 1;
 }
 
@@ -7989,6 +8061,10 @@ public String removeDuplicates(String S) {
 #### [lc1371. 每个元音包含偶数次的最长子字符串](https://leetcode-cn.com/problems/find-the-longest-substring-containing-vowels-in-even-counts/)(招银网络笔试题)
 
 #### [lc165. 比较版本号](https://leetcode-cn.com/problems/compare-version-numbers/)
+
+思路：分割，逐个比较，当遇到idx大于字符串数组长度的情况下，将那一个segment看做是0进行比较；
+
+下面的代码真的简洁，优雅。。。：）
 
 ```java
 public int compareVersion(String version1, String version2) {
