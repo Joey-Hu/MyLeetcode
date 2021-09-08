@@ -165,3 +165,123 @@ public int hammingWeight(int n) {
 }
 ```
 
+### 树
+
+#### [剑指 Offer 33. 二叉搜索树的后序遍历序列](https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+
+思路：递归+分治
+
+```java
+public boolean verifyPostorder(int[] postorder) {
+    return recur(postorder, 0, postorder.length-1);
+
+}
+
+private boolean recur(int[] postorder, int start, int end) {
+    if (start >= end) {
+        return true;
+    }
+
+    int i = start;
+    // 找到第一个大于根节点的结点，即根节点的右子树节点
+    while (postorder[i] < postorder[end]) {
+        i ++;
+    }
+    int mid = i;
+    // 判断右子树的结点是不是都是大于根节点
+    while (postorder[i] > postorder[end]) {
+        i ++;
+    }
+
+    return i == end && recur(postorder, start, mid-1) && recur(postorder, mid, end-1);
+}
+```
+
+### 二分
+
+#### [lc33. 搜索旋转排序数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+
+思路：先二分找到最小值所对应的下标 minValIdx，然后规定target可能所在区间的左右边界（minValIdx 的左边还是右边），然后使用二分搜索查找target
+
+```java
+public int search(int[] nums, int target) {
+    // 找到最小值所在的下标
+    int len = nums.length;
+    int minIdx = findMinIdx(nums);
+    int left = target > nums[len-1] ? 0 : minIdx;
+    int right = target > nums[len-1] ? minIdx-1 : len-1;
+    return binarySearch(nums, left, right, target);
+}
+
+private int findMinIdx(int[] nums) {
+    int len = nums.length;
+    int low = 0;
+    int high = len - 1;
+
+    while (low < high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] > nums[len-1]) {
+            low = mid + 1;
+        }else {
+            high = mid;
+        }
+    }
+    return low;
+}
+
+private int binarySearch(int[] nums, int left, int right, int target) {
+    int low = left;
+    int high = right;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (nums[mid] == target) {
+            return mid;
+        }else if (nums[mid] < target) {
+            low = mid + 1;
+        }else if (nums[mid] > target) {
+            high = mid - 1;
+        }
+    }
+    return -1;
+}
+```
+
+### 字符串
+
+#### [lc8. 字符串转换整数 (atoi)](https://leetcode-cn.com/problems/string-to-integer-atoi/)
+
+思路：注意判断条件 1. 去空格  2. 判断sign  3. 计算res
+
+```java
+public int myAtoi(String s) {
+    int i = 0;
+    int sign = 1;
+    int res = 0;
+
+    if (s.length() == 0) {
+        return 0;
+    }
+
+    // 去掉空格
+    while (i < s.length() && s.charAt(i) == ' ') {
+        i ++;
+    }
+
+    // 如果出现符号字符，仅第 1 个有效，并记录正负
+    if (i < s.length() && (s.charAt(i) == '+' || s.charAt(i) == '-')) {
+        sign = (s.charAt(i++) == '-') ? -1 : 1;
+    }
+
+    while (i < s.length() && s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+        // 必须先判断res和MAX_VALUE的大小然后再进行res更新，不然会造成res越界，从而造成res值发生错误
+        if (res > Integer.MAX_VALUE / 10 || (res == Integer.MAX_VALUE / 10 && (s.charAt(i) - '0') > Integer
+                                             .MAX_VALUE % 10)) {
+            return (sign == 1) ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        res = res * 10 + (s.charAt(i++) - '0');
+    }
+    return res * sign;
+}
+```
+

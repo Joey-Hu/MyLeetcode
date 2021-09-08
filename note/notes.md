@@ -6691,7 +6691,7 @@ public int trap(int[] height) {
 
 #### lc11 盛最多水的容器
 
-思路：采用双指针，每次移动较矮的指针，因为移动较矮的指针才会改变盛水的容量
+思路：采用双指针，每次移动较矮的指针，因为移动较矮的指针才有可能会增大盛水的容量
 
 ```java
 public int maxArea(int[] height) {
@@ -6712,8 +6712,6 @@ public int maxArea(int[] height) {
 }
 ```
 
-
-
 #### lc234 回文链表
 
 ```java
@@ -6722,34 +6720,34 @@ public int maxArea(int[] height) {
      * @param head
      * @return
      */
-    public boolean isPalindrome2(ListNode head) {
-        ListNode fast = head;
-        ListNode slow = head;
+public boolean isPalindrome2(ListNode head) {
+    ListNode fast = head;
+    ListNode slow = head;
 
-        // find the middle node
-        while (fast != null && fast.next != null) {
-            fast = fast.next.next;
-            slow = slow.next;
-        }
-
-        // 奇数节点，将slow节点移动到下个节点
-        if (fast != null) {
-            slow = slow.next;
-        }
-
-        // 逆转后半部分节点
-        slow = reverse(slow);
-        fast = head;
-
-        while (slow != null && fast != null) {
-            if (slow.val != fast.val) {
-                return false;
-            }
-            slow = slow.next;
-            fast = fast.next;
-        }
-        return true;
+    // find the middle node
+    while (fast != null && fast.next != null) {
+        fast = fast.next.next;
+        slow = slow.next;
     }
+
+    // 奇数节点，将slow节点移动到下个节点
+    if (fast != null) {
+        slow = slow.next;
+    }
+
+    // 逆转后半部分节点
+    slow = reverse(slow);
+    fast = head;
+
+    while (slow != null && fast != null) {
+        if (slow.val != fast.val) {
+            return false;
+        }
+        slow = slow.next;
+        fast = fast.next;
+    }
+    return true;
+}
 ```
 
 #### [lc76 最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
