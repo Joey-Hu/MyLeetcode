@@ -292,6 +292,28 @@ public int canCompleteCircuit(int[] gas, int[] cost) {
 }
 ```
 
+#### [lc674. 最长连续递增序列](https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence/)
+
+思路：贪心策略，使用一个变量count来记录每一个以nums[i]结尾的递增序列的长度，最后得到最长递增序列的长度
+
+```java
+public int findLengthOfLCIS(int[] nums) {
+    int len = nums.length;
+    int res = 0;
+    int cnt = 0;
+    for (int i = 0; i < len; i ++) {
+        // 计算以nums[i]结尾的连续递增序列长度
+        if (i == 0 || nums[i-1] < nums[i]) {
+            cnt ++;
+            res = Math.max(res, cnt);
+        }else {
+            cnt = 1;
+        }
+    }
+    return res;
+}
+```
+
 
 
 ### DFS&BFS
@@ -629,6 +651,52 @@ public class HorseChessDemo {
 }
 ```
 
+#### [lc743. 网络延迟时间](https://leetcode-cn.com/problems/network-delay-time/)
+
+思路：1. floyd算法，2. dijkstra算法
+
+```java
+// Floyd算法：从任意起点出发，到达任意起点的最短距离    
+int INF = 0x3f3f3f3f;
+
+public int networkDelayTime(int[][] times, int n, int k) {
+    // 邻接矩阵数组：w[a][b] = c 代表从 a 到 b 有权重为 c 的边
+    int[][] w = new int[n+1][n+1];
+    // 初始化邻接矩阵
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= n; j ++) {
+            w[i][j] = w[j][i] = i == j ? 0 : INF;
+        }
+    }
+    // 存图
+    for (int[] time : times) {
+        w[time[0]][time[1]] = time[2];
+    }
+
+    // floyd算法
+    floyd(w, k);
+    // 遍历答案
+    int ans = 0;
+    for (int i = 1; i <= n; i ++) {
+        ans = Math.max(ans, w[k][i]);
+    }
+    return ans >= INF / 2 ? -1 : ans;
+}
+
+private void floyd(int[][] w, int k) {
+    int n = w.length-1;
+    // floyd 基本流程为三层循环：
+    // 枚举中转点 - 枚举起点 - 枚举终点 - 松弛操作
+    for (int p = 1; p <= n; p ++) {
+        for (int i = 1; i <= n; i ++) {
+            for (int j = 1; j <= n; j ++) {
+                w[i][j] = Math.min(w[i][j], w[i][p] + w[p][j]);
+            }
+        }
+    }
+}
+```
+
 
 
 ### 拓扑排序
@@ -732,7 +800,9 @@ return new int[0];
 
 ### 动态规划
 
-#### [lc121 买卖股票最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)（只交易一次）
+#### 股票问题
+
+##### [lc121 买卖股票最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)（只交易一次）
 
 思路：dp[i]：表示到第 i 天为止能获得的最大利润，所以 dp[i] 等于max\{今天的价格prices[i] - 从第 1 到第 i-1天之中股票最低价格minPrice，dp\[i-1]}，所以需要一个变量 minPrice 记录到第 i-1 天为止的股票最低价格。
 
@@ -761,7 +831,7 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### [lc122 买卖股票最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)（多次交易）
+##### [lc122 买卖股票最佳时机II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)（多次交易）
 
 思路：dp[i] 表示到第 i 天为止能获得的最大利润，dp[i] = 前一天的最大利润dp[i-1] + Math.max(prices[i]-prices[i-1], 0)， Math.max(prices[i]-prices[i-1], 0)表示当天卖出收益是否大于0，如果大于0，则卖出，如果小于0，则不卖出。
 
@@ -785,7 +855,7 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### [lc714. 买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+##### [lc714. 买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
 思路：dp\[i][0] 表示第 i 天交易完后手里没有股票的最大利润，dp\[i][1] 表示第 i 天交易完后手里持有一支股票的最大利润（i 从 0 开始）
 
@@ -822,7 +892,7 @@ public int maxProfit(int[] prices, int fee) {
 }
 ```
 
-#### [lc123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)(最多完成两笔交易)
+##### [lc123. 买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii)(最多完成两笔交易)
 
 思路：
 
@@ -889,7 +959,7 @@ public int maxProfit(int[] prices) {
 }
 ```
 
-#### [lc188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)（最多可以完成 **k** 笔交易）
+##### [lc188. 买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv)（最多可以完成 **k** 笔交易）
 
 与上一题类似	
 
@@ -931,7 +1001,9 @@ public int maxProfit(int k, int[] prices) {
 }
 ```
 
-#### [lc198 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
+#### 打家劫舍问题
+
+##### [lc198 打家劫舍](https://leetcode-cn.com/problems/house-robber/)
 
 思路：动态规划，这道题的本质相当于在一列数组中取出一个或多个不相邻数，使其和最大
 
@@ -962,7 +1034,7 @@ public int rob(int[] nums) {
 }
 ```
 
-#### [lc213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
+##### [lc213. 打家劫舍 II](https://leetcode-cn.com/problems/house-robber-ii/)
 
 思路：这里的 nums 是环形，所以可以将 nums 拆分成两个非环形数组，一个是从0~len-2的，一个是从1~len-1的，然后通过198题的解法求出两个非环形数组的最大收益，返回两者的较大值即可；
 
@@ -1122,57 +1194,6 @@ private int binarySearchPos(int[] increasingSequence, int len, int x) {
     return low;
 }
 ```
-
-#### [**NC91** **最长递增子序列**](https://www.nowcoder.com/practice/9cf027bf54714ad889d4f30ff0ae5481?tpId=117)
-
-```java
-public int[] LIS (int[] arr) {
-    if(arr == null) return null;
-    // write code here
-    int len = arr.length;
-    int maxLen[] = new int[len];
-    LinkedList<Integer> suar = new LinkedList<>();
-    suar.add(arr[0]);
-    maxLen[0] = 1;
-    for(int i = 0;i < len;i++){
-        if(arr[i] > suar.getLast()){
-            suar.add(arr[i]);
-            maxLen[i] = suar.size();
-        }else{
-            int m = BinaryFindH(suar,arr[i]);
-            suar.set(m,arr[i]);
-            maxLen[i] = m + 1;
-        }
-    }
-    int[] res = new int[suar.size()];
-    for(int i = len - 1,j = suar.size();i >= 0;i--){
-        if(maxLen[i] == j){
-            res[--j] = arr[i];
-        }
-    }
-    return res;
-}
-// 查找大于等于target的第一个元素的下标
-public int BinaryFindH(LinkedList<Integer> arr,int target){
-    int left = 0;
-    int right = arr.size() - 1;
-    int mid = (left + right)/2;
-    while(left < right){
-        mid = (left + right)/2;
-        if(arr.get(mid) > target){
-            right = mid - 1;
-        }else{
-            left = mid + 1;
-        }
-    }
-    if(arr.get(left) < target){    //判断是否为大于目标值的第一个数字
-        return left+1;
-    }else
-        return left;
-}
-```
-
-
 
 #### [lc70 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
 
@@ -7692,36 +7713,85 @@ public int largestRectangleArea(int[] heights) {
 
 #### [lc402. 移掉 K 位数字](https://leetcode-cn.com/problems/remove-k-digits/)
 
+思路：单调找+贪心，从左到右遍历数字，保持单调栈里是递增的趋势，每次遇上D_i<D_{i−1}，就删去D\_{i-1}，同时k递减，如果到最后k仍不为0，则删去单调栈栈顶几个数字直到k=0，最后输出单调栈里的数字（注意处理前导0）
+
 ```java
 public String removeKdigits(String num, int k) {
-    Deque<Character> deque = new LinkedList<Character>();
-    int length = num.length();
-    for (int i = 0; i < length; ++i) {
-        char digit = num.charAt(i);
-        while (!deque.isEmpty() && k > 0 && deque.peekLast() > digit) {
-            deque.pollLast();
-            k--;
+    int n = num.length();
+    Stack<Character> stack = new Stack<>();
+
+    // coner case
+    if (n == k) {
+        return "0";
+    }
+
+    for (int i = 0; i < n; i ++) {
+        char ch = num.charAt(i);
+        // 如果遇到一个数小于栈顶元素，则弹出栈顶元素（保持递增趋势）
+        while (!stack.empty() && k > 0 && stack.peek() > ch) {
+            stack.pop();
+            k --;
         }
-        deque.offerLast(digit);
+        stack.push(ch);
     }
-	
-    // 如果我们删除了 m 个数字且 m<k，这种情况下我们需要从序列尾部删除额外的 k−m 个数字。
-    for (int i = 0; i < k; ++i) {
-        deque.pollLast();
+
+    while (k > 0) {
+        stack.pop();
+        k --;
     }
-	
-    // 处理前导零
-    StringBuilder ret = new StringBuilder();
-    boolean leadingZero = true;
-    while (!deque.isEmpty()) {
-        char digit = deque.pollFirst();
-        if (leadingZero && digit == '0') {
-            continue;
+
+    // 输出字符串，处理前导零
+    StringBuilder sb = new StringBuilder();
+    while (!stack.empty()) {
+        sb.append(stack.pop());
+    }
+    sb.reverse();
+    while (sb.length()>1 && sb.charAt(0) == '0') {
+        sb.deleteCharAt(0);
+    }
+    return sb.toString();
+}
+```
+
+#### [lc768. 最多能完成排序的块 II](https://leetcode-cn.com/problems/max-chunks-to-make-sorted-ii/)
+
+思路：1. 单调栈；2. 前缀和
+
+```java
+// 因为题目要求的是最多的块，最多的块的情况下只能是每一个元素都可以当成一个块，此时数组是递增或者是递减的。
+
+// 从左往右遍历数组arr，如果当前值arr[i] >= 单调栈的栈顶元素的值，arr[i]直接入栈(相当于当前元素arr[i]可以算为一个单独的块，因为要求的是最多的块)
+// 如果当前值arr[i] < 单调栈的栈顶元素时，栈顶元素出栈后，先把它临时保存为此时栈的最大值max，循环继续比较arr[i]和下一个栈顶元素的大小，如果当前值依然小于栈顶元素，一直出栈，直到当前值 >= 栈顶元素，最后把max压入栈（相当于 当前元素arr[i] 和 比arr[i]小而出栈的所有元素 和 当前栈顶的元素max 组成一个块，块的最大值即为max，所以最后需要把max入栈）
+ public int maxChunksToSorted(int[] arr) {
+     Stack<Integer> stack = new Stack<>();
+     for (i	nt i = 0; i < arr.length; i ++) {
+         if (stack.empty() || arr[i] >= arr[stack.peek()]) {
+             stack.push(i);
+         }else {
+             int maxId = stack.pop();
+             while (!stack.empty() && arr[i] < arr[stack.peek()]) {
+                 stack.pop();
+             }
+             stack.push(maxId);
+         }
+     }
+     return stack.size();
+ }
+
+public int maxChunksToSorted(int[] arr) {
+    // 前缀和：如果前k个元素差值等于0的话，可以分成一块
+    int[] sortedArr = arr.clone();
+    Arrays.sort(sortedArr);
+    int diff = 0;
+    int res = 0;
+
+    for (int i = 0; i < arr.length; i ++) {
+        diff += (arr[i] - sortedArr[i]);
+        if (diff == 0) {
+            res ++;
         }
-        leadingZero = false;
-        ret.append(digit);
     }
-    return ret.length() == 0 ? "0" : ret.toString();
+    return res;
 }
 ```
 
