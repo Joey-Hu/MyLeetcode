@@ -76,3 +76,29 @@ private double quickMul(double x, long N) {
 }
 ```
 
+#### [lc372. 超级次方](https://leetcode-cn.com/problems/super-pow/)
+
+思路：**快速幂题型**，具体思路参考[超级次方](https://leetcode-cn.com/problems/super-pow/solution/chao-ji-ci-fang-by-leetcode-solution-ow8j/)
+
+```java
+static final int MOD = 1337;
+
+public int superPow(int a, int[] b) {
+    int ans = 1;
+    for (int i = b.length-1; i >= 0; i --) {
+        ans = (int)((long) ans * pow(a, b[i]) % MOD);
+        a = pow(a, 10);
+    }
+    return ans;
+}
+
+private int pow(int x, int n) {
+    // 快速幂
+    if (n == 0) {
+        return 1;
+    }
+    int y = (int)((long)pow(x, n/2) % MOD);
+    return n % 2 == 1 ? (int)((long)y * y * x % MOD) : (int)((long)y * y % MOD);
+}
+```
+
