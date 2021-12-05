@@ -656,7 +656,7 @@ public class HorseChessDemo {
 思路：1. floyd算法，2. dijkstra算法
 
 ```java
-// Floyd算法：从任意起点出发，到达任意起点的最短距离    
+// Floyd算法：多源最短路径算法，从任意起点出发，到达任意起点的最短距离    
 int INF = 0x3f3f3f3f;
 
 public int networkDelayTime(int[][] times, int n, int k) {
@@ -692,6 +692,63 @@ private void floyd(int[][] w, int k) {
             for (int j = 1; j <= n; j ++) {
                 w[i][j] = Math.min(w[i][j], w[i][p] + w[p][j]);
             }
+        }
+    }
+}
+
+
+// Dijkstra算法：单源最短路算法，从某一起点出发，到达任意起点的最短距离    
+int INF = 0x3f3f3f3f;
+
+public int networkDelayTime(int[][] times, int n, int k) {
+    // 邻接矩阵数组：w[a][b] = c 代表从 a 到 b 有权重为 c 的边
+    int[][] w = new int[n+1][n+1];
+    // dist[x] = y 代表从源点到 x 的最短距离为 y
+    int[] dist = new int[n+1];
+    // 记录哪些点已经被更新过
+    boolean[] vis = new boolean[n+1];
+    // 初始化邻接矩阵
+    for (int i = 1; i <= n; i ++) {
+        for (int j = 1; j <= n; j ++) {
+            w[i][j] = w[j][i] = i == j ? 0 : INF;
+        }
+    }
+    // 存图
+    for (int[] time : times) {
+        w[time[0]][time[1]] = time[2];
+    }
+
+    // dijkstra算法
+    dijkstra(w, dist, vis, k);
+    // 遍历答案
+    int ans = 0;
+    for (int i = 1; i <= n; i ++) {
+        ans = Math.max(ans, dist[i]);
+    }
+    return ans > INF / 2 ? -1 : ans;
+}
+
+private void dijkstra(int[][] w, int[] dist, boolean[] vis, int k) {
+    int n = w.length-1;
+    // 起始先将所有的点标记为「未更新」和「距离为正无穷」
+    Arrays.fill(vis, false);
+    Arrays.fill(dist, INF);
+    // 只有起点最短距离为 0
+    dist[k] = 0;
+
+    for (int p = 1; p <= n; p ++) {
+        // 每次找到「最短距离最小」且「未被更新」的点 t
+        int t = -1;
+        for (int i = 1; i <= n; i ++) {
+            if (!vis[i] && (t==-1 || dist[i] < dist[t])) {
+                t = i;
+            }
+        }
+        // 标记点 t 为已更新
+        vis[t] = true;
+        // 用点 t 的「最小距离」更新其他点
+        for (int i = 1; i <= n; i++) {
+            dist[i] = Math.min(dist[i], dist[t] + w[t][i]);
         }
     }
 }
